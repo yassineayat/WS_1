@@ -15,8 +15,12 @@ def start():
 	trigger2 = CronTrigger(
 		year="*", month="*", day="*", hour="0", minute="00", second="00"
 	)
+	trigger3 = CronTrigger(
+		year="*", month="*", day="*", hour="13", minute="30", second="00"
+	)
 	scheduler.add_job(schedule_api, trigger=trigger)
 	scheduler.add_job(ET0_calc, trigger=trigger2)
+	scheduler.add_job(FWI, trigger=trigger2)
 	scheduler.add_job(schedule_api2, 'interval', minutes=15)
 	scheduler.print_jobs()
 	# scheduler.pause()
