@@ -77,6 +77,253 @@ def chart(request):
     context={'tab':tab,'labels':labels,'dataa':dataa}
     return render(request,"charts.html",context)
 
+def charthum(request):
+    tab=CapSol.objects.all()
+    labels = []
+    dataa = []
+    dataa2 = []
+    for data in tab:
+        labels.append((data.dt).strftime("%Y-%m-%d %H:%M:%S"))
+        dataa.append(data.Temp)
+        dataa2.append(data.Hum)
+        print("labels0", type(labels))
+    if (request.method == "POST"):
+        labels.clear()
+        dataa.clear()
+        dataa2.clear()
+
+        fromdate = request.POST.get('startdate')
+        # print(type(datetime.datetime.now()))
+        print("fromdate")
+        print(fromdate)
+        todate = request.POST.get('enddate')
+        print("todate")
+        print(todate)
+        first = CapSol.objects.first()
+        print("first date", str(first.dt))
+        lastdate = CapSol.objects.last()
+        print("last date", str(lastdate.dt))
+        if fromdate != "" and todate != "":
+            # to = datetime.datetime.strptime(todate, '%Y-%m-%d')+datetime.timedelta(days=1)
+            to = datetime.datetime.strptime(todate, '%Y-%m-%d') + datetime.timedelta(days=1)
+            print("to", to)
+            # fromdate = datetime.datetime("07-07")
+            created_documents5 = CapSol.objects.filter(dt__range=[fromdate, to]).order_by('dt')
+            print("created_documents5", created_documents5)
+            for data in created_documents5:
+                labels.append((data.dt).strftime("%d %b %Y %H:%M:%S"))
+                dataa.append(data.Temp)
+                dataa2.append(data.Hum)
+                print("labelfiltter", labels)
+                # return HttpResponseRedirect('/')
+            # print("labelfiltter",labels)
+        if fromdate == "":
+            fromdate = first.dt
+
+        if todate == "":
+            to = (lastdate.dt) + datetime.timedelta(days=1)
+            todate = to + datetime.timedelta(days=1)
+            labels.clear()
+            dataa.clear()
+            dataa2.clear()
+            created_documents6 = CapSol.objects.filter(dt__range=[fromdate, todate]).order_by('id')
+            print("created_documents6", created_documents6)
+
+            for data in created_documents6:
+                labels.append((data.dt).strftime("%d %b %Y %H:%M:%S"))
+                dataa.append(data.Temp)
+                dataa2.append(data.Hum)
+                print("lab", labels)
+                return HttpResponseRedirect('/Chart')
+
+            print("todate", type(todate))
+
+    context={'tab':tab,'labels':labels,'dataa':dataa,'dataa2':dataa2}
+    return render(request,"chartshum.html",context)
+
+def chartsal(request):
+    tab=CapSol.objects.all()
+    labels = []
+    dataa = []
+    for data in tab:
+        labels.append((data.dt).strftime("%Y-%m-%d %H:%M:%S"))
+        dataa.append(data.Sal)
+        print("labels0", type(labels))
+    if (request.method == "POST"):
+        labels.clear()
+        dataa.clear()
+
+        fromdate = request.POST.get('startdate')
+        # print(type(datetime.datetime.now()))
+        print("fromdate")
+        print(fromdate)
+        todate = request.POST.get('enddate')
+        print("todate")
+        print(todate)
+        first = CapSol.objects.first()
+        print("first date", str(first.dt))
+        lastdate = CapSol.objects.last()
+        print("last date", str(lastdate.dt))
+        if fromdate != "" and todate != "":
+            # to = datetime.datetime.strptime(todate, '%Y-%m-%d')+datetime.timedelta(days=1)
+            to = datetime.datetime.strptime(todate, '%Y-%m-%d') + datetime.timedelta(days=1)
+            print("to", to)
+            # fromdate = datetime.datetime("07-07")
+            created_documents5 = CapSol.objects.filter(dt__range=[fromdate, to]).order_by('dt')
+            print("created_documents5", created_documents5)
+            for data in created_documents5:
+                labels.append((data.dt).strftime("%d %b %Y %H:%M:%S"))
+                dataa.append(data.Sal)
+
+                print("labelfiltter", labels)
+                # return HttpResponseRedirect('/')
+            # print("labelfiltter",labels)
+        if fromdate == "":
+            fromdate = first.dt
+
+        if todate == "":
+            to = (lastdate.dt) + datetime.timedelta(days=1)
+            todate = to + datetime.timedelta(days=1)
+            labels.clear()
+            dataa.clear()
+
+            created_documents6 = CapSol.objects.filter(dt__range=[fromdate, todate]).order_by('id')
+            print("created_documents6", created_documents6)
+
+            for data in created_documents6:
+                labels.append((data.dt).strftime("%d %b %Y %H:%M:%S"))
+                dataa.append(data.Sal)
+
+                print("lab", labels)
+                return HttpResponseRedirect('/Chartsal')
+
+            print("todate", type(todate))
+
+    context={'tab':tab,'labels':labels,'dataa':dataa}
+    return render(request,"chartssal.html",context)
+
+def chartec(request):
+    tab=CapSol.objects.all()
+    labels = []
+    dataa = []
+    for data in tab:
+        labels.append((data.dt).strftime("%Y-%m-%d %H:%M:%S"))
+        dataa.append(data.Ec)
+        print("labels0", type(labels))
+    if (request.method == "POST"):
+        labels.clear()
+        dataa.clear()
+
+        fromdate = request.POST.get('startdate')
+        # print(type(datetime.datetime.now()))
+        print("fromdate")
+        print(fromdate)
+        todate = request.POST.get('enddate')
+        print("todate")
+        print(todate)
+        first = CapSol.objects.first()
+        print("first date", str(first.dt))
+        lastdate = CapSol.objects.last()
+        print("last date", str(lastdate.dt))
+        if fromdate != "" and todate != "":
+            # to = datetime.datetime.strptime(todate, '%Y-%m-%d')+datetime.timedelta(days=1)
+            to = datetime.datetime.strptime(todate, '%Y-%m-%d') + datetime.timedelta(days=1)
+            print("to", to)
+            # fromdate = datetime.datetime("07-07")
+            created_documents5 = CapSol.objects.filter(dt__range=[fromdate, to]).order_by('dt')
+            print("created_documents5", created_documents5)
+            for data in created_documents5:
+                labels.append((data.dt).strftime("%d %b %Y %H:%M:%S"))
+                dataa.append(data.Ec)
+
+                print("labelfiltter", labels)
+                # return HttpResponseRedirect('/')
+            # print("labelfiltter",labels)
+        if fromdate == "":
+            fromdate = first.dt
+
+        if todate == "":
+            to = (lastdate.dt) + datetime.timedelta(days=1)
+            todate = to + datetime.timedelta(days=1)
+            labels.clear()
+            dataa.clear()
+
+            created_documents6 = CapSol.objects.filter(dt__range=[fromdate, todate]).order_by('id')
+            print("created_documents6", created_documents6)
+
+            for data in created_documents6:
+                labels.append((data.dt).strftime("%d %b %Y %H:%M:%S"))
+                dataa.append(data.Ec)
+
+                print("lab", labels)
+                return HttpResponseRedirect('/Chartec')
+
+            print("todate", type(todate))
+
+    context={'tab':tab,'labels':labels,'dataa':dataa}
+    return render(request,"chartsec.html",context)
+
+def chartbat(request):
+    tab=CapSol.objects.all()
+    labels = []
+    dataa = []
+    for data in tab:
+        labels.append((data.dt).strftime("%Y-%m-%d %H:%M:%S"))
+        dataa.append(data.Bat)
+        print("labels0", type(labels))
+    if (request.method == "POST"):
+        labels.clear()
+        dataa.clear()
+
+        fromdate = request.POST.get('startdate')
+        # print(type(datetime.datetime.now()))
+        print("fromdate")
+        print(fromdate)
+        todate = request.POST.get('enddate')
+        print("todate")
+        print(todate)
+        first = CapSol.objects.first()
+        print("first date", str(first.dt))
+        lastdate = CapSol.objects.last()
+        print("last date", str(lastdate.dt))
+        if fromdate != "" and todate != "":
+            # to = datetime.datetime.strptime(todate, '%Y-%m-%d')+datetime.timedelta(days=1)
+            to = datetime.datetime.strptime(todate, '%Y-%m-%d') + datetime.timedelta(days=1)
+            print("to", to)
+            # fromdate = datetime.datetime("07-07")
+            created_documents5 = CapSol.objects.filter(dt__range=[fromdate, to]).order_by('dt')
+            print("created_documents5", created_documents5)
+            for data in created_documents5:
+                labels.append((data.dt).strftime("%d %b %Y %H:%M:%S"))
+                dataa.append(data.Bat)
+
+                print("labelfiltter", labels)
+                # return HttpResponseRedirect('/')
+            # print("labelfiltter",labels)
+        if fromdate == "":
+            fromdate = first.dt
+
+        if todate == "":
+            to = (lastdate.dt) + datetime.timedelta(days=1)
+            todate = to + datetime.timedelta(days=1)
+            labels.clear()
+            dataa.clear()
+
+            created_documents6 = CapSol.objects.filter(dt__range=[fromdate, todate]).order_by('id')
+            print("created_documents6", created_documents6)
+
+            for data in created_documents6:
+                labels.append((data.dt).strftime("%d %b %Y %H:%M:%S"))
+                dataa.append(data.Bat)
+
+                print("lab", labels)
+                return HttpResponseRedirect('/Chartec')
+
+            print("todate", type(todate))
+
+    context={'tab':tab,'labels':labels,'dataa':dataa}
+    return render(request,"chartsbat.html",context)
+
 
 def exemple():
     one_day_ago = datetime.datetime.now() - datetime.timedelta(days=1)
