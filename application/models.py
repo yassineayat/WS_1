@@ -95,3 +95,15 @@ class ET0(models.Model):
 
     def __str__(self):
         return "ET0: "+str(self.Time_Stamp)
+
+class DataFwi(models.Model):
+    ffmc = models.FloatField()
+    dmc = models.FloatField()
+    dc = models.FloatField()
+    isi = models.FloatField()
+    bui = models.FloatField()
+    fwi = models.FloatField()
+    Time_Stamp = models.DateTimeField(auto_now_add=True,null=True)
+
+    def __str__(self):
+        return "FWI = "+str(self.fwi)+" @ "+str(self.Time_Stamp)

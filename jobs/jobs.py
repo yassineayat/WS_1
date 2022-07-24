@@ -123,7 +123,7 @@ def ET0_calc():
         print("hmin", Hmin)
         print("hmax", Hmax)
         print("avgWS :", avgvent)
-        B2 = datetime.datetime.now().timetuple().tm_yday
+        B2 = one_day_ago.timetuple().tm_yday
         RS = Rayt  # totl radiation
         Tmin = Tmmin
         Tmax = Tmmax
