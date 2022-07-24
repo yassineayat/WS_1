@@ -12,8 +12,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 import os
 from pathlib import Path
 
-from django.conf.locale.en import formats as en_formats
-en_formats.TIME_FORMATS = '%H:%M:%S'
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -41,8 +40,17 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     # 'django_browser_reload',
+    'livesync',
     'django.contrib.staticfiles',
     'application'
+]
+
+DJANGO_LIVESYNC = [
+    {'PORT': 9001}
+]
+
+MIDDLEWARE_CLASSES = [
+    'livesync.core.middleware.DjangoLiveSyncMiddleware',
 ]
 
 MIDDLEWARE = [
@@ -54,6 +62,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     # 'django_browser_reload.middleware.BrowserReloadMiddleware',
+    # 'livesync.core.middleware.DjangoLiveSyncMiddleware',
+
 ]
 
 ROOT_URLCONF = 'prjt.urls'
@@ -131,10 +141,6 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-
-TIME_FORMAT = '%H:%M:%S'
-
-TIME_INPUT_FORMATS = '%H:%M:%S'
 
 
 # Static files (CSS, JavaScript, Images)
