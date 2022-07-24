@@ -91,77 +91,77 @@ def ET0_calc():
     print("day", day)
     x = ET0.objects.last()
     print("eto", (x.dt))
-    if ET0.objects.filter(dt=x.dt).exists():
-        print("Ok")
-    else:
-        posts = Ws.objects.filter(dateRay__gte=one_day_ago)
-        print("posts", posts)
-        totalRay = posts.values('Ray').aggregate(Sum('Ray'))
-        totalVent = posts.values('Vent').aggregate(Sum('Vent'))
-        Maxtemp = posts.values('Temperature').aggregate(Max('Temperature'))
-        Mintemp = posts.values('Temperature').aggregate(Min('Temperature'))
-        MaxHum = posts.values('Humidity').aggregate(Max('Humidity'))
-        MinHum = posts.values('Humidity').aggregate(Min('Humidity'))
-        avreage = posts.aggregate(Avg('Vent'))
-        dicttolistRay = list(totalRay.items())
-        dicttolistVent = list(avreage.items())
-        avgvent = (round(dicttolistVent[0][1] / 3.6, 4))
-        Rayt = dicttolistRay[0][1]
-        dicttolisTmax = list(Maxtemp.items())
-        Tmmax = dicttolisTmax[0][1]
-        dicttolisTmin = list(Mintemp.items())
-        Tmmin = dicttolisTmin[0][1]
-        dicttolisHmax = list(MaxHum.items())
-        Hmax = dicttolisHmax[0][1]
-        dicttolisHmin = list(MinHum.items())
-        Hmin = dicttolisHmin[0][1]
-        print("posts", posts)
-        print("tv", totalVent)
-        print("tr", Rayt)
-        print("tmin", Tmmin)
-        print("tmax", Tmmax)
-        print("hmin", Hmin)
-        print("hmax", Hmax)
-        print("avgWS :", avgvent)
-        B2 = one_day_ago.timetuple().tm_yday
-        RS = Rayt  # totl radiation
-        Tmin = Tmmin
-        Tmax = Tmmax
-        HRmin = Hmin
-        HRmax = Hmax
-        u = avgvent  # m/s moyen
-        M = RS / 24  # radiation/h
-        N = M * 3600 * 0.000001 * 24  # Rs [MJm-2d-1]
-        u2 = u * 4.87 / math.log(67.8 * 2 - 5.42)
-        latitude = 33.51
-        altitude = 755
-        ctesolaire = 0.082
-        StefanBolt = 0.000000004896
-        p = 3.140
-        g = 0.000665 * 101.3 * math.pow(((293 - 0.0065 * altitude) / 293), 5.26)
-        conversion = latitude * 3.1416 / 180
-        Y = 1 + 0.033 * math.cos((2 * p * B2) / 365)
-        Z = 0.409 * math.sin((2 * p * B2 / 365) - 1.39)
-        AA = math.acos(-math.tan(conversion) * math.tan(Z))
-        AB = (24 * 60 / p) * ctesolaire * Y * (
-                AA * math.sin(conversion) * math.sin(Z) + math.cos(conversion) * math.cos(Z) * math.sin(AA))
-        AC = AB * (0.75 + 0.00002 * altitude)
-        AD = 1.35 * (N / AC) - 0.35
-        AE = (0.6108 * math.exp(17.27 * Tmin / (Tmin + 237.3)) + 0.6108 * math.exp(17.27 * Tmax / (Tmax + 237.3))) / 2
-        AF = (HRmin * 0.6108 * math.exp(17.27 * Tmax / (Tmax + 237.3)) + HRmax * 0.6108 * math.exp(
-            17.27 * Tmin / (Tmin + 237.3))) / (2 * 100)
-        AG = StefanBolt * 0.5 * ((Tmin + 273) ** 4 + (Tmax + 273) ** 4) * (0.34 - 0.14 * math.sqrt(AF)) * AD
-        AH = (1 - 0.23) * N - AG
-        AI = 0
-        AJ = 4098 * 0.6108 * math.exp(17.27 * 0.5 * (Tmin + Tmax) / (0.5 * (Tmin + Tmax) + 237.3)) / (
-                0.5 * (Tmin + Tmax) + 237.3) ** 2
-        ET = (0.408 * AJ * (AH - AI) + (1600 * g / ((Tmin + Tmax) * 0.5 + 273)) * u2 * (AE - AF)) / (
-                AJ + g * (1 + 0.38 * u2))
-        ET_0 = round(ET, 2)
-        print("ET_0", ET_0)
+    # if ET0.objects.filter(dt=x.dt).exists():
+    #     print("Ok")
+    # else:
+    posts = Ws.objects.filter(dateRay__gte=one_day_ago)
+    print("posts", posts)
+    totalRay = posts.values('Ray').aggregate(Sum('Ray'))
+    totalVent = posts.values('Vent').aggregate(Sum('Vent'))
+    Maxtemp = posts.values('Temperature').aggregate(Max('Temperature'))
+    Mintemp = posts.values('Temperature').aggregate(Min('Temperature'))
+    MaxHum = posts.values('Humidity').aggregate(Max('Humidity'))
+    MinHum = posts.values('Humidity').aggregate(Min('Humidity'))
+    avreage = posts.aggregate(Avg('Vent'))
+    dicttolistRay = list(totalRay.items())
+    dicttolistVent = list(avreage.items())
+    avgvent = (round(dicttolistVent[0][1] / 3.6, 4))
+    Rayt = dicttolistRay[0][1]
+    dicttolisTmax = list(Maxtemp.items())
+    Tmmax = dicttolisTmax[0][1]
+    dicttolisTmin = list(Mintemp.items())
+    Tmmin = dicttolisTmin[0][1]
+    dicttolisHmax = list(MaxHum.items())
+    Hmax = dicttolisHmax[0][1]
+    dicttolisHmin = list(MinHum.items())
+    Hmin = dicttolisHmin[0][1]
+    print("posts", posts)
+    print("tv", totalVent)
+    print("tr", Rayt)
+    print("tmin", Tmmin)
+    print("tmax", Tmmax)
+    print("hmin", Hmin)
+    print("hmax", Hmax)
+    print("avgWS :", avgvent)
+    B2 = one_day_ago.timetuple().tm_yday
+    RS = Rayt  # totl radiation
+    Tmin = Tmmin
+    Tmax = Tmmax
+    HRmin = Hmin
+    HRmax = Hmax
+    u = avgvent  # m/s moyen
+    M = RS / 24  # radiation/h
+    N = M * 3600 * 0.000001 * 24  # Rs [MJm-2d-1]
+    u2 = u * 4.87 / math.log(67.8 * 2 - 5.42)
+    latitude = 33.51
+    altitude = 755
+    ctesolaire = 0.082
+    StefanBolt = 0.000000004896
+    p = 3.140
+    g = 0.000665 * 101.3 * math.pow(((293 - 0.0065 * altitude) / 293), 5.26)
+    conversion = latitude * 3.1416 / 180
+    Y = 1 + 0.033 * math.cos((2 * p * B2) / 365)
+    Z = 0.409 * math.sin((2 * p * B2 / 365) - 1.39)
+    AA = math.acos(-math.tan(conversion) * math.tan(Z))
+    AB = (24 * 60 / p) * ctesolaire * Y * (
+            AA * math.sin(conversion) * math.sin(Z) + math.cos(conversion) * math.cos(Z) * math.sin(AA))
+    AC = AB * (0.75 + 0.00002 * altitude)
+    AD = 1.35 * (N / AC) - 0.35
+    AE = (0.6108 * math.exp(17.27 * Tmin / (Tmin + 237.3)) + 0.6108 * math.exp(17.27 * Tmax / (Tmax + 237.3))) / 2
+    AF = (HRmin * 0.6108 * math.exp(17.27 * Tmax / (Tmax + 237.3)) + HRmax * 0.6108 * math.exp(
+        17.27 * Tmin / (Tmin + 237.3))) / (2 * 100)
+    AG = StefanBolt * 0.5 * ((Tmin + 273) ** 4 + (Tmax + 273) ** 4) * (0.34 - 0.14 * math.sqrt(AF)) * AD
+    AH = (1 - 0.23) * N - AG
+    AI = 0
+    AJ = 4098 * 0.6108 * math.exp(17.27 * 0.5 * (Tmin + Tmax) / (0.5 * (Tmin + Tmax) + 237.3)) / (
+            0.5 * (Tmin + Tmax) + 237.3) ** 2
+    ET = (0.408 * AJ * (AH - AI) + (1600 * g / ((Tmin + Tmax) * 0.5 + 273)) * u2 * (AE - AF)) / (
+            AJ + g * (1 + 0.38 * u2))
+    ET_0 = round(ET, 2)
+    print("ET_0", ET_0)
 
-        ET0.objects.create(value=ET_0, WSavg=avgvent, Tmax=Tmax, Tmin=Tmin, Hmax=HRmax, Hmin=HRmin, Raym=Rayt, U2=u2, Delta=B2)
-        print("ok bien")
+    ET0.objects.create(value=ET_0, WSavg=avgvent, Tmax=Tmax, Tmin=Tmin, Hmax=HRmax, Hmin=HRmin, Raym=Rayt, U2=u2, Delta=B2)
+    print("ok bien")
 
 def FWI():
     global temp, rhum, prcp, wind, ffmc0, dc0, dmc0, ffmc, dmc, isi, bui, fwi, i, jprcp

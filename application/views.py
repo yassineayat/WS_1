@@ -568,6 +568,7 @@ def weatherS(request):
     r = round(lst.Rafale,1)
     p = round(lst.Pluv,1)
     lstet = ET0.objects.last()
+    lstfwi= DataFwi.objects.last()
     # exemple() FWI
     one_day_ago = datetime.datetime.now() - datetime.timedelta(days=1)
     posts = Ws.objects.filter(date__gte=one_day_ago)
@@ -596,7 +597,7 @@ def weatherS(request):
     print(mth)
 
 
-    context={'lst':lst,'t':t,'h':h,'v':v,'r':r,'p':p,"lstet":lstet}
+    context={'lst':lst,'t':t,'h':h,'v':v,'r':r,'p':p,"lstet":lstet,'lstfwi':lstfwi}
     return render(request,"stationvisio.html",context)
 
 

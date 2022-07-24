@@ -688,9 +688,9 @@ input:checked + .slider .off
 										<img src="{% static 'images/w5.png'%}" alt="">
 									<br>
 									<br>
-									<h1><em> 54 </em></h1>
+									<h1><em> {{lstfwi.fwi}} </em></h1>
 									<br>
-									<h10>il y a : </h10>
+									<h10>il y a : {{lstfwi.Time_Stamp|timesince}} ({{lstfwi.Time_Stamp|date:"H:i"}})</h10>
 										<br>
 							        </div><!--//col-->
 
@@ -722,9 +722,9 @@ input:checked + .slider .off
 							<img src="{% static 'images/w6.png'%}" alt="">
 								<br>
 									<br>
-									<h1><em> 54 °C</em></h1>
+									<h1><em> {{lstfet.value}}</em></h1>
 									<br>
-									<h10>il y a : </h10>
+									<h10>il y a : {{lstet.Time_Stamp|timesince}} ({{lstet.Time_Stamp|date:"H:i"}})</h10>
 							<br>
 							</div><!--//app-card-body-->
 <!--						    <div class="app-card-footer p-4 mt-auto">-->
