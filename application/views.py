@@ -567,37 +567,36 @@ def weatherS(request):
     v = round(lst.Vent,1)
     r = round(lst.Rafale,1)
     p = round(lst.Pluv,1)
+    ray = round(lst.Ray, 1)
     lstet = ET0.objects.last()
     lstfwi= DataFwi.objects.last()
     # exemple() FWI
     one_day_ago = datetime.datetime.now() - datetime.timedelta(days=1)
     posts = Ws.objects.filter(date__gte=one_day_ago)
-    print("posts :", posts)
-    #vent calcul
-    totalVent = posts.values('Vent').aggregate(Sum('Vent'))
-    nbrVent = posts.values('Vent').count()
-    moyVent=round((totalVent["Vent__sum"]/nbrVent),2)
-    print("totalevent : ",totalVent , nbrVent, moyVent)
-    #temperature calcul
-    Maxtemp = posts.values('Temperature').aggregate(Max('Temperature'))
-    Mintemp = posts.values('Temperature').aggregate(Min('Temperature'))
-    moyTemp = (Maxtemp["Temperature__max"] + Mintemp["Temperature__min"]) / 2
-    print("moyTemp :", moyTemp)
-    #humiidity calcul
-    MaxHum = posts.values('Humidity').aggregate(Max('Humidity'))
-    MinHum = posts.values('Humidity').aggregate(Min('Humidity'))
-    moyHum = (MaxHum["Humidity__max"] + MinHum["Humidity__min"]) / 2
-    print("moyHum : ", moyHum)
-    #pluie calcul
-    totalrain = posts.values('Pluv').aggregate(Sum('Pluv'))
-    nmbrRain = posts.values('Pluv').count()
-    moyRain = totalrain['Pluv__sum']/nmbrRain
-    print("moyRain :", moyRain)
-    mth = datetime.datetime.today().month
-    print(mth)
-
-
-    context={'lst':lst,'t':t,'h':h,'v':v,'r':r,'p':p,"lstet":lstet,'lstfwi':lstfwi}
+    print("................................. weeather station visio green .................................")
+    # #vent calcul
+    # totalVent = posts.values('Vent').aggregate(Sum('Vent'))
+    # nbrVent = posts.values('Vent').count()
+    # moyVent=round((totalVent["Vent__sum"]/nbrVent),2)
+    # print("totalevent : ",totalVent , nbrVent, moyVent)
+    # #temperature calcul
+    # Maxtemp = posts.values('Temperature').aggregate(Max('Temperature'))
+    # Mintemp = posts.values('Temperature').aggregate(Min('Temperature'))
+    # moyTemp = (Maxtemp["Temperature__max"] + Mintemp["Temperature__min"]) / 2
+    # print("moyTemp :", moyTemp)
+    # #humiidity calcul
+    # MaxHum = posts.values('Humidity').aggregate(Max('Humidity'))
+    # MinHum = posts.values('Humidity').aggregate(Min('Humidity'))
+    # moyHum = (MaxHum["Humidity__max"] + MinHum["Humidity__min"]) / 2
+    # print("moyHum : ", moyHum)
+    # #pluie calcul
+    # totalrain = posts.values('Pluv').aggregate(Sum('Pluv'))
+    # nmbrRain = posts.values('Pluv').count()
+    # moyRain = totalrain['Pluv__sum']/nmbrRain
+    # print("moyRain :", moyRain)
+    # mth = datetime.datetime.today().month
+    # print(mth)
+    context={'lst':lst,'t':t,'h':h,'v':v,'r':r,'p':p,"lstet":lstet,'lstfwi':lstfwi,'ray':ray}
     return render(request,"stationvisio.html",context)
 
 

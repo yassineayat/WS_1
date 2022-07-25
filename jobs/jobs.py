@@ -78,6 +78,8 @@ def schedule_api2():
         print(datetime.datetime.now()-datetime.timedelta(1))
     # time.sleep(1)
 
+    else:
+        print("deja existe")
 
 def ET0_calc():
 
@@ -161,7 +163,7 @@ def ET0_calc():
     print("ET_0", ET_0)
 
     ET0.objects.create(value=ET_0, WSavg=avgvent, Tmax=Tmax, Tmin=Tmin, Hmax=HRmax, Hmin=HRmin, Raym=Rayt, U2=u2, Delta=B2)
-    print("ok bien")
+    print("__________________________________ET_O Calculé________________________________")
 
 def FWI():
     global temp, rhum, prcp, wind, ffmc0, dc0, dmc0, ffmc, dmc, isi, bui, fwi, i, jprcp
@@ -299,7 +301,7 @@ def FWI():
         Maxtemp = posts.values('Temperature').aggregate(Max('Temperature'))
         Mintemp = posts.values('Temperature').aggregate(Min('Temperature'))
         temp = (Maxtemp["Temperature__max"] + Mintemp["Temperature__min"]) / 2
-        print("moyTemp :", moyTemp)
+        print("moyTemp :", temp)
         # humiidity calcul
         MaxHum = posts.values('Humidity').aggregate(Max('Humidity'))
         MinHum = posts.values('Humidity').aggregate(Min('Humidity'))
@@ -330,5 +332,6 @@ def FWI():
         fwi = fwisystem.FWIcalc(isi, bui)
         DataFwi.objects.create(ffmc=round(ffmc, 1), dmc=round(dmc, 1), dc=round(dc, 1), isi=round(isi, 1),
                                bui=round(bui, 1), fwi=round(fwi, 2))
+        print("__________________________________FWI Calculé________________________________")
 
     main()

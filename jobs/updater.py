@@ -20,8 +20,10 @@ def start():
 	)
 	scheduler.add_job(schedule_api, trigger=trigger)
 	scheduler.add_job(ET0_calc, trigger=trigger2)
-	scheduler.add_job(FWI, trigger=trigger2)
-	scheduler.add_job(schedule_api2, 'interval', minutes=15)
+	scheduler.add_job(FWI, trigger=trigger3)
+	scheduler.add_job(schedule_api2, 'interval', minutes=2)
+	# print("ok")
+
 	scheduler.print_jobs()
 	# scheduler.pause()
 
