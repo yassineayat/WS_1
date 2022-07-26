@@ -89,19 +89,20 @@ def schedule_api3():
         ('type', 'value'),
     )
 
-    response2 = requests.get('https://api.myiotplatform.com/data/exports/devices/f29f3c49e0', headers=headers,
+    response = requests.get('https://api.myiotplatform.com/data/exports/devices/f29f3c49e0', headers=headers,
                             params=params)
 
-    pouet2 = json.loads(response2.text)
-    i=-1
-    dateobservation2 = str(pouet2['data']['f29f3c49e0'][i]['dateEvent'])
-    print(dateobservation2)
-    if not Ray.objects.filter(dateRay=dateobservation2).exists():
-        Rayo = pouet2['data']['f29f3c49e0'][i]['data']['probe1']['value']
+    pouet = json.loads(response.text)
+    i = -1
+    dateobservation = str(pouet['data']['f29f3c49e0'][i]['dateEvent'])
+    print(dateobservation)
+    print("last" + str(pouet['data']['f29f3c49e0'][-1]['dateEvent']))
+    if not Ray.objects.filter(dateRay=dateobservation).exists():
+        Rayo = pouet['data']['f29f3c49e0'][i]['data']['probe1']['value']
 
         # if not Ws.objects.filter(date=dateobservation).exists():
             # Insert new data here
-        tab = Ray.objects.create(Ray=Rayo, dateRay=dateobservation2)
+        tab = Ray.objects.create(Ray=Rayo, dateRay=dateobservation)
         print(tab)
         print(datetime.datetime.now()-datetime.timedelta(1))
     # time.sleep(1)
@@ -343,7 +344,8 @@ def FWI():
         nmbrRain = posts.values('Pluv').count()
         prcp = totalrain['Pluv__sum'] / nmbrRain
         print("moyRain :", prcp)
-        initfw = DataFwi.objects.filter(timestamp__date=one_day_ago)
+        initfw = DataFwi.objects.last()
+        print("initfw :",initfw)
         ffmc0 = initfw.ffmc
         print("ffmc0 :", ffmc0)
         dmc0 = initfw.dmc
@@ -362,5 +364,6 @@ def FWI():
         DataFwi.objects.create(ffmc=round(ffmc, 1), dmc=round(dmc, 1), dc=round(dc, 1), isi=round(isi, 1),
                                bui=round(bui, 1), fwi=round(fwi, 2))
         print("__________________________________FWI Calculé________________________________")
+
 
     main()

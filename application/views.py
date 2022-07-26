@@ -608,7 +608,7 @@ def home(request):
     print("date",str((datetime.datetime.now())))
     print("date2", str((datetime.datetime.now()).strftime("%M")))
     tab=CapSol.objects.last()
-    print("last",str((tab.time)))
+    # print("last",str((tab.time)))
 
     f = CapSol.objects.first()
     tab2=CapSol.objects.all()
@@ -653,10 +653,10 @@ def home(request):
     created_documents2 = CapSol.objects.filter(dt__gte=date_from2).count()
     created_documents3 = CapSol.objects.filter(dt__gte=date_from3).count()
     created_documents4 = CapSol.objects.filter(dt__gte=date_from4).count()
-    print("created_documents",str(created_documents))
-    print("created_documents", str(created_documents2))
-    print("created_documents", str(created_documents3))
-    print("created_documents", str(created_documents4))
+    # print("created_documents",str(created_documents))
+    # print("created_documents", str(created_documents2))
+    # print("created_documents", str(created_documents3))
+    # print("created_documents", str(created_documents4))
     now = (datetime.datetime.now()).strftime("%M")
     x = CapSol.objects.filter(time__minute=now).count()
     # print("x", str(x))
@@ -668,7 +668,7 @@ def home(request):
         labels.append((data.dt).strftime("%d %b %Y %H:%M:%S"))
         dataa.append(data.Temp)
         dataa2.append(data.Hum)
-        print("labels0",labels)
+        # print("labels0",labels)
 
     print("labelall",labels)
     if (request.method == "POST"):
@@ -697,7 +697,7 @@ def home(request):
                 labels.append((data.dt).strftime("%d %b %Y %H:%M:%S"))
                 dataa.append(data.Temp)
                 dataa2.append(data.Hum)
-                print("labelfiltter", labels)
+                # print("labelfiltter", labels)
                 # return HttpResponseRedirect('/')
             # print("labelfiltter",labels)
         if fromdate =="":
@@ -710,15 +710,15 @@ def home(request):
             dataa.clear()
             dataa2.clear()
             created_documents6 = CapSol.objects.filter(dt__range=[fromdate, todate]).order_by('id')
-            print("created_documents6",created_documents6)
+            # print("created_documents6",created_documents6)
 
             for data in created_documents6:
 
                 labels.append((data.dt).strftime("%d %b %Y %H:%M:%S"))
                 dataa.append(data.Temp)
                 dataa2.append(data.Hum)
-                print("lab",labels)
-            print("todate", type(todate))
+                # print("lab",labels)
+            # print("todate", type(todate))
 
 
 
