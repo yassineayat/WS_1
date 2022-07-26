@@ -65,6 +65,11 @@ class Ws(models.Model):
     def __str__(self):
         return str(self.pk )  +  str(self.date)
 
+class Ray(models.Model):
+    Ray = models.FloatField(null=True)
+    dateRay = models.DateTimeField(null=True)
+    def __str__(self):
+        return str(self.dateRay)
 
 class Data(models.Model):
     ID_Device = models.IntegerField()
@@ -72,9 +77,9 @@ class Data(models.Model):
     Hum = models.FloatField(null=True)
     Ray = models.FloatField(null=True)
     Wind_Speed = models.FloatField(null=True)
-    Rain = models.FloatField( null=True)
+    Rain = models.FloatField(null=True)
     Wind_Dir = models.CharField(max_length=50,null=True)
-    Bat = models.FloatField( null=True)
+    Bat = models.FloatField(null=True)
     Time_Stamp = models.DateTimeField(auto_now_add=True)
     def __str__(self):
         return str(self.Time_Stamp)

@@ -45,9 +45,10 @@ INSTALLED_APPS = [
     'application'
 ]
 
-DJANGO_LIVESYNC = [
-    {'PORT': 9001}
-]
+DJANGO_LIVESYNC = {'PORT': 8080,
+                   'HOST': '10.130.1.232'
+                   }
+
 
 MIDDLEWARE_CLASSES = [
     'livesync.core.middleware.DjangoLiveSyncMiddleware',
@@ -62,7 +63,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     # 'django_browser_reload.middleware.BrowserReloadMiddleware',
-    # 'livesync.core.middleware.DjangoLiveSyncMiddleware',
+    'livesync.core.middleware.DjangoLiveSyncMiddleware',
 
 ]
 

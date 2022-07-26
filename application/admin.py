@@ -9,4 +9,5 @@ admin.site.register(Ws)
 admin.site.register(Data)
 admin.site.register(ET0)
 admin.site.register(DataFwi)
+admin.site.register(Ray)
 

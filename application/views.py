@@ -327,9 +327,10 @@ def chartbat(request):
 
 def exemple():
     one_day_ago = datetime.datetime.now() - datetime.timedelta(days=1)
-    posts = Ws.objects.filter(dateRay__gte=one_day_ago)
+    posts = Ws.objects.filter(date__gte=one_day_ago)
     print("posts", posts)
-    totalRay = posts.values('Ray').aggregate(Sum('Ray'))
+    posts2 = Ray.objects.filter(dateRay__gte=one_day_ago)
+    totalRay = posts2.values('Ray').aggregate(Sum('Ray'))
     totalVent = posts.values('Vent').aggregate(Sum('Vent'))
     Maxtemp = posts.values('Temperature').aggregate(Max('Temperature'))
     Mintemp = posts.values('Temperature').aggregate(Min('Temperature'))
@@ -366,8 +367,8 @@ def exemple():
     M = RS/24  # radiation/h
     N = M * 3600 * 0.000001 * 24  # Rs [MJm-2d-1]
     u2 = u * 4.87 / math.log(67.8 * 2 - 5.42)
-    latitude = 33.53
-    altitude = 531
+    latitude = 34.65
+    altitude = 639
     ctesolaire = 0.082
     StefanBolt = 0.000000004896
     p = 3.140
@@ -567,10 +568,13 @@ def weatherS(request):
     v = round(lst.Vent,1)
     r = round(lst.Rafale,1)
     p = round(lst.Pluv,1)
-    ray = round(lst.Ray, 1)
+    lstR=Ray.objects.last()
+    ray = round(lstR.Ray, 1)
+    print(ray)
     lstet = ET0.objects.last()
     lstfwi= DataFwi.objects.last()
-    # exemple() FWI
+    exemple()
+    # FWI
     one_day_ago = datetime.datetime.now() - datetime.timedelta(days=1)
     posts = Ws.objects.filter(date__gte=one_day_ago)
     print("................................. weeather station visio green .................................")
@@ -596,7 +600,7 @@ def weatherS(request):
     # print("moyRain :", moyRain)
     # mth = datetime.datetime.today().month
     # print(mth)
-    context={'lst':lst,'t':t,'h':h,'v':v,'r':r,'p':p,"lstet":lstet,'lstfwi':lstfwi,'ray':ray}
+    context={'lst':lst,'t':t,'h':h,'v':v,'r':r,'p':p,"lstet":lstet,'lstfwi':lstfwi,'ray':ray,'lstR':lstR}
     return render(request,"stationvisio.html",context)
 
 

@@ -44,21 +44,24 @@ def on_message(client, userdata, msg):
         id_dev = ss[0][-1]
         temp = ss[1]
         hum = ss[2]
-        ec = ss[3]
-        sal = ss[4]
-        v_batt = ss[5]
+        ray = ss[3]
+        vite = ss[4]
+        plo = ss[5]
         Wind_Dir = ss[6]
+        batt = ss[7]
         print("ID-Dev :" + str(id_dev))
         print("temp :" + str(temp))
         print("hum :" + str(hum))
-        print("ec :" + str(ec))
-        print("sal :" + str(sal))
-        print("v_batt :" + str(v_batt))
+        print("ray :" + str(ray))
+        print("vite :" + str(vite))
+        print("plo :" + str(plo))
+        print("Wind_Dir :" + str(Wind_Dir))
+        print("batt :" + str(batt))
         # now = (datetime.datetime.now()).strftime("%M")
         #
         # if not CapSol.objects.filter(time__minute=now).exists():
         #     print(now)
-        s = Data.objects.create(ID_Device=id_dev,Temp=temp, Hum=hum,Ray=ec, Wind_Speed=sal,Rain=v_batt,Wind_Dir=Wind_Dir)
+        s = Data.objects.create(ID_Device=id_dev,Temp=temp, Hum=hum,Ray=ray, Wind_Speed=vite,Rain=plo,Wind_Dir=Wind_Dir, Bat=batt)
         print("created!!!")
 
 

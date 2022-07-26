@@ -9,7 +9,7 @@ import random
 
 from django.db.models import Sum, Avg, Max, Min
 
-from application.models import Ws, ET0, DataFwi
+from application.models import Ws, ET0, DataFwi,Ray
 
 postcodes = [
     "SW1A 1AA",
@@ -81,6 +81,34 @@ def schedule_api2():
     else:
         print("deja existe")
 
+def schedule_api3():
+    headers = {
+        'authorization': '876523763964578',
+    }
+    params = (
+        ('type', 'value'),
+    )
+
+    response2 = requests.get('https://api.myiotplatform.com/data/exports/devices/f29f3c49e0', headers=headers,
+                            params=params)
+
+    pouet2 = json.loads(response2.text)
+    i=-1
+    dateobservation2 = str(pouet2['data']['f29f3c49e0'][i]['dateEvent'])
+    print(dateobservation2)
+    if not Ray.objects.filter(dateRay=dateobservation2).exists():
+        Rayo = pouet2['data']['f29f3c49e0'][i]['data']['probe1']['value']
+
+        # if not Ws.objects.filter(date=dateobservation).exists():
+            # Insert new data here
+        tab = Ray.objects.create(Ray=Rayo, dateRay=dateobservation2)
+        print(tab)
+        print(datetime.datetime.now()-datetime.timedelta(1))
+    # time.sleep(1)
+
+    else:
+        print("deja existe rayonnement")
+
 def ET0_calc():
 
     one_day_ago = datetime.datetime.now() - datetime.timedelta(days=1)
@@ -96,9 +124,10 @@ def ET0_calc():
     # if ET0.objects.filter(dt=x.dt).exists():
     #     print("Ok")
     # else:
-    posts = Ws.objects.filter(dateRay__gte=one_day_ago)
+    posts = Ws.objects.filter(date__gte=one_day_ago)
+    posts2 = Ray.objects.filter(dateRay__gte=one_day_ago)
     print("posts", posts)
-    totalRay = posts.values('Ray').aggregate(Sum('Ray'))
+    totalRay = posts2.values('Ray').aggregate(Sum('Ray'))
     totalVent = posts.values('Vent').aggregate(Sum('Vent'))
     Maxtemp = posts.values('Temperature').aggregate(Max('Temperature'))
     Mintemp = posts.values('Temperature').aggregate(Min('Temperature'))
