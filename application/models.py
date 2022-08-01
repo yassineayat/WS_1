@@ -69,7 +69,7 @@ class Ray(models.Model):
     Ray = models.FloatField(null=True)
     dateRay = models.DateTimeField(null=True)
     def __str__(self):
-        return str(self.dateRay)
+        return str(self.Ray)
 
 class Data(models.Model):
     ID_Device = models.IntegerField()

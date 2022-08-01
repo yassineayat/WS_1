@@ -26,6 +26,16 @@
     <link id="theme-style" rel="stylesheet" href="{% static 'assets/css/portal.css'%}">
 
 </head>
+<script>
+    window.setInterval('refresh()', 480000);
+    // Call a function every 10000 milliseconds
+    // (OR 10 seconds).
+
+    // Refresh or reload page.
+    function refresh() {
+        window .location.reload();
+    }
+</script>
 <style>
     .app {
         background-color: #EBEBEB;

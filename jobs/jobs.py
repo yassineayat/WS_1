@@ -8,6 +8,7 @@ import json
 import random
 
 from django.db.models import Sum, Avg, Max, Min
+from django.http import HttpResponseRedirect
 
 from application.models import Ws, ET0, DataFwi,Ray
 
@@ -79,7 +80,7 @@ def schedule_api2():
     # time.sleep(1)
 
     else:
-        print("deja existe")
+        print("______________________________________________deja existews____________________________________")
 
 def schedule_api3():
     headers = {
@@ -108,37 +109,44 @@ def schedule_api3():
     # time.sleep(1)
 
     else:
-        print("deja existe rayonnement")
+        print("______________________________________deja existe rayonnement___________________________________")
 
 def ET0_calc():
-
-    one_day_ago = datetime.datetime.now() - datetime.timedelta(days=1)
-    print(one_day_ago.strftime("%d"))
-    # day = datetime.datetime.now().strftime("%d")
-    # print("day",day)
-    lstet = ET0.objects.last()
     # exemple()
-    day = datetime.datetime.today().date()
-    print("day", day)
-    x = ET0.objects.last()
-    print("eto", (x.dt))
-    # if ET0.objects.filter(dt=x.dt).exists():
-    #     print("Ok")
-    # else:
-    posts = Ws.objects.filter(date__gte=one_day_ago)
-    posts2 = Ray.objects.filter(dateRay__gte=one_day_ago)
-    print("posts", posts)
-    totalRay = posts2.values('Ray').aggregate(Sum('Ray'))
-    totalVent = posts.values('Vent').aggregate(Sum('Vent'))
+
+    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=1)).replace(hour=0, minute=0, second=0,
+                                                                                 microsecond=0)
+    now = (datetime.datetime.now()).replace(hour=0, minute=0, second=0, microsecond=0)
+    onedayRay = one_day_ago.replace(hour=7)
+    todayRay = one_day_ago.replace(hour=20)
+    posts = Ws.objects.filter(date__gte=one_day_ago, date__lte=now)
+    # print("posts ws", posts.count())
+    print("heure", one_day_ago)
+    print("to heure", todayRay)
+
+    post = Ray.objects.filter(dateRay__gte=one_day_ago, dateRay__lte=now)
+    rav = post.count()
+    print("nbrs ray1", rav)
+    print("____________________________________filtre par heure _______________________________________")
+
+    filtresup = Ray.objects.filter(dateRay__gte=onedayRay, dateRay__lte=todayRay)
+    print("filtre nbr:", filtresup.count())
+    w = filtresup.aggregate(Sum('Ray'))
+    print("filtreRay :", w)
+    rayonnement = w['Ray__sum'] / rav
+    print("avreage ray :", rayonnement)
+    print("_____________________________________fin filtre par heure __________________________________")
+
+    totalRay = post.values('Ray').aggregate(Sum('Ray'))
     Maxtemp = posts.values('Temperature').aggregate(Max('Temperature'))
     Mintemp = posts.values('Temperature').aggregate(Min('Temperature'))
     MaxHum = posts.values('Humidity').aggregate(Max('Humidity'))
     MinHum = posts.values('Humidity').aggregate(Min('Humidity'))
     avreage = posts.aggregate(Avg('Vent'))
-    dicttolistRay = list(totalRay.items())
     dicttolistVent = list(avreage.items())
     avgvent = (round(dicttolistVent[0][1] / 3.6, 4))
-    Rayt = dicttolistRay[0][1]
+    vitvent = round(dicttolistVent[0][1], 4)
+    print("vitvent :", vitvent)
     dicttolisTmax = list(Maxtemp.items())
     Tmmax = dicttolisTmax[0][1]
     dicttolisTmin = list(Mintemp.items())
@@ -147,26 +155,30 @@ def ET0_calc():
     Hmax = dicttolisHmax[0][1]
     dicttolisHmin = list(MinHum.items())
     Hmin = dicttolisHmin[0][1]
-    print("posts", posts)
-    print("tv", totalVent)
-    print("tr", Rayt)
+    # print("posts", posts)
+    print("tv", avgvent)
+    print("tr", totalRay)
     print("tmin", Tmmin)
     print("tmax", Tmmax)
     print("hmin", Hmin)
     print("hmax", Hmax)
-    print("avgWS :", avgvent)
-    B2 = one_day_ago.timetuple().tm_yday
-    RS = Rayt  # totl radiation
+    print("avg :", avgvent)
+    B2 = 70#one_day_ago.timetuple().tm_yday
+    print("b2", B2)
+    RS = 7875  # totl radiation
     Tmin = Tmmin
     Tmax = Tmmax
     HRmin = Hmin
     HRmax = Hmax
     u = avgvent  # m/s moyen
-    M = RS / 24  # radiation/h
-    N = M * 3600 * 0.000001 * 24  # Rs [MJm-2d-1]
-    u2 = u * 4.87 / math.log(67.8 * 2 - 5.42)
-    latitude = 33.51
-    altitude = 755
+    M = round(rayonnement, 2)  # radiation/h
+    print("ray ", M)
+    N = round(M * 3600 * 0.000001 * 24, 2)  # Rs [MJm-2d-1]
+    print("N :", N)
+    u2 = round(u * 4.87 / math.log(67.8 * 2 - 5.42), 3)
+    print("u2 ;", u2)
+    latitude = 34.65
+    altitude = 639
     ctesolaire = 0.082
     StefanBolt = 0.000000004896
     p = 3.140
@@ -187,12 +199,14 @@ def ET0_calc():
     AI = 0
     AJ = 4098 * 0.6108 * math.exp(17.27 * 0.5 * (Tmin + Tmax) / (0.5 * (Tmin + Tmax) + 237.3)) / (
             0.5 * (Tmin + Tmax) + 237.3) ** 2
-    ET = (0.408 * AJ * (AH - AI) + (1600 * g / ((Tmin + Tmax) * 0.5 + 273)) * u2 * (AE - AF)) / (
+    ET_0 = (0.408 * AJ * (AH - AI) + (1600 * g / ((Tmin + Tmax) * 0.5 + 273)) * u2 * (AE - AF)) / (
             AJ + g * (1 + 0.38 * u2))
-    ET_0 = round(ET, 2)
-    print("ET_0", ET_0)
 
-    ET0.objects.create(value=ET_0, WSavg=avgvent, Tmax=Tmax, Tmin=Tmin, Hmax=HRmax, Hmin=HRmin, Raym=Rayt, U2=u2, Delta=B2)
+
+    ET = round(ET_0, 2)
+    print("ET_0", ET)
+
+    ET0.objects.create(value=ET, WSavg=avgvent, Tmax=Tmax, Tmin=Tmin, Hmax=HRmax, Hmin=HRmin, Raym=M, U2=u2, Delta=B2)
     print("__________________________________ET_O Calculé________________________________")
 
 def FWI():

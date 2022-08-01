@@ -36,11 +36,12 @@ INSTALLED_APPS = [
     'channels',
     'django.contrib.admin',
     'django.contrib.auth',
+    'livesync',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     # 'django_browser_reload',
-    'livesync',
+
     'django.contrib.staticfiles',
     'application'
 ]
@@ -87,6 +88,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'prjt.wsgi.application'
+
 
 ASGI_APPLICATION = 'prjt.asgi.application'
 

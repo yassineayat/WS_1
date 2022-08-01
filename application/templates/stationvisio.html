@@ -149,19 +149,16 @@ input:checked + .slider .off
 <script src="https://unpkg.com/htmx.org@1.6.0"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 
-													<script type="text/javascript">
-													  var clickHandler = () => {
-													  if (clickHandler.running)
-														return
+													<script>
+    window.setInterval('refresh()', 240000);
+    // Call a function every 10000 milliseconds
+    // (OR 10 seconds).
 
-													  clickHandler.running = true
-													  setTimeout(() => { clickHandler.running = false }, 5000)
-
-													  console.log(new Date())
-													  }
-
-													$('#getmore').click(clickHandler)
-													</script>
+    // Refresh or reload page.
+    function refresh() {
+        window .location.reload();
+    }
+</script>
 <body class="app">
     <header class="app-header fixed-top  background-color: #808080;">
 
@@ -723,7 +720,11 @@ input:checked + .slider .off
 								<br>
 									<br>
 									<h1><em> {{lstet.value}}</em></h1>
+								<br>
+									<font size="+1">Tmax:{{lstet.Tmax}}°C Hmax: {{lstet.Hmax}}% Pyra: {{lstet.Raym}}</font>
 									<br>
+								<font size="+1">Tmin:{{lstet.Tmin}}°C Hmin: {{lstet.Hmin}}% Vent: {{lstet.U2}}</font>
+								<br>
 									<h10>il y a : {{lstet.Time_Stamp|timesince}} ({{lstet.Time_Stamp|date:"H:i"}})</h10>
 							<br>
 							</div><!--//app-card-body-->
