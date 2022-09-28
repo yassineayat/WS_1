@@ -134,7 +134,7 @@ def charthum(request):
                 dataa.append(data.Temp)
                 dataa2.append(data.Hum)
                 print("lab", labels)
-                return HttpResponseRedirect('/Chart')
+                return HttpResponseRedirect('/Charthum')
 
             print("todate", type(todate))
 
@@ -376,7 +376,7 @@ def exemple():
     print("hmin", Hmin)
     print("hmax", Hmax)
     print("avg :", avgvent)
-    B2 = 64#one_day_ago.timetuple().tm_yday # 57#
+    B2 = one_day_ago.timetuple().tm_yday # 57#
     print("b2", B2)
     RS = 6017.33  # totl radiation
     Tmin = Tmmin#6.62#
@@ -597,7 +597,7 @@ def weatherS(request):
     lstet = ET0.objects.last()
     lstfwi= DataFwi.objects.last()
 
-    exemple()
+    # exemple()
     # FWI
     one_day_ago = datetime.datetime.now() - datetime.timedelta(days=1)
     posts = Ws.objects.filter(date__gte=one_day_ago)
@@ -629,8 +629,8 @@ def weatherS(request):
 
 
 def home(request):
-    print("date",str((datetime.datetime.now())))
-    print("date2", str((datetime.datetime.now()).strftime("%M")))
+    # print("date",str((datetime.datetime.now())))
+    # print("date2", str((datetime.datetime.now()).strftime("%M")))
     tab=CapSol.objects.last()
     # print("last",str((tab.time)))
 
@@ -694,7 +694,7 @@ def home(request):
         dataa2.append(data.Hum)
         # print("labels0",labels)
 
-    print("labelall",labels)
+    # print("labelall",labels)
     if (request.method == "POST"):
         labels.clear()
         dataa.clear()
@@ -780,3 +780,18 @@ def wsopen(request):
     tab = Data.objects.last()
     context={'tab':tab}
     return render(request,"ws_open.html",context)
+
+
+# def dash(request):
+#     one_day_ago = datetime.datetime.now() - datetime.timedelta(days=1)
+#     labels = []
+#     dataa = []
+#     all = Ws.objects.all()
+#     # print("all", all)
+#     for i in all:
+#         labels.append((i.date).strftime("%Y-%m-%d %H:%M:%S"))
+#         # print("labels", labels)
+#         dataa.append(i.Temperature)
+#     lst = Ws.objects.last()
+#     context={'all':all,'lst':lst,'labels':labels,'dataa':dataa}
+#     return render(request,"acc.html",context)

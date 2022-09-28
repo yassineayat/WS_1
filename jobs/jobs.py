@@ -49,10 +49,11 @@ def schedule_api2():
     response2 = requests.get('https://api.myiotplatform.com/data/exports/devices/f29f3c49e0', headers=headers,
                             params=params)
     pouet = json.loads(response.text)
+    # print(pouet)
     pouet2 = json.loads(response2.text)
-    i=-1
-    dateobservation = str(pouet['data']['d1072befe4'][i]['dateEvent'])
-    dateobservation2 = str(pouet2['data']['f29f3c49e0'][i]['dateEvent'])
+    print("jobs 2 meteo...")
+    dateobservation = str(pouet['data']['d1072befe4'][-1]['dateEvent'])
+    # dateobservation2 = str(pouet2['data']['f29f3c49e0'][i]['dateEvent'])
     if not Ws.objects.filter(date=dateobservation).exists():
         # dobservation_str = dateobservation[0:10]
         # heureobservation = dateobservation[11:19]
@@ -60,21 +61,21 @@ def schedule_api2():
         # print("heureobservation :" + heureobservation)
 
         # print("test" + str(pouet['data']['d1072befe4'][i]['data']['probe1']['value']))
-        temperature = pouet['data']['d1072befe4'][i]['data']['probe1']['value']
+        temperature = pouet['data']['d1072befe4'][-1]['data']['probe1']['value']
 
-        hygro = pouet['data']['d1072befe4'][i]['data']['probe2']['value']
+        hygro = pouet['data']['d1072befe4'][-1]['data']['probe2']['value']
 
-        vitvent = pouet['data']['d1072befe4'][i]['data']['probe3']['value']
+        vitvent = pouet['data']['d1072befe4'][-1]['data']['probe3']['value']
 
-        rafale = pouet['data']['d1072befe4'][i]['data']['probe4']['value']
-        pluvio = pouet['data']['d1072befe4'][i]['data']['probe5']['value']
+        rafale = pouet['data']['d1072befe4'][-1]['data']['probe4']['value']
+        pluvio = pouet['data']['d1072befe4'][-1]['data']['probe5']['value']
 
-        Ray = pouet2['data']['f29f3c49e0'][i]['data']['probe1']['value']
+        # Ray = pouet2['data']['f29f3c49e0'][i]['data']['probe1']['value']
 
         # if not Ws.objects.filter(date=dateobservation).exists():
             # Insert new data here
-        tab = Ws.objects.create(Temperature=temperature, Humidity=hygro, Vent=vitvent, Rafale=rafale, Pluv=pluvio,Ray=Ray,
-                                date=dateobservation, dateRay=dateobservation2)
+        tab = Ws.objects.create(Temperature=temperature, Humidity=hygro, Vent=vitvent, Rafale=rafale, Pluv=pluvio,
+                                date=dateobservation)
         print(tab)
         print(datetime.datetime.now()-datetime.timedelta(1))
     # time.sleep(1)
@@ -83,34 +84,37 @@ def schedule_api2():
         print("______________________________________________deja existews____________________________________")
 
 def schedule_api3():
-    headers = {
-        'authorization': '876523763964578',
-    }
-    params = (
-        ('type', 'value'),
-    )
+    try:
+        headers = {
+            'authorization': '876523763964578',
+        }
+        params = (
+            ('type', 'value'),
+        )
 
-    response = requests.get('https://api.myiotplatform.com/data/exports/devices/f29f3c49e0', headers=headers,
-                            params=params)
+        response = requests.get('https://api.myiotplatform.com/data/exports/devices/f29f3c49e0', headers=headers,
+                                params=params)
 
-    pouet = json.loads(response.text)
-    i = -1
-    dateobservation = str(pouet['data']['f29f3c49e0'][i]['dateEvent'])
-    print(dateobservation)
-    print("last" + str(pouet['data']['f29f3c49e0'][-1]['dateEvent']))
-    if not Ray.objects.filter(dateRay=dateobservation).exists():
-        Rayo = pouet['data']['f29f3c49e0'][i]['data']['probe1']['value']
+        pouet = json.loads(response.text)
+        i = -1
+        dateobservation = str(pouet['data']['f29f3c49e0'][i]['dateEvent'])
+        print(dateobservation)
+        print("last" + str(pouet['data']['f29f3c49e0'][-1]['dateEvent']))
+        if not Ray.objects.filter(dateRay=dateobservation).exists():
+            Rayo = pouet['data']['f29f3c49e0'][i]['data']['probe1']['value']
 
-        # if not Ws.objects.filter(date=dateobservation).exists():
-            # Insert new data here
-        tab = Ray.objects.create(Ray=Rayo, dateRay=dateobservation)
-        print(tab)
-        print(datetime.datetime.now()-datetime.timedelta(1))
-    # time.sleep(1)
+            # if not Ws.objects.filter(date=dateobservation).exists():
+                # Insert new data here
+            tab = Ray.objects.create(Ray=Rayo, dateRay=dateobservation)
+            print(tab)
+            print(datetime.datetime.now()-datetime.timedelta(1))
+        # time.sleep(1)
 
-    else:
-        print("______________________________________deja existe rayonnement___________________________________")
-
+        else:
+            print("______________________________________deja existe rayonnement___________________________________")
+    except Exception as e:
+        print(e)
+        pass
 def ET0_calc():
     # exemple()
 
@@ -163,7 +167,7 @@ def ET0_calc():
     print("hmin", Hmin)
     print("hmax", Hmax)
     print("avg :", avgvent)
-    B2 = 70#one_day_ago.timetuple().tm_yday
+    B2 =one_day_ago.timetuple().tm_yday
     print("b2", B2)
     RS = 7875  # totl radiation
     Tmin = Tmmin

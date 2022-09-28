@@ -15,7 +15,16 @@
 
     <!-- FontAwesome JS-->
     <script defer src="{% static 'assets/plugins/fontawesome/js/all.min.js'%}"></script>
+	<script>
+    window.setInterval('refresh()', 120000);
+    // Call a function every 10000 milliseconds
+    // (OR 10 seconds).
 
+    // Refresh or reload page.
+    function refresh() {
+        window .location.reload();
+    }
+</script>
     <!-- App CSS -->
     <link id="theme-style" rel="stylesheet" href="{% static 'assets/css/portal.css'%}">
 
@@ -714,15 +723,15 @@ input:checked + .slider .off
 
 							        </div><!--//col-->
 							        <div class=" head-card-title-center ">
-								        <h4 class="app-card-title-center text-white ">Wind Direction</h4>
+								        <h4 class="app-card-title-center text-white ">Batterie</h4>
 							        </div><!--//col-->
 						        </div><!--//row-->
 						    </div><!--//app-card-header-->
 						    <div class="app-card-body px-4">
-							<img src="{% static 'images/w10.png'%}" alt="">
+							<img src="{% static 'images/bg6.png'%}" alt="">
 								<br>
 									<br>
-									<h1><em> {{tab.Wind_Dir}} </em></h1>
+									<h1><em> {{tab.Bat}} Volt</em></h1>
 									<br>
 									<h10>il y a : {{tab.Time_Stamp|timesince}} ({{ tab.Time_Stamp|date:"H:i"}})</h10>
 							<br>

@@ -13,7 +13,7 @@ def start():
 			year="*", month="*", day="*", hour="2", minute="49", second="50"
 		)
 	trigger2 = CronTrigger(
-		year="*", month="*", day="*", hour="0", minute="06", second="00"
+		year="*", month="*", day="*", hour="1", minute="00", second="00"
 	)
 	trigger3 = CronTrigger(
 		year="*", month="*", day="*", hour="13", minute="30", second="00"
