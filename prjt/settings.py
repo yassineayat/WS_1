@@ -36,7 +36,7 @@ INSTALLED_APPS = [
     'channels',
     'django.contrib.admin',
     'django.contrib.auth',
-    'livesync',
+    # 'livesync',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
@@ -46,14 +46,14 @@ INSTALLED_APPS = [
     'application'
 ]
 
-DJANGO_LIVESYNC = {'PORT': 8080,
-                   'HOST': '10.130.1.232'
-                   }
-
-
-MIDDLEWARE_CLASSES = [
-    'livesync.core.middleware.DjangoLiveSyncMiddleware',
-]
+# DJANGO_LIVESYNC = {'PORT': 8080,
+#                    'HOST': '10.130.1.232'
+#                    }
+#
+#
+# MIDDLEWARE_CLASSES = [
+#     'livesync.core.middleware.DjangoLiveSyncMiddleware',
+# ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -64,7 +64,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     # 'django_browser_reload.middleware.BrowserReloadMiddleware',
-    'livesync.core.middleware.DjangoLiveSyncMiddleware',
+    # 'livesync.core.middleware.DjangoLiveSyncMiddleware',
 
 ]
 

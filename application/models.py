@@ -1,3 +1,5 @@
+import datetime
+
 from django.db import models
 from django.conf.locale.en import formats as en_formats
 en_formats.TIME_FORMATS = ['%H:%M:%S']
@@ -37,6 +39,9 @@ class CapSol(models.Model):
 
     def __str__(self):
         return str(self.dt)
+    def save(self, *args, **kwargs):
+        now = datetime.datetime.now()
+        print("created ...... capteur de sol ",now)
 
 
 class CapSol2(models.Model):

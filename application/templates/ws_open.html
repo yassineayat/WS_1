@@ -531,9 +531,9 @@ input:checked + .slider .off
 								<img src="{% static 'images/w1.png'%}" alt="">
 									<br>
 									<br>
-									<h1><em> {{tab.Temp}} °C</em></h1>
+									<a href="{% url 'acc'%}"><h1 ><em> {{tab.Temp}} °C</em></h1></a>
 									<br>
-									<h10>il y a : {{tab.Time_Stamp|timesince}} ({{ tab.Time_Stamp|date:"H:i"}})</h10>
+									<h10 href="{% url 'acc'%}">il y a : {{tab.Time_Stamp|timesince}} ({{ tab.Time_Stamp|date:"H:i"}})</h10>
 <!--								<form action="" method="post" >-->
 <!--												{% csrf_token %}-->
 <!--												<div id="" class="d-grid gap-2 text-center">-->

@@ -77,6 +77,20 @@ def chart(request):
     context={'tab':tab,'labels':labels,'dataa':dataa}
     return render(request,"charts.html",context)
 
+def dash(request):
+    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=1)).replace(hour=0,minute=0,second=0,microsecond=0)
+    labels = []
+    dataa = []
+    all = Data.objects.filter(Time_Stamp__gte=one_day_ago)
+    print("all", all)
+    for i in all:
+        labels.append((i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S"))
+        print("labels", labels)
+        dataa.append(i.Temp)
+    lst = Data.objects.last()
+    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
+    return render(request, "chartopenTemp.html", context)
+
 def charthum(request):
     tab=CapSol.objects.all()
     labels = []

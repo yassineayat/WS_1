@@ -66,10 +66,10 @@ def on_message(client, userdata, msg):
         print("created!!!")
 
 
-HOST = "102.53.10.67"
+# HOST = "102.53.10.67"
 client = mqtt.Client()
-client.username_pw_set(username="opensnz", password="opensnz")
-client.connect(HOST, 1883, 60)
+# client.username_pw_set(username="opensnz", password="opensnz")
+client.connect("broker.hivemq.com", 1883, 60)
 client.loop_start()
 
 try:

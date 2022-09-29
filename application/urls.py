@@ -11,5 +11,5 @@ urlpatterns = [
     path('Chartbat/', views.chartbat, name="chartbat"),
     path('data/', views.weatherS,name="data"),
     path('wso/', views.wsopen,name="wso"),
-    # path('acc/', views.dash,name="acc"),
+    path('acc/', views.dash,name="acc"),
 ]
