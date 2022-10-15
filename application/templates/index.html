@@ -523,7 +523,8 @@ input:checked + .slider .off
 						    </div><!--//app-card-header-->
 						    <div class="app-card-body px-4">
 								<table class="table app-table-hover mb-2">
-
+									<tbody>
+<tr>
 								<form action="" method="post" onsubmit="return confirm ('Are you sure?')">
 												{% csrf_token %}
 												<div id="" class="d-grid gap-2 text-center">
@@ -531,7 +532,7 @@ input:checked + .slider .off
 <!--													<input type="submit" name="checks1" id="togBtn">-->
 
 													<td>	<button name="btn" id="get1" class="btn btn-secondary" type="submit" value="True" ><em>On</em></button></td>
-<td>													<button name="btn1" id="get2" class="btn btn-warning" type="submit" value="False" "><em>Off</em></button></td>
+													<td>	<button name="btn1" id="get2" class="btn btn-warning" type="submit" value="False" "><em>Off</em></button></td>
 
 													<!--
 <div class="slider round-center">-->
@@ -542,7 +543,19 @@ input:checked + .slider .off
 <!--											 </div>-->
 													</div>
 												</form>
+								</tr>
+
+								</tbody>
+								</table>
+								<table class="table app-table-hover mb-2">
+									<tbody>
+								<td>
+									<h1><em><a > Batterie_EV : </a></em></h1>
+									<h1><em><a >{{bv.bat}} </a></em></h1>
+
 								</td>
+
+								</tbody>
 								</table>
 
 <!--							    <div class="intro">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam aliquet eros vel diam semper mollis.</div>-->
@@ -566,7 +579,7 @@ input:checked + .slider .off
 
 							        </div><!--//col-->
 							        <div class=" head-card-title-center ">
-										<h4 class="app-card-title-center text-dark ">capteur 2 </h4>   <h10><font color = "white">(il ya {{ tab.dt|timesince}} ({{ tab.dt|date:"H:i"}}))</font></h10>
+										<h4 class="app-card-title-center text-white "> 1er capteur de sol  </h4>   <h10><font color = "white">(il ya {{ tab.dt|timesince}} ({{ tab.dt|date:"H:i"}}))</font></h10>
 							        </div><!--//col-->
 <!--									<div class="card-header">En-tête</div>-->
 <!--									<div class="body-card">Corps</div>-->
@@ -584,7 +597,7 @@ input:checked + .slider .off
 										<tr>
 											<td style="text-align: left;" width="400" rowspan="3"><strong   ><em><a href="{% url 'chart'%}">Temperature</a></em></strong>
 											<br>
-												<h1><em><a href="{% url 'chart'%}">{{tab.Temp}}</a></em></h1>
+												<h1><em><a href="{% url 'chart'%}">{{tab.Temp}} °C</a></em></h1>
 											</td>
 											<td style="text-align: right;" width="150"><em>Max: {{max_temp.Temp__max}}</em></td>
 										</tr>
@@ -597,7 +610,7 @@ input:checked + .slider .off
 										<tr>
 											<td style="text-align: left;" width="400" rowspan="3"><strong><a href="{% url 'charthum'%}"><em>Humidité</em></a></strong>
 											<br>
-												<h1><a href="{% url 'charthum'%}"><em>{{tab.Hum}}</em></a></h1>
+												<h1><a href="{% url 'charthum'%}"><em>{{tab.Hum}} %</em></a></h1>
 											</td>
 <!--											</td>-->
 											<td style="text-align: right;" width="150">Max: 40</td>
@@ -611,7 +624,7 @@ input:checked + .slider .off
 										<tr>
 											<td style="text-align: left;" width="400" rowspan="3"><strong><a href="{% url 'chartsal'%}"><em>Salainité</em></a></strong>
 											<br>
-												<h1><a href="{% url 'chartsal'%}"><em>{{tab.Sal}}</em></a></h1>
+												<h1><a href="{% url 'chartsal'%}"><em>{{tab.Sal}} mg/L</em></a></h1>
 										</tr>
 										<tr>
 											<td style="text-align: right;" width="150">Moy: 40</td>
@@ -622,7 +635,7 @@ input:checked + .slider .off
 										<tr>
 											<td style="text-align: left;" width="400" rowspan="3"><strong><a href="{% url 'chartec'%}"><em>EC</em></a></strong>
 											<br>
-												<h1><a href="{% url 'chartec'%}"><em>{{tab.Ec}}</em></a></h1>
+												<h1><a href="{% url 'chartec'%}"><em>{{tab.Ec}} µS/cm</em></a></h1>
 <!--											</td>-->
 											</td>
 											<td style="text-align: right;" width="150">Max: 40</td>
@@ -636,7 +649,7 @@ input:checked + .slider .off
 										<tr>
 											<td style="text-align: left;" width="400" rowspan="3"><strong><a href="{% url 'chartbat'%}"><em>Batterie</em></a></strong>
 											<br>
-												<h1><a href="{% url 'chartbat'%}"><em>{{tab.Bat}}Volt</em></a></h1>
+												<h1><a href="{% url 'chartbat'%}"><em>{{tab.Bat}} V</em></a></h1>
 <!--											</td>-->
 											</td>
 
@@ -672,7 +685,7 @@ input:checked + .slider .off
 
 							        </div><!--//col-->
 							        <div class=" head-card-title-center ">
-								        <h4 class="app-card-title-center text-white ">capteur 3</h4>
+								        <h4 class="app-card-title-center text-white "> 2éme capteur de sol </h4> <h10><font color = "white">(il ya {{ cap2.dt|timesince}} ({{ cap2.dt|date:"H:i"}}))</font></h10>
 							        </div><!--//col-->
 						        </div><!--//row-->
 						    </div><!--//app-card-header-->
@@ -687,7 +700,7 @@ input:checked + .slider .off
 										<tr>
 											<td style="text-align: left;" width="400" rowspan="3"><strong><em>Temperature</em></strong>
 											<br>
-												<h1><em>{{tab.Temp}}</em></h1>
+												<h1><em>{{cap2.Temp}} °C</em></h1>
 											</td>
 											<td style="text-align: right;" width="150"><em>Max: 40</em></td>
 										</tr>
@@ -700,7 +713,7 @@ input:checked + .slider .off
 										<tr>
 											<td style="text-align: left;" width="400" rowspan="3"><strong><em>Humidité</em></strong>
 											<br>
-												<h1><em>{{tab.Hum}}</em></h1>
+												<h1><em>{{cap2.Hum}} %</em></h1>
 											</td>
 <!--											</td>-->
 											<td style="text-align: right;" width="150">Max: 40</td>
@@ -714,7 +727,7 @@ input:checked + .slider .off
 										<tr>
 											<td style="text-align: left;" width="400" rowspan="3"><strong><em>Salainité</em></strong>
 											<br>
-											<h1><em>{{tab.Sal}}</em></h1>
+											<h1><em>{{cap2.Sal}} mg/L</em></h1>
 										</tr>
 										<tr>
 											<td style="text-align: right;" width="150">Moy: 40</td>
@@ -725,7 +738,7 @@ input:checked + .slider .off
 										<tr>
 											<td style="text-align: left;" width="400" rowspan="3"><strong><em>EC</em></strong>
 											<br>
-												<h1><em>{{tab.Ec}}</em></h1>
+												<h1><em>{{cap2.Ec}} µS/cm</em></h1>
 <!--											</td>-->
 											</td>
 											<td style="text-align: right;" width="150">Max: 40</td>
@@ -739,7 +752,7 @@ input:checked + .slider .off
 										<tr>
 											<td style="text-align: left;" width="400" rowspan="3"><strong><em>Batterie</em></strong>
 											<br>
-												<h1><em>{{tab.Bat}}Volt</em></h1>
+												<h1><em>{{cap2.Bat}} V</em></h1>
 <!--											</td>-->
 											</td>
 

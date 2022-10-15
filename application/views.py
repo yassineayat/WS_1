@@ -77,8 +77,26 @@ def chart(request):
     context={'tab':tab,'labels':labels,'dataa':dataa}
     return render(request,"charts.html",context)
 
+
+#temperature
+
 def dash(request):
     one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=1)).replace(hour=0,minute=0,second=0,microsecond=0)
+    print("oui ......",one_day_ago)
+    labels = []
+    dataa = []
+    all = Data.objects.filter(Time_Stamp__gte=one_day_ago)
+    # print("all", all)
+    for i in all:
+        labels.append((i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S"))
+        # print("labels", labels)
+        dataa.append(i.Temp)
+    lst = Data.objects.last()
+    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
+    return render(request, "temp/Tempjrs.html", context)
+
+def data3(request):
+    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=3)).replace(hour=0,minute=0,second=0,microsecond=0)
     labels = []
     dataa = []
     all = Data.objects.filter(Time_Stamp__gte=one_day_ago)
@@ -89,7 +107,342 @@ def dash(request):
         dataa.append(i.Temp)
     lst = Data.objects.last()
     context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
-    return render(request, "chartopenTemp.html", context)
+    return render(request, "temp/Temp3jrs.html", context)
+
+def data7(request):
+    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=7)).replace(hour=0,minute=0,second=0,microsecond=0)
+    labels = []
+    dataa = []
+    all = Data.objects.filter(Time_Stamp__gte=one_day_ago)
+    print("all", all)
+    for i in all:
+        labels.append((i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S"))
+        print("labels", labels)
+        dataa.append(i.Temp)
+    lst = Data.objects.last()
+    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
+    return render(request, "temp/Temp7jrs.html", context)
+
+def data15(request):
+    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=15)).replace(hour=0,minute=0,second=0,microsecond=0)
+    labels = []
+    dataa = []
+    all = Data.objects.filter(Time_Stamp__gte=one_day_ago)
+    # print("all", all)
+    for i in all:
+        labels.append((i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S"))
+        # print("labels", labels)
+        dataa.append(i.Temp)
+    lst = Data.objects.last()
+    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
+    return render(request, "temp/Temp15jrs.html", context)
+
+#humidité
+def hum1(request):
+    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=1)).replace(hour=0,minute=0,second=0,microsecond=0)
+    print("oui ......",one_day_ago)
+    labels = []
+    dataa = []
+    all = Data.objects.filter(Time_Stamp__gte=one_day_ago)
+    # print("all", all)
+    for i in all:
+        labels.append((i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S"))
+        # print("labels", labels)
+        dataa.append(i.Hum)
+    lst = Data.objects.last()
+    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
+    return render(request, "hum/hum1.html", context)
+
+def hum3(request):
+    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=3)).replace(hour=0,minute=0,second=0,microsecond=0)
+    labels = []
+    dataa = []
+    all = Data.objects.filter(Time_Stamp__gte=one_day_ago)
+    print("all", all)
+    for i in all:
+        labels.append((i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S"))
+        print("labels", labels)
+        dataa.append(i.Hum)
+    lst = Data.objects.last()
+    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
+    return render(request, "hum/hum3.html", context)
+
+def hum7(request):
+    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=7)).replace(hour=0,minute=0,second=0,microsecond=0)
+    labels = []
+    dataa = []
+    all = Data.objects.filter(Time_Stamp__gte=one_day_ago)
+    print("all", all)
+    for i in all:
+        labels.append((i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S"))
+        print("labels", labels)
+        dataa.append(i.Hum)
+    lst = Data.objects.last()
+    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
+    return render(request, "hum/hum7.html", context)
+
+def hum15(request):
+    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=15)).replace(hour=0,minute=0,second=0,microsecond=0)
+    labels = []
+    dataa = []
+    all = Data.objects.filter(Time_Stamp__gte=one_day_ago)
+    # print("all", all)
+    for i in all:
+        labels.append((i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S"))
+        # print("labels", labels)
+        dataa.append(i.Hum)
+    lst = Data.objects.last()
+    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
+    return render(request, "hum/hum15.html", context)
+""" fin hum"""
+
+#vitesse
+def vit1(request):
+    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=1)).replace(hour=0,minute=0,second=0,microsecond=0)
+    print("oui ......",one_day_ago)
+    labels = []
+    dataa = []
+    all = Data.objects.filter(Time_Stamp__gte=one_day_ago)
+    # print("all", all)
+    for i in all:
+        labels.append((i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S"))
+        # print("labels", labels)
+        dataa.append(i.Wind_Speed)
+    lst = Data.objects.last()
+    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
+    return render(request, "vite/vit1.html", context)
+
+def vit3(request):
+    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=3)).replace(hour=0,minute=0,second=0,microsecond=0)
+    labels = []
+    dataa = []
+    all = Data.objects.filter(Time_Stamp__gte=one_day_ago)
+    print("all", all)
+    for i in all:
+        labels.append((i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S"))
+        print("labels", labels)
+        dataa.append(i.Wind_Speed)
+    lst = Data.objects.last()
+    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
+    return render(request, "vite/vit3.html", context)
+
+def vit7(request):
+    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=7)).replace(hour=0,minute=0,second=0,microsecond=0)
+    labels = []
+    dataa = []
+    all = Data.objects.filter(Time_Stamp__gte=one_day_ago)
+    print("all", all)
+    for i in all:
+        labels.append((i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S"))
+        print("labels", labels)
+        dataa.append(i.Wind_Speed)
+    lst = Data.objects.last()
+    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
+    return render(request, "vite/vit7.html", context)
+
+def vit15(request):
+    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=15)).replace(hour=0,minute=0,second=0,microsecond=0)
+    labels = []
+    dataa = []
+    all = Data.objects.filter(Time_Stamp__gte=one_day_ago)
+    # print("all", all)
+    for i in all:
+        labels.append((i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S"))
+        # print("labels", labels)
+        dataa.append(i.Wind_Speed)
+    lst = Data.objects.last()
+    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
+    return render(request, "vite/vit15.html", context)
+""" fin vit"""
+
+#rayonnement
+def ray1(request):
+    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=1)).replace(hour=0,minute=0,second=0,microsecond=0)
+    print("oui ......",one_day_ago)
+    labels = []
+    dataa = []
+    all = Data.objects.filter(Time_Stamp__gte=one_day_ago)
+    # print("all", all)
+    for i in all:
+        labels.append((i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S"))
+        # print("labels", labels)
+        dataa.append(i.Ray)
+    lst = Data.objects.last()
+    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
+    return render(request, "ray/ray1.html", context)
+
+def ray3(request):
+    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=3)).replace(hour=0,minute=0,second=0,microsecond=0)
+    labels = []
+    dataa = []
+    all = Data.objects.filter(Time_Stamp__gte=one_day_ago)
+    print("all", all)
+    for i in all:
+        labels.append((i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S"))
+        print("labels", labels)
+        dataa.append(i.Ray)
+    lst = Data.objects.last()
+    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
+    return render(request, "ray/ray3.html", context)
+
+def ray7(request):
+    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=7)).replace(hour=0,minute=0,second=0,microsecond=0)
+    labels = []
+    dataa = []
+    all = Data.objects.filter(Time_Stamp__gte=one_day_ago)
+    print("all", all)
+    for i in all:
+        labels.append((i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S"))
+        print("labels", labels)
+        dataa.append(i.Ray)
+    lst = Data.objects.last()
+    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
+    return render(request, "ray/ray7.html", context)
+
+def ray15(request):
+    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=15)).replace(hour=0,minute=0,second=0,microsecond=0)
+    labels = []
+    dataa = []
+    all = Data.objects.filter(Time_Stamp__gte=one_day_ago)
+    # print("all", all)
+    for i in all:
+        labels.append((i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S"))
+        # print("labels", labels)
+        dataa.append(i.Ray)
+    lst = Data.objects.last()
+    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
+    return render(request, "ray/ray15.html", context)
+""" fin ray"""
+
+#pluviemetre
+def plu1(request):
+    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=1)).replace(hour=0,minute=0,second=0,microsecond=0)
+    print("oui ......",one_day_ago)
+    labels = []
+    dataa = []
+    all = Data.objects.filter(Time_Stamp__gte=one_day_ago)
+    # print("all", all)
+    for i in all:
+        labels.append((i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S"))
+        # print("labels", labels)
+        dataa.append(i.Rain)
+    lst = Data.objects.last()
+    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
+    return render(request, "plu/plu1.html", context)
+
+def plu3(request):
+    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=3)).replace(hour=0,minute=0,second=0,microsecond=0)
+    labels = []
+    dataa = []
+    all = Data.objects.filter(Time_Stamp__gte=one_day_ago)
+    print("all", all)
+    for i in all:
+        labels.append((i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S"))
+        print("labels", labels)
+        dataa.append(i.Rain)
+    lst = Data.objects.last()
+    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
+    return render(request, "plu/plu3.html", context)
+
+def plu7(request):
+    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=7)).replace(hour=0,minute=0,second=0,microsecond=0)
+    labels = []
+    dataa = []
+    all = Data.objects.filter(Time_Stamp__gte=one_day_ago)
+    print("all", all)
+    for i in all:
+        labels.append((i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S"))
+        print("labels", labels)
+        dataa.append(i.Rain)
+    lst = Data.objects.last()
+    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
+    return render(request, "plu/plu7.html", context)
+
+def plu15(request):
+    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=15)).replace(hour=0,minute=0,second=0,microsecond=0)
+    labels = []
+    dataa = []
+    all = Data.objects.filter(Time_Stamp__gte=one_day_ago)
+    # print("all", all)
+    for i in all:
+        labels.append((i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S"))
+        # print("labels", labels)
+        dataa.append(i.Rain)
+    lst = Data.objects.last()
+    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
+    return render(request, "plu/plu15.html", context)
+""" fin plu"""
+
+#batterie
+def bat1(request):
+    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=1)).replace(hour=0,minute=0,second=0,microsecond=0)
+    print("oui ......",one_day_ago)
+    labels = []
+    dataa = []
+    all = Data.objects.filter(Time_Stamp__gte=one_day_ago)
+    # print("all", all)
+    for i in all:
+        labels.append((i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S"))
+        # print("labels", labels)
+        dataa.append(i.Bat)
+    lst = Data.objects.last()
+    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
+    return render(request, "bat/bat1.html", context)
+
+def bat3(request):
+    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=3)).replace(hour=0,minute=0,second=0,microsecond=0)
+    labels = []
+    dataa = []
+    all = Data.objects.filter(Time_Stamp__gte=one_day_ago)
+    print("all", all)
+    for i in all:
+        labels.append((i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S"))
+        print("labels", labels)
+        dataa.append(i.Bat)
+    lst = Data.objects.last()
+    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
+    return render(request, "bat/bat3.html", context)
+
+def bat7(request):
+    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=7)).replace(hour=0,minute=0,second=0,microsecond=0)
+    labels = []
+    dataa = []
+    all = Data.objects.filter(Time_Stamp__gte=one_day_ago)
+    print("all", all)
+    for i in all:
+        labels.append((i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S"))
+        print("labels", labels)
+        dataa.append(i.Bat)
+    lst = Data.objects.last()
+    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
+    return render(request, "bat/bat7.html", context)
+
+def bat15(request):
+    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=15)).replace(hour=0,minute=0,second=0,microsecond=0)
+    labels = []
+    dataa = []
+    all = Data.objects.filter(Time_Stamp__gte=one_day_ago)
+    # print("all", all)
+    for i in all:
+        labels.append((i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S"))
+        # print("labels", labels)
+        dataa.append(i.Bat)
+    lst = Data.objects.last()
+    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
+    return render(request, "bat/bat15.html", context)
+""" fin bat"""
+
+def et(request):
+    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=15)).replace(hour=0,minute=0,second=0,microsecond=0)
+    labels = []
+    dataa = []
+    all = ET0o.objects.filter(Time_Stamp__gte=one_day_ago)
+    for i in all:
+        labels.append((i.Time_Stamp).strftime("%Y-%m-%d "))
+        dataa.append(i.value)
+
+    context = {'all': all, 'labels': labels, 'dataa': dataa}
+    return render(request, "ET0/et.html", context)
 
 def charthum(request):
     tab=CapSol.objects.all()
@@ -646,6 +999,10 @@ def home(request):
     # print("date",str((datetime.datetime.now())))
     # print("date2", str((datetime.datetime.now()).strftime("%M")))
     tab=CapSol.objects.last()
+
+    cap2 = CapSol2.objects.last()
+
+    bv= batvanne.objects.last()
     # print("last",str((tab.time)))
 
     f = CapSol.objects.first()
@@ -776,7 +1133,7 @@ def home(request):
     #                 dataa2.append(data.Hum)
     #                 # print("label3", labels)
     #                 # return HttpResponseRedirect('/')
-    context = {'tab': tab,'tab2':tab2,'max_temp':max_temp,'min_temp':min_temp,'moy':moy,'f':f,'labels':labels,'dataa':dataa,'dataa2':dataa2}
+    context = {'tab': tab,'tab2':tab2,'max_temp':max_temp,'min_temp':min_temp,'moy':moy,'f':f,'labels':labels,'dataa':dataa,'dataa2':dataa2,'cap2':cap2, 'bv':bv}
     return render(request, "index.html", context)
 
 
@@ -792,7 +1149,10 @@ def home(request):
 
 def wsopen(request):
     tab = Data.objects.last()
-    context={'tab':tab}
+    eto = ET0o.objects.last()
+    # ET0o_calc()
+    print("eto", eto)
+    context={'tab':tab,'eto':eto}
     return render(request,"ws_open.html",context)
 
 
@@ -809,3 +1169,102 @@ def wsopen(request):
 #     lst = Ws.objects.last()
 #     context={'all':all,'lst':lst,'labels':labels,'dataa':dataa}
 #     return render(request,"acc.html",context)
+
+
+def ET0o_calc():
+    # exemple()
+
+    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=1)).replace(hour=0, minute=0, second=0,
+                                                                                 microsecond=0)
+    now = (datetime.datetime.now()).replace(hour=0, minute=0, second=0, microsecond=0)
+    onedayRay = one_day_ago.replace(hour=7)
+    todayRay = one_day_ago.replace(hour=20)
+    posts = Data.objects.filter(Time_Stamp__gte=one_day_ago, Time_Stamp__lte=now)
+    # print("posts ws", posts.count())
+    print("heure", one_day_ago)
+    print("to heure", todayRay)
+
+    post = Data.objects.filter(Time_Stamp__gte=one_day_ago, Time_Stamp__lte=now)
+    rav = post.count()
+    print("nbrs ray1", rav)
+    print("____________________________________filtre par heure _______________________________________")
+
+    filtresup = Data.objects.filter(Time_Stamp__gte=onedayRay, Time_Stamp__lte=todayRay)
+    print("filtre nbr:", filtresup.count())
+    w = filtresup.aggregate(Sum('Ray'))
+    print("filtreRay :", w)
+    rayonnement = w['Ray__sum'] / rav
+    print("avreage ray :", rayonnement)
+    print("_____________________________________fin filtre par heure __________________________________")
+
+    totalRay = post.values('Ray').aggregate(Sum('Ray'))
+    Maxtemp = posts.values('Temp').aggregate(Max('Temp'))
+    Mintemp = posts.values('Temp').aggregate(Min('Temp'))
+    MaxHum = posts.values('Hum').aggregate(Max('Hum'))
+    MinHum = posts.values('Hum').aggregate(Min('Hum'))
+    avreage = posts.aggregate(Avg('Wind_Speed'))
+    dicttolistVent = list(avreage.items())
+    avgvent = (round(dicttolistVent[0][1] / 3.6, 4))
+    vitvent = round(dicttolistVent[0][1], 4)
+    print("vitvent :", vitvent)
+    dicttolisTmax = list(Maxtemp.items())
+    Tmmax = dicttolisTmax[0][1]
+    dicttolisTmin = list(Mintemp.items())
+    Tmmin = dicttolisTmin[0][1]
+    dicttolisHmax = list(MaxHum.items())
+    Hmax = dicttolisHmax[0][1]
+    dicttolisHmin = list(MinHum.items())
+    Hmin = dicttolisHmin[0][1]
+    # print("posts", posts)
+    print("tv", avgvent)
+    print("tr", totalRay)
+    print("tmin", Tmmin)
+    print("tmax", Tmmax)
+    print("hmin", Hmin)
+    print("hmax", Hmax)
+    print("avg :", avgvent)
+    B2 =one_day_ago.timetuple().tm_yday
+    print("b2", B2)
+    RS = 7875  # totl radiation
+    Tmin = Tmmin
+    Tmax = Tmmax
+    HRmin = Hmin
+    HRmax = Hmax
+    u = avgvent  # m/s moyen
+    M = round(rayonnement, 2)  # radiation/h
+    print("ray ", M)
+    N = round(M * 3600 * 0.000001 * 24, 2)  # Rs [MJm-2d-1]
+    print("N :", N)
+    u2 = round(u * 4.87 / math.log(67.8 * 2 - 5.42), 3)
+    print("u2 ;", u2)
+    latitude = 34.65
+    altitude = 639
+    ctesolaire = 0.082
+    StefanBolt = 0.000000004896
+    p = 3.140
+    g = 0.000665 * 101.3 * math.pow(((293 - 0.0065 * altitude) / 293), 5.26)
+    conversion = latitude * 3.1416 / 180
+    Y = 1 + 0.033 * math.cos((2 * p * B2) / 365)
+    Z = 0.409 * math.sin((2 * p * B2 / 365) - 1.39)
+    AA = math.acos(-math.tan(conversion) * math.tan(Z))
+    AB = (24 * 60 / p) * ctesolaire * Y * (
+            AA * math.sin(conversion) * math.sin(Z) + math.cos(conversion) * math.cos(Z) * math.sin(AA))
+    AC = AB * (0.75 + 0.00002 * altitude)
+    AD = 1.35 * (N / AC) - 0.35
+    AE = (0.6108 * math.exp(17.27 * Tmin / (Tmin + 237.3)) + 0.6108 * math.exp(17.27 * Tmax / (Tmax + 237.3))) / 2
+    AF = (HRmin * 0.6108 * math.exp(17.27 * Tmax / (Tmax + 237.3)) + HRmax * 0.6108 * math.exp(
+        17.27 * Tmin / (Tmin + 237.3))) / (2 * 100)
+    AG = StefanBolt * 0.5 * ((Tmin + 273) ** 4 + (Tmax + 273) ** 4) * (0.34 - 0.14 * math.sqrt(AF)) * AD
+    AH = (1 - 0.23) * N - AG
+    AI = 0
+    AJ = 4098 * 0.6108 * math.exp(17.27 * 0.5 * (Tmin + Tmax) / (0.5 * (Tmin + Tmax) + 237.3)) / (
+            0.5 * (Tmin + Tmax) + 237.3) ** 2
+    ET_0 = (0.408 * AJ * (AH - AI) + (1600 * g / ((Tmin + Tmax) * 0.5 + 273)) * u2 * (AE - AF)) / (
+            AJ + g * (1 + 0.38 * u2))
+
+
+    ET = round(ET_0, 2)
+    print("ET_0", ET)
+
+    # ET0.objects.create(value=ET, WSavg=avgvent, Tmax=Tmax, Tmin=Tmin, Hmax=HRmax, Hmin=HRmin, Raym=M, U2=u2, Delta=B2)
+    print("__________________________________ET_O Calculé________________________________")

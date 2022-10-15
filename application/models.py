@@ -20,11 +20,16 @@ class vanne(models.Model):
 
         client = mqtt.Client()
 
-        client.connect("10.130.1.223", 1883, 80)
+        client.connect("broker.hivemq.com", 1883, 80)
 
         client.publish("test", msg)  # publish the message typed by the user
         print(msg)
         # client.disconnect(); #disconnect from server
+
+
+class batvanne(models.Model):
+    bat = models.FloatField( null=True)
+    dt = models.DateTimeField(auto_now=True, null=True)
 
 
 class CapSol(models.Model):
@@ -39,9 +44,9 @@ class CapSol(models.Model):
 
     def __str__(self):
         return str(self.dt)
-    def save(self, *args, **kwargs):
-        now = datetime.datetime.now()
-        print("created ...... capteur de sol ",now)
+    # def save(self, *args, **kwargs):
+    #     now = datetime.datetime.now()
+    #     print("created ...... capteur de sol ",now)
 
 
 class CapSol2(models.Model):
@@ -86,7 +91,11 @@ class Data(models.Model):
     Bat = models.FloatField(null=True)
     Time_Stamp = models.DateTimeField(auto_now_add=True)
     def __str__(self):
-        return str(self.Time_Stamp)
+        return str(self.pk)
+
+    # def save(self, *args, **kwargs):
+    #     now = datetime.datetime.now()
+    #     print("created ......Weather station ",now)
 
 
 class ET0(models.Model):
@@ -116,3 +125,21 @@ class DataFwi(models.Model):
 
     def __str__(self):
         return "FWI = "+str(self.fwi)+" @ "+str(self.Time_Stamp)
+
+
+
+class ET0o(models.Model):
+    value = models.FloatField(null=True)
+    WSavg = models.FloatField(null=True)
+    Tmax = models.FloatField(null=True)
+    Tmin = models.FloatField(null=True)
+    Hmax = models.FloatField(null=True)
+    Hmin = models.FloatField(null=True)
+    Raym = models.FloatField(null=True)
+    U2 = models.FloatField(null=True)
+    Delta = models.FloatField(null=True)
+    Time_Stamp = models.DateTimeField(auto_now_add=True)
+    dt = models.DateField(auto_now_add=True, null=True)
+
+    def __str__(self):
+        return "ET0: "+str(self.value)

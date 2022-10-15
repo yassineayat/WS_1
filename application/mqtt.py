@@ -13,6 +13,7 @@ def on_connect(client, userdata, flags, rc):
     #print("Connected with result code " + str(rc)) #notify about established connection
     client.subscribe("message")
     client.subscribe("capteur2")
+    client.subscribe("batvan")
 
 
 def on_message(client, userdata, msg):
@@ -41,6 +42,26 @@ def on_message(client, userdata, msg):
         #     print(now)
         s = CapSol.objects.create(devId=id_dev,Temp=temp, Hum=hum,Ec=ec, Sal=sal,Bat=v_batt)
         print(s)
+
+    if ss[0] == "03":
+        id_dev = ss[0]
+        temp = ss[1]
+        hum = ss[2]
+        ec = ss[3]
+        sal = ss[4]
+        v_batt = ss[5]
+        print("ID-Dev :" + str(id_dev))
+        print("temp :" + str(temp))
+        print("hum :" + str(hum))
+        print("ec :" + str(ec))
+        print("sal :" + str(sal))
+        print("v_batt :" + str(v_batt))
+        # now = (datetime.datetime.now()).strftime("%M")
+        #
+        # if not CapSol.objects.filter(time__minute=now).exists():
+        #     print(now)
+        s = CapSol2.objects.create(devId=id_dev,Temp=temp, Hum=hum,Ec=ec, Sal=sal,Bat=v_batt)
+        print(s)
     if ss[0][-1] == "1":
         id_dev = ss[0][-1]
         batt = ss[1]
@@ -58,21 +79,29 @@ def on_message(client, userdata, msg):
         print("plo :" + str(plo))
 
         print("batt :" + str(batt))
+
+        batterie = round(float(batt),2)
+        print("batterie : ",batterie)
+        Data.objects.create(ID_Device=id_dev,Temp=temp, Hum=hum,Ray=ray, Wind_Speed=vite,Rain=plo, Bat=batterie)
+        print("created!!!")
         # now = (datetime.datetime.now()).strftime("%M")
         #
         # if not CapSol.objects.filter(time__minute=now).exists():
         #     print(now)
-        s = Data.objects.create(ID_Device=id_dev,Temp=temp, Hum=hum,Ray=ray, Wind_Speed=vite,Rain=plo, Bat=batt)
-        print("created!!!")
-
+    if ss[0][-1] == "9":
+        id = ss[0][-1]
+        batt = ss[3]
+        print("batterie vanne ", batt)
+        batvanne.objects.create(bat=batt)
+        print("created batterie vanne !!!")
 
 # HOST = "102.53.10.67"
-client = mqtt.Client()
-# client.username_pw_set(username="opensnz", password="opensnz")
-client.connect("broker.hivemq.com", 1883, 60)
-client.loop_start()
+
 
 try:
+    client = mqtt.Client()
+    # client.username_pw_set(username="opensnz", password="opensnz")
+    client.connect("broker.hivemq.com", 1883, 60)
     client.on_connect = on_connect
     client.on_message = on_message
     client.loop_start() #do not disconnect

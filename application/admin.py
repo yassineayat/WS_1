@@ -11,3 +11,4 @@ admin.site.register(ET0)
 admin.site.register(DataFwi)
 admin.site.register(Ray)
 
+admin.site.register(ET0o)

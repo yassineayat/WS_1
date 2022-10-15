@@ -207,7 +207,7 @@
 
                             <div class="app-card-body p-4">
 								<p> <a href="{% url 'acc'%}" class="link-primary">24h</a>&emsp;
-									<a href="{% url 'acc'%}" class="link-secondary">données des 3 jours précédentes </a>&emsp;
+									<a href="{% url '3jracc'%}" class="link-secondary">données des 3 jours précédentes </a>&emsp;
 								<a href="#" class="link-danger">dérniers 7 jours </a>&emsp;
 								<a href="#" class="link-warning">dérniers 15 jours </a>&emsp;</p>
 
@@ -276,7 +276,7 @@
                 height: 450,
                 type: 'line',
                 id: 'areachart-2',
-
+foreColor: "#999",
               },
               annotations: {
                 yaxis: [{
@@ -290,21 +290,22 @@
                     },
                     text: 'Support',
                   }
-                }, {
-                  y: 23,
-                  y2: 25,
-                  borderColor: '#000',
-                  fillColor: '#FEB019',
-                  opacity: 0.1,
-                  label: {
-                    borderColor: '#333',
-                    style: {
-                      fontSize: '10px',
-                      color: '#333',
-                      background: '#00E396',
-                    },
-                    text: 'intervale temperature',
-                  }
+               },
+ <!--  { -->
+<!--                  y: 23,-->
+<!--                  y2: 25,-->
+<!--                  borderColor: '#000',-->
+<!--                  fillColor: '#FEB019',-->
+<!--                  opacity: 0.1,-->
+<!--                  label: {-->
+<!--                    borderColor: '#333',-->
+<!--                    style: {-->
+<!--                      fontSize: '10px',-->
+<!--                      color: '#333',-->
+<!--                      background: '#00E396',-->
+<!--                    },-->
+<!--                    text: ' ',-->
+<!--                  }-->
                 }],
                 xaxis: [{
 
@@ -395,6 +396,7 @@
               labels: series.monthDataSeries1.dates,
               xaxis: {
                 type: 'datetime',
+
               },
             },
 
