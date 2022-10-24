@@ -4,8 +4,9 @@ from django.db import models
 from django.conf.locale.en import formats as en_formats
 en_formats.TIME_FORMATS = ['%H:%M:%S']
 # Create your models here.
-class vanne(models.Model):
+class vann(models.Model):
     onoff = models.BooleanField(default=False)
+
     dt=models.DateTimeField(auto_now=True, null=True)
 
     def __str__(self):
@@ -13,18 +14,26 @@ class vanne(models.Model):
 
     def save(self, *args, **kwargs):
         msg=self.onoff
-        print("msg" +str(msg))
+        super(vann, self).save(*args, **kwargs)
+
         # client.publish("vanne", str(msg))
 
         import paho.mqtt.client as mqtt
 
+        client1 = mqtt.Client()
         client = mqtt.Client()
-
+        client1.disconnect()
+        client1.connect("broker.hivemq.com", 1883, 80)
         client.connect("broker.hivemq.com", 1883, 80)
-
-        client.publish("test", msg)  # publish the message typed by the user
-        print(msg)
-        # client.disconnect(); #disconnect from server
+        print("..................")
+        print("self :", self.onoff)
+        if (self.onoff == False):
+            client.publish("test", "0")
+            print("off")
+        elif (self.onoff == True):
+            client1.publish("test1","1")  # publish the message typed by the user# publish the message typed by the user
+            print("on")
+        #client1.disconnect() #disconnect from server
 
 
 class batvanne(models.Model):
@@ -59,7 +68,7 @@ class CapSol2(models.Model):
     dt = models.DateTimeField(auto_now=True, null=True)
 
     def __str__(self):
-        return str(self.devId)
+        return str(self.dt)
 
 
 class Ws(models.Model):
@@ -90,9 +99,19 @@ class Data(models.Model):
     Wind_Dir = models.CharField(max_length=50,null=True)
     Bat = models.FloatField(null=True)
     Time_Stamp = models.DateTimeField(auto_now_add=True)
-    def __str__(self):
-        return str(self.pk)
+    diff = models.DurationField(null=True, blank=True)
 
+    def __str__(self):
+        return str(self.diff)
+    #
+    # def save(self, *args, **kwargs):
+    #     now = datetime.datetime.now()
+    #     x=now.time.strftime("%H:%M:%S")
+    #     if not Data.objects.filter(Time_Stamp__date= now.date,Time_Stamp__time=x).exists():
+    #         print("not exist ....")
+    #
+    #     else:
+    #         print("data exist ")
     # def save(self, *args, **kwargs):
     #     now = datetime.datetime.now()
     #     print("created ......Weather station ",now)
@@ -143,3 +162,19 @@ class ET0o(models.Model):
 
     def __str__(self):
         return "ET0: "+str(self.value)
+
+    def save(self, *args, **kwargs):
+        msg=self.value
+        super(ET0o, self).save( *args, **kwargs)
+        print("msg" +str(msg))
+        # client.publish("vanne", str(msg))
+
+        import paho.mqtt.client as mqtt
+
+        client = mqtt.Client()
+
+        client.connect("broker.hivemq.com", 1883, 80)
+
+        client.publish("et", msg)  # publish the message typed by the user
+        print(msg)
+        client.disconnect(); #disconnect from server

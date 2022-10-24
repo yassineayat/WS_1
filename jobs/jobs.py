@@ -200,7 +200,7 @@ def ET0_calc():
         17.27 * Tmin / (Tmin + 237.3))) / (2 * 100)
     AG = StefanBolt * 0.5 * ((Tmin + 273) ** 4 + (Tmax + 273) ** 4) * (0.34 - 0.14 * math.sqrt(AF)) * AD
     AH = (1 - 0.23) * N - AG
-    AI = 0
+    AI = 14.45
     AJ = 4098 * 0.6108 * math.exp(17.27 * 0.5 * (Tmin + Tmax) / (0.5 * (Tmin + Tmax) + 237.3)) / (
             0.5 * (Tmin + Tmax) + 237.3) ** 2
     ET_0 = (0.408 * AJ * (AH - AI) + (1600 * g / ((Tmin + Tmax) * 0.5 + 273)) * u2 * (AE - AF)) / (
@@ -396,10 +396,12 @@ def ET0o_calc():
     onedayRay = one_day_ago.replace(hour=7)
     todayRay = one_day_ago.replace(hour=20)
     posts = Data.objects.filter(Time_Stamp__gte=one_day_ago, Time_Stamp__lte=now)
+
     # print("posts ws", posts.count())
     print("heure", one_day_ago)
     print("to heure", todayRay)
-
+    wind_s = Ws.objects.filter(date__gte=one_day_ago, date__lte=now)
+    wind_sp=wind_s.aggregate(Max('Vent'))
     post = Data.objects.filter(Time_Stamp__gte=one_day_ago, Time_Stamp__lte=now)
     rav = post.count()
     print("nbrs ray1", rav)
@@ -412,6 +414,19 @@ def ET0o_calc():
     rayonnement = w['Ray__sum'] / rav
     print("avreage ray :", rayonnement)
     print("_____________________________________fin filtre par heure __________________________________")
+
+    """ wind speed opensnz"""
+    wind_s = Ws.objects.filter(date__gte=one_day_ago, date__lte=now)
+    wind_sp = wind_s.aggregate(Max('Vent'))
+    spw = list(wind_sp.items())
+    sw = float(spw[0][1])
+    print("speed max visio :", sw)
+
+    wsp = Data.objects.filter(Time_Stamp__gte=onedayRay, Time_Stamp__lte=todayRay, Wind_Speed__lte=sw)
+    awsp = wsp.aggregate(Sum('Wind_Speed'))
+    listws = list(awsp.items())
+    avgws = round(listws[0][1] / rav , 4)
+    print("avrege open snz vent :", avgws)
 
     totalRay = post.values('Ray').aggregate(Sum('Ray'))
     Maxtemp = posts.values('Temp').aggregate(Max('Temp'))
@@ -446,7 +461,8 @@ def ET0o_calc():
     Tmax = Tmmax
     HRmin = Hmin
     HRmax = Hmax
-    u = avgvent  # m/s moyen
+    dif_ws = avgws - avgvent
+    u =  avgws - dif_ws #avgvent - 0.8 # m/s moyen
     M = round(rayonnement, 2)  # radiation/h
     print("ray ", M)
     N = round(M * 3600 * 0.000001 * 24, 2)  # Rs [MJm-2d-1]
@@ -472,7 +488,7 @@ def ET0o_calc():
         17.27 * Tmin / (Tmin + 237.3))) / (2 * 100)
     AG = StefanBolt * 0.5 * ((Tmin + 273) ** 4 + (Tmax + 273) ** 4) * (0.34 - 0.14 * math.sqrt(AF)) * AD
     AH = (1 - 0.23) * N - AG
-    AI = 0
+    AI = 14.45
     AJ = 4098 * 0.6108 * math.exp(17.27 * 0.5 * (Tmin + Tmax) / (0.5 * (Tmin + Tmax) + 237.3)) / (
             0.5 * (Tmin + Tmax) + 237.3) ** 2
     ET_0 = (0.408 * AJ * (AH - AI) + (1600 * g / ((Tmin + Tmax) * 0.5 + 273)) * u2 * (AE - AF)) / (

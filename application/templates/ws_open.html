@@ -533,6 +533,8 @@ input:checked + .slider .off
 									<br>
 									 <a href="{% url 'acc'%}"><h1 >  <em>  {{tab.Temp}} °C</em>   <img src="{% static 'images/c1.png' %}" /> </h1></a>
 									<br>
+									Temp_Max :  {{Tmmax}} Temp_Min : {{Tmmin}}
+									<br>
 									<h10 href="{% url 'acc'%}">il y a : {{tab.Time_Stamp|timesince}} ({{ tab.Time_Stamp|date:"H:i"}})</h10>
 
 								</table>
@@ -571,7 +573,8 @@ input:checked + .slider .off
 									<br>
 									<br>
 										<a href="{% url 'hacc'%}"><h1 >  <em>  {{tab.Hum}} %</em>   <img src="{% static 'images/c1.png' %}" /> </h1></a>
-
+									<br>
+										Humidité_Max :  {{Hx}} Humidité_Min : {{Hm}}
 									<br>
 									<h10>il y a : {{tab.Time_Stamp|timesince}} ({{ tab.Time_Stamp|date:"H:i"}})</h10>
 							        </div><!--//col-->
@@ -606,8 +609,9 @@ input:checked + .slider .off
 									<br>
 									<a href="{% url 'vacc'%}"><h1 >  <em>  {{tab.Wind_Speed}} Km/h</em>   <img src="{% static 'images/c1.png' %}" /> </h1></a>
 
-
 									<br>
+								Wind_Max : {{Sx}}  Wind_Min : {{Sm}}
+								<br>
 									<h10>il y a : {{tab.Time_Stamp|timesince}} ({{ tab.Time_Stamp|date:"H:i"}})</h10>
 								<br>
 							</div><!--//app-card-body-->
@@ -647,7 +651,9 @@ input:checked + .slider .off
 									<br>
 									<a href="{% url 'pacc'%}"><h1 >  <em>  {{tab.Rain}} mm</em>   <img src="{% static 'images/c1.png' %}" /> </h1></a>
 
-
+									{{p1h}}mm/1h&emsp;{{p8h}}mm/8h&emsp;
+								<br>
+								{{p24h}}mm/24h&emsp;{{p1w}}mm/7jrs&emsp;
 									<br>
 									<h10>il y a : {{tab.Time_Stamp|timesince}} ({{ tab.Time_Stamp|date:"H:i"}})</h10>
 <br>
@@ -688,6 +694,8 @@ input:checked + .slider .off
 
 
 									<br>
+										Ray_Max =  {{Rx}}&emsp;  Ray_Min =  {{Rm}}
+										<br>
 									<h10>il y a : {{tab.Time_Stamp|timesince}} ({{ tab.Time_Stamp|date:"H:i"}})</h10>
 										<br>
 							        </div><!--//col-->

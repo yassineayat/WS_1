@@ -46,4 +46,55 @@ urlpatterns = [
     path('b15jrs/', views.bat15,name="b15jracc"),
     #et0
     path('et/', views.et,name="et"),
+
+    #temperature sol
+    path('st24h/', views.tsol1,name="tsacc"),
+    path('st3jrs/', views.tsol3,name="ts3acc"),
+    path('st7jrs/', views.tsol7,name="ts7acc"),
+    path('st15jrs/', views.tsol15,name="ts15acc"),
+
+    path('2st24h/', views.tsol21,name="2tsacc"),
+    path('2st3jrs/', views.tsol23,name="2ts3acc"),
+    path('2st7jrs/', views.tsol27,name="2ts7acc"),
+    path('2st15jrs/', views.tsol215,name="2ts15acc"),
+    #humidite dsol
+    path('sh24h/', views.hsol1,name="hsacc"),
+    path('sh3jrs/', views.hsol3,name="hs3acc"),
+    path('sh7jrs/', views.hsol7,name="hs7acc"),
+    path('sh15jrs/', views.hsol15,name="hs15acc"),
+
+    path('2sh24h/', views.hsol21, name="2hsacc"),
+    path('2sh3jrs/', views.hsol23, name="2hs3acc"),
+    path('2sh7jrs/', views.hsol27, name="2hs7acc"),
+    path('2sh15jrs/', views.hsol215, name="2hs15acc"),
+    #salinité
+    path('ss24h/', views.ssol1, name="ssacc"),
+    path('ss3jrs/', views.ssol3, name="ss3acc"),
+    path('ss7jrs/', views.ssol7, name="ss7acc"),
+    path('ss15jrs/', views.ssol15, name="ss15acc"),
+
+    path('2ss24h/', views.ssol21, name="2ssacc"),
+    path('2ss3jrs/', views.ssol23, name="2ss3acc"),
+    path('2ss7jrs/', views.ssol27, name="2ss7acc"),
+    path('2ss15jrs/', views.ssol215, name="2ss15acc"),
+    #EC
+    path('es24h/', views.esol1, name="esacc"),
+    path('es3jrs/', views.esol3, name="es3acc"),
+    path('es7jrs/', views.esol7, name="es7acc"),
+    path('es15jrs/', views.esol15, name="es15acc"),
+
+    path('2es24h/', views.esol21, name="2esacc"),
+    path('2es3jrs/', views.esol23, name="2es3acc"),
+    path('2es7jrs/', views.esol27, name="2es7acc"),
+    path('2es15jrs/', views.esol215, name="2es15acc"),
+    #batterie sol
+    path('bs24h/', views.bsol1, name="bsacc"),
+    path('bs3jrs/', views.bsol3, name="bs3acc"),
+    path('bs7jrs/', views.bsol7, name="bs7acc"),
+    path('bs15jrs/', views.bsol15, name="bs15acc"),
+
+    path('2bs24h/', views.bsol21, name="2bsacc"),
+    path('2bs3jrs/', views.bsol23, name="2bs3acc"),
+    path('2bs7jrs/', views.bsol27, name="2bs7acc"),
+    path('2bs15jrs/', views.bsol215, name="2bs15acc"),
 ]

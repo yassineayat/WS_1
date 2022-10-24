@@ -16,6 +16,7 @@ def on_connect(client, userdata, flags, rc):
     client.subscribe("batvan")
 
 
+
 def on_message(client, userdata, msg):
     ms = msg.payload
     data = str(ms[0: len(ms)])[2:-1]
