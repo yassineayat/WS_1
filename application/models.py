@@ -5,7 +5,7 @@ from django.conf.locale.en import formats as en_formats
 en_formats.TIME_FORMATS = ['%H:%M:%S']
 # Create your models here.
 class vann(models.Model):
-    onoff = models.BooleanField(default=False)
+    onoff = models.BooleanField()
 
     dt=models.DateTimeField(auto_now=True, null=True)
 
@@ -102,7 +102,7 @@ class Data(models.Model):
     diff = models.DurationField(null=True, blank=True)
 
     def __str__(self):
-        return str(self.diff)
+        return str(self.Rain)
     #
     # def save(self, *args, **kwargs):
     #     now = datetime.datetime.now()
@@ -131,7 +131,7 @@ class ET0(models.Model):
     dt = models.DateField(auto_now_add=True, null=True)
 
     def __str__(self):
-        return "ET0: "+str(self.Time_Stamp)
+        return "ET0: "+str(self.value)+" "+ str( self.Time_Stamp)
 
 class DataFwi(models.Model):
     ffmc = models.FloatField()
@@ -161,7 +161,7 @@ class ET0o(models.Model):
     dt = models.DateField(auto_now_add=True, null=True)
 
     def __str__(self):
-        return "ET0: "+str(self.value)
+        return "ET0: "+str(self.value, self.Time_Stamp)
 
     def save(self, *args, **kwargs):
         msg=self.value
@@ -169,12 +169,12 @@ class ET0o(models.Model):
         print("msg" +str(msg))
         # client.publish("vanne", str(msg))
 
-        import paho.mqtt.client as mqtt
-
-        client = mqtt.Client()
-
-        client.connect("broker.hivemq.com", 1883, 80)
-
-        client.publish("et", msg)  # publish the message typed by the user
-        print(msg)
-        client.disconnect(); #disconnect from server
+        # import paho.mqtt.client as mqtt
+        #
+        # client = mqtt.Client()
+        #
+        # client.connect("broker.hivemq.com", 1883, 80)
+        #
+        # client.publish("et", msg)  # publish the message typed by the user
+        # print(msg)
+        # client.disconnect(); #disconnect from server

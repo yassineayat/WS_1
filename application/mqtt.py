@@ -11,9 +11,13 @@ from application.models import *
 
 def on_connect(client, userdata, flags, rc):
     #print("Connected with result code " + str(rc)) #notify about established connection
-    client.subscribe("message")
-    client.subscribe("capteur2")
-    client.subscribe("batvan")
+    client.message_retry_set(2)
+    client.subscribe("mg", 2)
+    client.subscribe("capteur2",2)
+    client.subscribe("batvan",2)
+
+
+
 
 
 
@@ -21,7 +25,7 @@ def on_message(client, userdata, msg):
     ms = msg.payload
     data = str(ms[0: len(ms)])[2:-1]
     # data = str(ms)
-    print("Your message:" + data) #display received message
+    print("Your message:" + data + "' with QoS " + str(msg.qos)) #display received message
     ss = data.split(' ')
     print(ss)
     if ss[0] == "02":
@@ -83,8 +87,11 @@ def on_message(client, userdata, msg):
 
         batterie = round(float(batt),2)
         print("batterie : ",batterie)
-        Data.objects.create(ID_Device=id_dev,Temp=temp, Hum=hum,Ray=ray, Wind_Speed=vite,Rain=plo, Bat=batterie)
-        print("created!!!")
+        if ss[5] != "0":
+            Data.objects.create(ID_Device=id_dev,Temp=temp, Hum=hum,Ray=ray, Wind_Speed=vite,Rain=plo, Bat=batterie)
+            print("created!!!")
+        else:
+            print("mesures fausse .............")
         # now = (datetime.datetime.now()).strftime("%M")
         #
         # if not CapSol.objects.filter(time__minute=now).exists():
@@ -99,17 +106,19 @@ def on_message(client, userdata, msg):
 # HOST = "102.53.10.67"
 
 
-try:
-    client = mqtt.Client()
-    # client.username_pw_set(username="opensnz", password="opensnz")
-    client.connect("broker.hivemq.com", 1883, 60)
-    client.on_connect = on_connect
-    client.on_message = on_message
-    client.loop_start() #do not disconnect
 
-except Exception as e:
-    print(e)
-    pass
+client = mqtt.Client()
+# client.username_pw_set(username="opensnz", password="opensnz")
+client.connect("broker.hivemq.com", 1883, 60)
+client.on_connect = on_connect
+client.on_message = on_message
+# client.reinitialise()
+
+client.loop_start() #do not disconnect
+
+# except Exception as e:
+#     print(e)
+#     pass
 
 
 

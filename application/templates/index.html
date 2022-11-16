@@ -525,14 +525,14 @@ input:checked + .slider .off
 								<table class="table app-table-hover mb-2">
 									<tbody>
 <tr>
-								<form action="" method="post" onsubmit="return confirm ('Are you sure?')">
+								<form action="" method="post" onsubmit="return confirm ('Are you sure?')" id="two">
 												{% csrf_token %}
 												<div id="" class="d-grid gap-2 text-center">
 <!--											 <input type="submit" name="checks" id="togBn">-->
 <!--													<input type="submit" name="checks1" id="togBtn">-->
-
-													<td>	<button name="btn" id="get1" class="btn btn-secondary" type="submit" value="True" ><em>On</em></button></td>
-													<td>	<button name="btn1" id="get2" class="btn btn-warning" type="submit" value="False" "><em>Off</em></button></td>
+													<script>http://javascript-coder.com/javascript-form/javascript-reset-form.phtml</script>
+													<td>	<button name="btn" id="get1" class="btn btn-secondary" type="submit" value="True"  onClick="this.form.reset()" ><em>On</em></button></td>
+													<td>	<button name="btn1" id="get2" class="btn btn-warning" type="submit" value="False"  onClick="this.form.reset()"><em>Off</em></button></td>
 
 													<!--
 <div class="slider round-center">-->
@@ -547,14 +547,30 @@ input:checked + .slider .off
 
 								</tbody>
 								</table>
-								<table class="table app-table-hover mb-2">
+								<table class="table app-table-hover ">
 									<tbody>
-								<td>
+								<tr>
+									<div>
 									<h1><em><a > Batterie_EV : </a></em></h1>
 									<h1><em><a >{{bv.bat}} </a></em></h1> <h10><font color = "dark">(il ya {{ bv.dt|timesince}} ({{ bv.dt|date:"H:i"}}))</font></h10>
 							        </div><!--//col-->
 
-								</td>
+								</tr>
+							<tr>
+								<form action="" method="post" id="one">
+												{% csrf_token %}
+								<h3> <em><label>  time for irrigation :</label></em></h3>
+
+								<input type="time" id="startdate" name="startdate">
+								<br>
+								<br>
+								<button type="submit">
+									valider
+								</button>
+								</form>
+
+<!--								<small>Office hours are 9am to 6pm</small>-->
+							</tr>
 
 								</tbody>
 								</table>

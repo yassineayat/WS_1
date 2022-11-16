@@ -46,6 +46,7 @@ urlpatterns = [
     path('b15jrs/', views.bat15,name="b15jracc"),
     #et0
     path('et/', views.et,name="et"),
+    path('et0/', views.et0,name="et0"),
 
     #temperature sol
     path('st24h/', views.tsol1,name="tsacc"),

@@ -6,10 +6,13 @@ from django.db.models import Max, Min, Sum, Avg
 from django.http import HttpResponseRedirect
 from django.shortcuts import render,HttpResponse
 from django.views.generic import TemplateView
+import paho.mqtt.client as mqtt
 
 from .models import *
 import requests
 import json
+import penmon as pm
+
 
 
 
@@ -80,7 +83,8 @@ def chart(request):
 
 """ temperature capteur de sol"""
 def tsol1(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=1)).replace(hour=0,minute=0,second=0,microsecond=0)
+    one_day_ago = (datetime.datetime.today()).replace(hour=0,minute=0,second=0,microsecond=0)
+    print((datetime.datetime.today()).replace(hour=0,minute=0,second=0,microsecond=0))
     print("oui ......",one_day_ago)
     labels = []
     dataa = []
@@ -137,7 +141,7 @@ def tsol15(request):
     return render(request, "sol/Tsol15.html", context)
 
 def tsol21(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=1)).replace(hour=0,minute=0,second=0,microsecond=0)
+    one_day_ago = (datetime.datetime.today()).replace(hour=0,minute=0,second=0,microsecond=0)
     print("oui ......",one_day_ago)
     labels = []
     dataa = []
@@ -195,7 +199,7 @@ def tsol215(request):
 
 """ humidité sol """
 def hsol1(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=1)).replace(hour=0,minute=0,second=0,microsecond=0)
+    one_day_ago = (datetime.datetime.today()).replace(hour=0,minute=0,second=0,microsecond=0)
     print("oui ......",one_day_ago)
     labels = []
     dataa = []
@@ -252,7 +256,7 @@ def hsol15(request):
     return render(request, "sol/Hsol15.html", context)
 
 def hsol21(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=1)).replace(hour=0,minute=0,second=0,microsecond=0)
+    one_day_ago = (datetime.datetime.today()).replace(hour=0,minute=0,second=0,microsecond=0)
     print("oui ......",one_day_ago)
     labels = []
     dataa = []
@@ -310,7 +314,7 @@ def hsol215(request):
 
 """ salinite """
 def ssol1(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=1)).replace(hour=0,minute=0,second=0,microsecond=0)
+    one_day_ago = (datetime.datetime.today()).replace(hour=0,minute=0,second=0,microsecond=0)
     print("oui ......",one_day_ago)
     labels = []
     dataa = []
@@ -367,7 +371,7 @@ def ssol15(request):
     return render(request, "sol2/Ssol15.html", context)
 
 def ssol21(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=1)).replace(hour=0,minute=0,second=0,microsecond=0)
+    one_day_ago = (datetime.datetime.today()).replace(hour=0,minute=0,second=0,microsecond=0)
     print("oui ......",one_day_ago)
     labels = []
     dataa = []
@@ -425,7 +429,7 @@ def ssol215(request):
 
 # EC
 def esol1(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=1)).replace(hour=0,minute=0,second=0,microsecond=0)
+    one_day_ago = (datetime.datetime.today()).replace(hour=0,minute=0,second=0,microsecond=0)
     print("oui ......",one_day_ago)
     labels = []
     dataa = []
@@ -484,7 +488,7 @@ def esol15(request):
 """ e2"""
 
 def esol21(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=1)).replace(hour=0,minute=0,second=0,microsecond=0)
+    one_day_ago = (datetime.datetime.today()).replace(hour=0,minute=0,second=0,microsecond=0)
     print("oui ......",one_day_ago)
     labels = []
     dataa = []
@@ -542,7 +546,7 @@ def esol215(request):
 
 #Batterie
 def bsol1(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=1)).replace(hour=0,minute=0,second=0,microsecond=0)
+    one_day_ago = (datetime.datetime.today()).replace(hour=0,minute=0,second=0,microsecond=0)
     print("oui ......",one_day_ago)
     labels = []
     dataa = []
@@ -599,7 +603,7 @@ def bsol15(request):
     return render(request, "sol/Bsol15.html", context)
 
 def bsol21(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=1)).replace(hour=0,minute=0,second=0,microsecond=0)
+    one_day_ago = (datetime.datetime.today()).replace(hour=0,minute=0,second=0,microsecond=0)
     print("oui ......",one_day_ago)
     labels = []
     dataa = []
@@ -659,7 +663,7 @@ def bsol215(request):
 #temperature
 
 def dash(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=1)).replace(hour=0,minute=0,second=0,microsecond=0)
+    one_day_ago = (datetime.datetime.today()).replace(hour=0,minute=0,second=0,microsecond=0)
     print("oui ......",one_day_ago)
     labels = []
     dataa = []
@@ -718,7 +722,7 @@ def data15(request):
 
 #humidité
 def hum1(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=1)).replace(hour=0,minute=0,second=0,microsecond=0)
+    one_day_ago = (datetime.datetime.today()).replace(hour=0,minute=0,second=0,microsecond=0)
     print("oui ......",one_day_ago)
     labels = []
     dataa = []
@@ -777,8 +781,8 @@ def hum15(request):
 
 #vitesse
 def vit1(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=1)).replace(hour=0,minute=0,second=0,microsecond=0)
-    print("oui ......",one_day_ago)
+    one_day_ago = (datetime.datetime.today()).replace(hour=0,minute=0,second=0,microsecond=0)
+    # print("oui ......",one_day_ago)
     labels = []
     dataa = []
     all = Data.objects.filter(Time_Stamp__gte=one_day_ago)
@@ -796,10 +800,10 @@ def vit3(request):
     labels = []
     dataa = []
     all = Data.objects.filter(Time_Stamp__gte=one_day_ago)
-    print("all", all)
+    # print("all", all)
     for i in all:
         labels.append((i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S"))
-        print("labels", labels)
+        # print("labels", labels)
         dataa.append(i.Wind_Speed)
     lst = Data.objects.last()
     context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
@@ -810,10 +814,10 @@ def vit7(request):
     labels = []
     dataa = []
     all = Data.objects.filter(Time_Stamp__gte=one_day_ago)
-    print("all", all)
+    # print("all", all)
     for i in all:
         labels.append((i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S"))
-        print("labels", labels)
+        # print("labels", labels)
         dataa.append(i.Wind_Speed)
     lst = Data.objects.last()
     context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
@@ -836,8 +840,8 @@ def vit15(request):
 
 #rayonnement
 def ray1(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=1)).replace(hour=0,minute=0,second=0,microsecond=0)
-    print("oui ......",one_day_ago)
+    one_day_ago = (datetime.datetime.today()).replace(hour=0,minute=0,second=0,microsecond=0)
+    # print("oui ......",one_day_ago)
     labels = []
     dataa = []
     all = Data.objects.filter(Time_Stamp__gte=one_day_ago)
@@ -855,10 +859,10 @@ def ray3(request):
     labels = []
     dataa = []
     all = Data.objects.filter(Time_Stamp__gte=one_day_ago)
-    print("all", all)
+    # print("all", all)
     for i in all:
         labels.append((i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S"))
-        print("labels", labels)
+        # print("labels", labels)
         dataa.append(i.Ray)
     lst = Data.objects.last()
     context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
@@ -869,10 +873,10 @@ def ray7(request):
     labels = []
     dataa = []
     all = Data.objects.filter(Time_Stamp__gte=one_day_ago)
-    print("all", all)
+    # print("all", all)
     for i in all:
         labels.append((i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S"))
-        print("labels", labels)
+        # print("labels", labels)
         dataa.append(i.Ray)
     lst = Data.objects.last()
     context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
@@ -895,7 +899,7 @@ def ray15(request):
 
 #pluviemetre
 def plu1(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=1)).replace(hour=0,minute=0,second=0,microsecond=0)
+    one_day_ago = (datetime.datetime.today()).replace(hour=0,minute=0,second=0,microsecond=0)
     print("oui ......",one_day_ago)
     labels = []
     dataa = []
@@ -954,7 +958,7 @@ def plu15(request):
 
 #batterie
 def bat1(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=1)).replace(hour=0,minute=0,second=0,microsecond=0)
+    one_day_ago = (datetime.datetime.today()).replace(hour=0,minute=0,second=0,microsecond=0)
     print("oui ......",one_day_ago)
     labels = []
     dataa = []
@@ -1022,6 +1026,20 @@ def et(request):
 
     context = {'all': all, 'labels': labels, 'dataa': dataa}
     return render(request, "ET0/et.html", context)
+
+
+def et0(request):
+    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=7)).replace(hour=0,minute=0,second=0,microsecond=0)
+    labels = []
+    dataa = []
+    all = ET0.objects.filter(Time_Stamp__gte=one_day_ago)
+    for i in all:
+        labels.append((i.Time_Stamp).strftime("%Y-%m-%d "))
+        dataa.append(i.value)
+
+    context = {'all': all, 'labels': labels, 'dataa': dataa}
+    return render(request, "ET0/et0.html", context)
+
 
 def charthum(request):
     tab=CapSol.objects.all()
@@ -1330,13 +1348,31 @@ def exemple():
     HRmin = Hmin #16.46#
     HRmax = Hmax #74.86#
     u = avgvent  # m/s moyen 0.1652#
+
+    print("--------------------------------------------------------------")
+    station = pm.Station(latitude=33.9, altitude=1690)
+    station.anemometer_height = 2
+    r = round(180.2 * 0.0864, 2)
+    print(r)
+    day = station.day_entry(B2,
+                            temp_min=11.76,
+                            temp_max=24.66,
+                            wind_speed=u,
+                            humidity_min=43.77,
+                            humidity_max= 92.33,
+                            # humidity_mean=(HRmin+HRmax)*0.5,
+                            radiation_s=r,
+                            )
+    print("ETo for this day is", day.eto())
+    print("--------------------------------------------------------------")
+
     M = round(rayonnement,2)  # radiation/h RS/24#
     print("ray ", M)
     N = round(M * 3600 * 0.000001 * 24,2)  # Rs [MJm-2d-1]
     print("N :",N)
     u2 = round(u * 4.87 / math.log(67.8 * 2 - 5.42),3)
     print("u2 ;",u2)
-    latitude = 33.53
+    latitude = 53.9
     altitude = 580
     ctesolaire = 0.082
     StefanBolt = 0.000000004896
@@ -1361,7 +1397,7 @@ def exemple():
     ET_0 = (0.408 * AJ * (AH - AI) + (1600 * g / ((Tmin + Tmax) * 0.5 + 273)) * u2 * (AE - AF)) / (
             AJ + g * (1 + 0.38 * u2))
 
-    print("ET_0",round(ET_0, 2))
+    print("ETvisio_0",round(ET_0, 2))
 
 def fwi():
     global temp, rhum, prcp, wind, ffmc0, dc0, dmc0, ffmc, dmc, isi, bui, fwi, i, jprcp
@@ -1596,17 +1632,16 @@ def home(request):
 
     #tab2 = CapSol.objects.last().filter(devId='03')
     if (request.method == "POST"):
-        if (request.POST.get('btn1', False)):
+        if (request.POST.get('btn1', False)) == 'two':
             new_value_button = vann(onoff=request.POST.get(
                 'btn1'))
             print(request.POST.get('btn1', False))
             new_value_button.save()
             x=vann.objects.create(onoff=False)
-            # print("x :", x)
+            print("x :", x)
             return HttpResponseRedirect('/')
 
-    if (request.method == "POST"):
-        if (request.POST.get('btn', True)):
+        if (request.POST.get('btn', True)) == 'two':
             new_value_button1 = vann(onoff=request.POST.get(
                 'btn'))
             print(request.POST.get('btn', True))
@@ -1616,6 +1651,22 @@ def home(request):
             print("w :", w)
             return HttpResponseRedirect('/')
 
+        elif request.POST.get('startdate') == 'one':
+            fromdate = request.POST.get('startdate')
+            # print(type(datetime.datetime.now()))
+            print("fromdate")
+            print(fromdate)
+            client1 = mqtt.Client()
+
+            client1.connect("broker.hivemq.com", 1883, 80)
+            client1.publish("time", str(fromdate))
+
+            return HttpResponseRedirect('/')
+
+    # if (request.method == "POST"):
+    #     fromdate = request.POST.get('startdate')
+    #     # print(type(datetime.datetime.now()))
+    #     print("fromdate" , fromdate)
 
     date_from = datetime.datetime.now() - datetime.timedelta(days=1)
     date_from2 = datetime.datetime.now() - datetime.timedelta(days=7)
@@ -1650,41 +1701,41 @@ def home(request):
         # print(type(datetime.datetime.now()))
         print("fromdate")
         print(fromdate)
-        todate = request.POST.get('enddate')
-        print("todate")
-        print(todate)
-        first = CapSol.objects.first()
-        print("first date", str(first.dt))
-        lastdate = CapSol.objects.last()
-        print("last date", str(lastdate.dt))
-        if fromdate != "" and todate != "":
-            # to = datetime.datetime.strptime(todate, '%Y-%m-%d')+datetime.timedelta(days=1)
-            to = datetime.datetime.strptime(todate, '%Y-%m-%d') + datetime.timedelta(days=1)
-            # fromdate = datetime.datetime("07-07")
-            created_documents5 = CapSol.objects.filter(dt__range=[fromdate, todate]).order_by('dt')
-            print("created_documents5",created_documents5)
-            for data in created_documents5:
-                labels.append((data.dt).strftime("%d %b %Y %H:%M:%S"))
-                dataa.append(data.Temp)
-                dataa2.append(data.Hum)
-
-        if fromdate =="":
-            fromdate= first.dt
-
-        if todate == "":
-            to = (lastdate.dt)+ datetime.timedelta(days=1)
-            todate = to + datetime.timedelta(days=1)
-            labels.clear()
-            dataa.clear()
-            dataa2.clear()
-            created_documents6 = CapSol.objects.filter(dt__range=[fromdate, todate]).order_by('id')
-            # print("created_documents6",created_documents6)
-
-            for data in created_documents6:
-
-                labels.append((data.dt).strftime("%d %b %Y %H:%M:%S"))
-                dataa.append(data.Temp)
-                dataa2.append(data.Hum)
+        # todate = request.POST.get('enddate')
+        # print("todate")
+        # print(todate)
+        # first = CapSol.objects.first()
+        # print("first date", str(first.dt))
+        # lastdate = CapSol.objects.last()
+        # print("last date", str(lastdate.dt))
+        # if fromdate != "" and todate != "":
+        #     # to = datetime.datetime.strptime(todate, '%Y-%m-%d')+datetime.timedelta(days=1)
+        #     to = datetime.datetime.strptime(todate, '%Y-%m-%d') + datetime.timedelta(days=1)
+        #     # fromdate = datetime.datetime("07-07")
+        #     created_documents5 = CapSol.objects.filter(dt__range=[fromdate, todate]).order_by('dt')
+        #     print("created_documents5",created_documents5)
+        #     for data in created_documents5:
+        #         labels.append((data.dt).strftime("%d %b %Y %H:%M:%S"))
+        #         dataa.append(data.Temp)
+        #         dataa2.append(data.Hum)
+        #
+        # if fromdate =="":
+        #     fromdate= first.dt
+        #
+        # if todate == "":
+        #     to = (lastdate.dt)+ datetime.timedelta(days=1)
+        #     todate = to + datetime.timedelta(days=1)
+        #     labels.clear()
+        #     dataa.clear()
+        #     dataa2.clear()
+        #     created_documents6 = CapSol.objects.filter(dt__range=[fromdate, todate]).order_by('id')
+        #     # print("created_documents6",created_documents6)
+        #
+        #     for data in created_documents6:
+        #
+        #         labels.append((data.dt).strftime("%d %b %Y %H:%M:%S"))
+        #         dataa.append(data.Temp)
+        #         dataa2.append(data.Hum)
 
     context = {'tab': tab,'tab2':tab2,'max_temp':max_temp,'min_temp':min_temp,'moy':moy,'f':f,'labels':labels,'dataa':dataa,'dataa2':dataa2,'cap2':cap2, 'bv':bv}
     return render(request, "index.html", context)
@@ -1701,6 +1752,7 @@ def home(request):
     # print(toSave)
 
 def wsopen(request):
+
     now=(datetime.datetime.now()).replace(hour=0,minute=0,second=0,microsecond=0)
     print(now)
     hm = Data.objects.filter(Time_Stamp__gte=now)
@@ -1767,11 +1819,21 @@ def wsopen(request):
     p8h = r8h[0][1]
     p24h = round(r24h[0][1],2)
     p1w = round(rw[0][1],2)
+    # client = mqtt.Client()
+    #
+    # client.connect("broker.hivemq.com", 1883, 80)
+    # # client.reinitialise()
+    # client.publish("et", 35)  # publish the message typed by the user
 
+    # client.disconnect();  # disconnect from server
+    print("ok.......data")
 
     tab = Data.objects.last()
     eto = ET0o.objects.last()
-    #ET0o_calc()
+    print(eto.value)
+    # ET0o_calc()
+    print("-----------------------------//------------------------------")
+    # exemple()
     # print("eto", eto)
     context={'tab':tab,'eto':eto,'p1w':p1w, 'p24h':p24h,'p8h':p8h,'p1h':p1h, 'Rx':Rx, 'Rm':Rm, 'Sx':Sx,'Sm':Sm, 'Hx':Hx,
              'Hm':Hm,'Tmmax':Tmmax,'Tmmin':Tmmin}
@@ -1814,9 +1876,10 @@ def ET0o_calc():
 
     filtresup = Data.objects.filter(Time_Stamp__gte=onedayRay, Time_Stamp__lte=todayRay)
     print("filtre nbr:", filtresup.count())
-    w = filtresup.aggregate(Sum('Ray'))
-    print("filtreRay :", w)
-    rayonnement = w['Ray__sum'] / rav
+    w = post.aggregate(Avg('Ray'))
+    print("moy ray :", w)
+    lit = list(w.items())
+    rayonnement = lit[0][1]
     print("avreage ray :", rayonnement)
     print("_____________________________________fin filtre par heure __________________________________")
 
@@ -1832,7 +1895,7 @@ def ET0o_calc():
     sw = float(spw[0][1])
     print("speed max visio :", sw)
 
-    wsp = Data.objects.filter(Time_Stamp__gte=onedayRay, Time_Stamp__lte=todayRay, Wind_Speed__lte=sw)
+    wsp = Data.objects.filter(Time_Stamp__gte=onedayRay, Time_Stamp__lte=todayRay)
     awsp = wsp.aggregate(Sum('Wind_Speed'))
     listws = list(awsp.items())
     avgws = round(listws[0][1]/rav,4)
@@ -1845,6 +1908,7 @@ def ET0o_calc():
     MaxHum = posts.values('Hum').aggregate(Max('Hum'))
     MinHum = posts.values('Hum').aggregate(Min('Hum'))
     avreage = posts.aggregate(Avg('Wind_Speed'))
+
     dicttolistVent = list(avreage.items())
     avgvent = (round(dicttolistVent[0][1] / 3.6, 4))
     vitvent = round(dicttolistVent[0][1], 4)
@@ -1867,20 +1931,50 @@ def ET0o_calc():
     print("avg :", avgvent)
     B2 =one_day_ago.timetuple().tm_yday
     print("b2", B2)
+
     RS = 7875  # totl radiation
     Tmin = Tmmin
     Tmax = Tmmax
     HRmin = Hmin
     HRmax = Hmax
-    u = avgws - dif_ws # m/s moyen
+    u = avgws  # m/s moyen
+    print("--------------------------------------------------------------")
+    station = pm.Station(latitude=33.01, altitude=640)
+    station.anemometer_height = 2
+    r = round(rayonnement * 0.0864, 2)
+    print(r)
+
+    day = station.day_entry(B2,
+                            temp_min=Tmmin,
+                            temp_max=Tmmax,
+                            wind_speed=u,
+                            humidity_max=HRmax,
+                            humidity_min= HRmin,
+                            # humidity_mean=(Hmin + Hmax) * 0.5,
+                            radiation_s=r,
+                            )
+    print("ETo opensnz for this day is", day.eto())
+    eto=day.eto()
+    durée = eto /0.05
+
+    print("time of irrig ................",round(durée))
+
+    client = mqtt.Client()
+
+    client.connect("broker.hivemq.com", 1883, 80)
+
+    client.publish("et", round(durée))  # publish the message typed by the user
+    # print(msg)
+    client.disconnect(); #disconnect from server
+    print("--------------------------------------------------------------")
     M = round(rayonnement, 2)  # radiation/h
     print("ray ", M)
     N = round(M * 3600 * 0.000001 * 24, 2)  # Rs [MJm-2d-1]
     print("N :", N)
     u2 = round(u * 4.87 / math.log(67.8 * 2 - 5.42), 3)
     print("u2 ;", u2)
-    latitude = 34.65
-    altitude = 639
+    latitude = 60
+    altitude = 800
     ctesolaire = 0.082
     StefanBolt = 0.000000004896
     p = 3.140
@@ -1898,7 +1992,7 @@ def ET0o_calc():
         17.27 * Tmin / (Tmin + 237.3))) / (2 * 100)
     AG = StefanBolt * 0.5 * ((Tmin + 273) ** 4 + (Tmax + 273) ** 4) * (0.34 - 0.14 * math.sqrt(AF)) * AD
     AH = (1 - 0.23) * N - AG
-    AI = 14.45
+    AI = 7
     AJ = 4098 * 0.6108 * math.exp(17.27 * 0.5 * (Tmin + Tmax) / (0.5 * (Tmin + Tmax) + 237.3)) / (
             0.5 * (Tmin + Tmax) + 237.3) ** 2
     ET_0 = (0.408 * AJ * (AH - AI) + (1600 * g / ((Tmin + Tmax) * 0.5 + 273)) * u2 * (AE - AF)) / (
@@ -1910,3 +2004,59 @@ def ET0o_calc():
 
     # ET0.objects.create(value=ET, WSavg=avgvent, Tmax=Tmax, Tmin=Tmin, Hmax=HRmax, Hmin=HRmin, Raym=M, U2=u2, Delta=B2)
     print("__________________________________ET_O Calculé________________________________")
+
+# def pm():
+#     import penmon as pm
+#
+#     ### create a station class with known location and elevation
+#     from penmon import DayEntry
+#
+#     station = pm.Station(latitude=34.01, altitude=626)
+#     station.anemometer_height = 2
+#     r = 198.65 * 0.0864
+#     print(r)
+#
+#     ### getting a day instance for August 16th
+#     day = station.day_entry(301,
+#                             temp_min=16.6,
+#                             temp_max=30.95,
+#                             wind_speed=1.86,
+#                             humidity_mean=52.64,
+#                             radiation_s=r,
+#                             )
+#     print("------------psychrometric_constant-----------")
+#     print(day.psychrometric_constant())
+#     print("-----------saturation_vapour_pressure------------")
+#     print(day.saturation_vapour_pressure(30.95))
+#     print("------------daylight_hours-----------")
+#     print(day.daylight_hours())
+#     print("----------latent_heat_of_vaporization-------------")
+#
+#     # print(day.sunshine_hours())
+#     print(day.latent_heat_of_vaporization())
+#     print("----------solar_radiation-------------")
+#     print(day.solar_radiation())
+#     print("------------R_ns-----------")
+#     print(day.R_ns())
+#     print("----------soil_heat_flux-------------")
+#     print(day.soil_heat_flux())
+#     print("-----------R_so------------")
+#     print(day.R_so())
+#     print("----------solar_radiation_in_mm-------------")
+#     print(day.solar_radiation_in_mm())
+#     print("-------------R_a_in_mm----------")
+#     print(day.R_a_in_mm())
+#     print("-------------R_a----------")
+#     print(day.R_a())
+#     print("-----------slope_of_saturation_vapour_pressure------------")
+#     print(day.slope_of_saturation_vapour_pressure(30.65))
+#     print("-----------------------")
+#     day.radiation_s = r
+#
+#     print(day.temp_max)
+#
+#     print(day.wind_speed_2m())
+#
+#     print(" blot :", DayEntry.dew_point(self=day))
+#     print("ETo for this day
+#     is", day.eto())
