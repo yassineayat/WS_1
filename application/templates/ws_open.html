@@ -500,9 +500,7 @@ input:checked + .slider .off
 
 	    <div class="app-content pt-3 p-md-3 p-lg-4">
 		    <div class="container-xl text-center">
-
 			    <h1 class="app-page-title"></h1>
-
 			    <div class="row g-4 mb-4 text-center">
 				    <div class="col-12 col-lg-4 text-center ">
 					    <div class="app-card app-card-basic d-flex flex-column align-items-start-center text-center shadow-sm background-color: #808080">
@@ -612,16 +610,16 @@ input:checked + .slider .off
 									<br>
 								Wind_Max : {{Sx}}  Wind_Min : {{Sm}}
 								<br>
+								<h10>durée : {{tab.d}}</h10>
+								<br>
 									<h10>il y a : {{tab.Time_Stamp|timesince}} ({{ tab.Time_Stamp|date:"H:i"}})</h10>
 								<br>
 							</div><!--//app-card-body-->
-<!--						    <div class="app-card-footer p-4 mt-auto">-->
-<!--							   <a href="#">Create New</a>-->
-<!--						    </div>&lt;!&ndash;//app-card-footer&ndash;&gt;-->
+
 						</div><!--//app-card-->
 				    </div><!--//col-->
 			    </div><!--//row-->
- <div class="row g-4 mb-4 text-center">
+ 				<div class="row g-4 mb-4 text-center">
 				    <div class="col-12 col-lg-4 text-center ">
 					    <div class="app-card app-card-basic d-flex flex-column align-items-start-center text-center shadow-sm background-color: #808080">
 						    <div class="app-card-header text-center p-3 border-bottom-0 text-center  " >
@@ -711,13 +709,6 @@ input:checked + .slider .off
 						    <div class="app-card-header text-center p-3 border-bottom-0 text-center ">
 						        <div class="row align-items-center gx-3 text-center bg-info">
 							        <div class="col-auto align-items-center text-center bg-info">
-<!--								        <div class="app-icon-holder">-->
-<!--										    <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-code-square" fill="currentColor" xmlns="http://www.w3.org/2000/svg">-->
-<!--  <path fill-rule="evenodd" d="M14 1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/>-->
-<!--  <path fill-rule="evenodd" d="M6.854 4.646a.5.5 0 0 1 0 .708L4.207 8l2.647 2.646a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 0 1 .708 0zm2.292 0a.5.5 0 0 0 0 .708L11.793 8l-2.647 2.646a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708 0z"/>-->
-<!--</svg>-->
-<!--									    </div>&lt;!&ndash;//icon-holder&ndash;&gt;-->
-
 							        </div><!--//col-->
 							        <div class=" head-card-title-center ">
 								        <h4 class="app-card-title-center text-white ">Batterie</h4>
@@ -742,25 +733,14 @@ input:checked + .slider .off
 
 
 				    </div><!--//col-->
-
 			    </div><!--//row-->
-<div class="row g-4 mb-4 text-center">
+				<div class="row g-4 mb-4 text-center">
 					    <div class="col-12 col-lg-4 text-center ">
 					    <div class="app-card app-card-basic d-flex flex-column align-items-start-center text-center shadow-sm background-color: #808080">
 						    <div class="app-card-header text-center p-3 border-bottom-0 text-center  " >
 						        <div class="row align-items-center gx-3 text-center bg-info">
 							        <div class="col-auto align-items-center text-center text-white ">
-<!--								        <div class="app-icon-holder">-->
-<!--&lt;!&ndash;										    <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-code-square" fill="currentColor" xmlns="http://www.w3.org/2000/svg">&ndash;&gt;-->
-<!--&lt;!&ndash;  <path fill-rule="evenodd" d="M14 1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/>&ndash;&gt;-->
-<!--&lt;!&ndash;  <path fill-rule="evenodd" d="M6.854 4.646a.5.5 0 0 1 0 .708L4.207 8l2.647 2.646a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 0 1 .708 0zm2.292 0a.5.5 0 0 0 0 .708L11.793 8l-2.647 2.646a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708 0z"/>&ndash;&gt;-->
-<!--&lt;!&ndash;</svg>&ndash;&gt;-->
-<!--&lt;!&ndash;<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em"  fill="currentColor" class="bi bi-thermometer-sun" viewBox="0 0 16 16">&ndash;&gt;-->
-<!--&lt;!&ndash;  <path fill-rule="evenodd" d="M14 1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/>&ndash;&gt;-->
-<!--&lt;!&ndash;  <path fill-rule="evenodd" d="M6.854 4.646a.5.5 0 0 1 0 .708L4.207 8l2.647 2.646a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 0 1 .708 0zm2.292 0a.5.5 0 0 0 0 .708L11.793 8l-2.647 2.646a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708 0z"/>&ndash;&gt;-->
-<!--&lt;!&ndash;</svg>&ndash;&gt;-->
 
-<!--									    </div>&lt;!&ndash;//icon-holder&ndash;&gt;-->
 
 							        </div><!--//col-->
 							        <div class=" head-card-title-center" >
@@ -784,14 +764,40 @@ input:checked + .slider .off
 <br>
 <!--							    <div class="intro">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam aliquet eros vel diam semper mollis.</div>-->
 						    </div><!--//app-card-body-->
-<!--						    <div class="app-card-footer p-4 mt-auto">-->
-<!--							   <a  href="#">Create New</a>-->
-<!--						    </div>&lt;!&ndash;//app-card-footer&ndash;&gt;-->
+						</div><!--//app-card-->
+						</div>
+					 	<div class="col-12 col-lg-4 text-center ">
+					    <div class="app-card app-card-basic d-flex flex-column align-items-start-center text-center shadow-sm bg-light">
+						    <div class="app-card-header text-center p-3 border-bottom-0 text-center ">
+						        <div class="row align-items-center gx-3 text-center bg-info">
+							        <div class="col-auto align-items-center text-center bg-info">
+							        </div><!--//col-->
+							        <div class=" head-card-title-center ">
+								        <h4 class="app-card-title-center text-white ">FWI</h4>
+							        </div><!--//col-->
+						        </div><!--//row-->
+						    </div><!--//app-card-header-->
+
+						    <div class="app-card-body px-4">
+									<div class=" body-card col-auto ">
+										<img src="{% static 'images/w5.png'%}" alt="">
+									<br>
+									<br>
+									<a href="{% url 'fwi'%}"><h1 >  <em>  {{lstfwi.fwi}} </em>   <img src="{% static 'images/c1.png' %}" /> </h1></a>
+
+
+									<br>
+									<h10>il y a : {{lstfwi.Time_Stamp|timesince}} ({{lstfwi.Time_Stamp|date:"H:i"}})</h10>
+										<br>
+							        </div><!--//col-->
+
+						    </div><!--//app-card-body-->
 						</div><!--//app-card-->
 				    </div><!--//col-->
 
-</div>
-			     <div class="row g-4 mb-4">
+
+
+
 			        <div class="col-12 col-lg-6">
 <!--				        <div class="app-card app-card-chart h-100 shadow-sm">-->
 <!--					        <div class="app-card-header p-3">-->

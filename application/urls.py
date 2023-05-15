@@ -48,6 +48,9 @@ urlpatterns = [
     path('et/', views.et,name="et"),
     path('et0/', views.et0,name="et0"),
 
+    #fwi
+    path('fwi/', views.fwi0, name="fwi"),
+
     #temperature sol
     path('st24h/', views.tsol1,name="tsacc"),
     path('st3jrs/', views.tsol3,name="ts3acc"),

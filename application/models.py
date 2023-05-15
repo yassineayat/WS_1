@@ -98,11 +98,14 @@ class Data(models.Model):
     Rain = models.FloatField(null=True)
     Wind_Dir = models.CharField(max_length=50,null=True)
     Bat = models.FloatField(null=True)
+    alt = models.FloatField(null=True)
+    pr = models.FloatField(null=True)
+    d = models.FloatField(null=True)
     Time_Stamp = models.DateTimeField(auto_now_add=True)
     diff = models.DurationField(null=True, blank=True)
 
     def __str__(self):
-        return str(self.Rain)
+        return str(self.d) + str(self.Time_Stamp)
     #
     # def save(self, *args, **kwargs):
     #     now = datetime.datetime.now()
@@ -128,7 +131,7 @@ class ET0(models.Model):
     U2 = models.FloatField(null=True)
     Delta = models.FloatField(null=True)
     Time_Stamp = models.DateTimeField(auto_now_add=True)
-    dt = models.DateField(auto_now_add=True, null=True)
+    i = models.IntegerField(null=True)
 
     def __str__(self):
         return "ET0: "+str(self.value)+" "+ str( self.Time_Stamp)
@@ -140,6 +143,20 @@ class DataFwi(models.Model):
     isi = models.FloatField()
     bui = models.FloatField()
     fwi = models.FloatField()
+    Time_Stamp = models.DateTimeField(auto_now_add=True,null=True)
+
+    def __str__(self):
+        return "FWI = "+str(self.fwi)+" @ "+str(self.Time_Stamp)
+
+
+class DataFwiO(models.Model):
+    ffmc = models.FloatField()
+    dmc = models.FloatField()
+    dc = models.FloatField()
+    isi = models.FloatField()
+    bui = models.FloatField()
+    fwi = models.FloatField()
+    i=models.IntegerField(null=True)
     Time_Stamp = models.DateTimeField(auto_now_add=True,null=True)
 
     def __str__(self):
@@ -159,9 +176,9 @@ class ET0o(models.Model):
     Delta = models.FloatField(null=True)
     Time_Stamp = models.DateTimeField(auto_now_add=True)
     dt = models.DateField(auto_now_add=True, null=True)
-
+    i = models.IntegerField(null=True)
     def __str__(self):
-        return "ET0: "+str(self.value, self.Time_Stamp)
+        return "ET0: "+str(self.value)+" "+str( self.Time_Stamp)
 
     def save(self, *args, **kwargs):
         msg=self.value

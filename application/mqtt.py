@@ -1,4 +1,7 @@
 import datetime
+import json
+
+from django.utils import timezone
 
 import paho.mqtt.client as mqtt
 import django
@@ -8,14 +11,19 @@ django.setup()
 from application.models import *
 # from application.models import vanne
 
+import penmon as pm
 
+### create a station class with known location and elevation
+from penmon import DayEntry
 def on_connect(client, userdata, flags, rc):
     #print("Connected with result code " + str(rc)) #notify about established connection
     client.message_retry_set(2)
-    client.subscribe("mg", 2)
-    client.subscribe("capteur2",2)
-    client.subscribe("batvan",2)
-
+    client.subscribe("mgo", 2)
+    client.subscribe("cap2",2)
+    client.subscribe("batvanne",2)
+    client.subscribe("evapo",2)
+    client.subscribe("msg", 2)
+    client.subscribe("wa",2)
 
 
 
@@ -28,13 +36,102 @@ def on_message(client, userdata, msg):
     print("Your message:" + data + "' with QoS " + str(msg.qos)) #display received message
     ss = data.split(' ')
     print(ss)
-    if ss[0] == "02":
+
+    # da= data.split(',')
+    # id = int(ss[0])
+
+    if ss[0]=="44":
+        ffmc = ss[1]
+        dmc = ss[2]
+        dc = ss[3]
+        isi = ss[4]
+        bui = ss[5]
+        fwi = ss[6]
+        i=ss[7]
+        if not DataFwiO.objects.filter(i=i).exists():
+            DataFwiO.objects.create(ffmc=ffmc, dmc=dmc, dc=dc, isi=isi, bui=bui, fwi=fwi, i=i)
+        else:
+            print(f"A record with i={i} already exists in the database. Skipping insertion.")
+        existing_records = DataFwiO.objects.filter(i=i)
+        if existing_records.exists():
+            if existing_records.count() > 1:
+                # if there are more than one record with the same value of "i", delete all but the last one
+                existing_records[:-1].delete()
+                print(f"Removed {existing_records.count() - 1} duplicate records with i={i} from the database.")
+            else:
+                # if there's only one record with the same value of "i", skip the insertion and print a message
+                print(f"A record with i={i} already exists in the database. Skipping insertion.")
+                return
+        print("__________________________________FWI Calculé________________________________")
+    if ss[0]=="33":
+        B2 = int(ss[1])
+        temp_max = float(ss[2])
+        temp_min = float(ss[3])
+        humidity_max = float(ss[4])
+        humidity_min = float(ss[5])
+        ws = float(ss[6])
+        rad = float(ss[7])
+        eto = float(ss[8])
+        i = int(ss[9])
+        print(rad)
+        station = pm.Station(latitude=34.41, altitude=567)
+        station.anemometer_height = 2
+        r = round(rad * 0.0864, 2)
+        print(r)
+        ### getting a day instance for August 16th
+        # day = station.day_entry(B2,
+        #                         temp_min=temp_min,
+        #                         temp_max=temp_max,
+        #                         wind_speed=ws,
+        #                         humidity_max=humidity_max,
+        #                         humidity_min=humidity_min,
+        #                         # humidity_mean = 50.44,
+        #                         radiation_s=r,
+        #                         )
+        # eto=day.eto()
+        # print("eto :",eto)
+        # ET0o.objects.create(value=eto, WSavg=ws, Tmax=temp_max, Tmin=temp_min, Hmax=humidity_max, Hmin=humidity_min, Raym=round(rad,2), U2=day.wind_speed_2m(),
+        #                     Delta=B2,i=i)
+        # print("__________________________________ET_O open Calculé________________________________")
+        if not ET0o.objects.filter(i=i).exists():
+            ### getting a day instance for August 16th
+            day = station.day_entry(B2,
+                                    temp_min=temp_min,
+                                    temp_max=temp_max,
+                                    wind_speed=ws,
+                                    humidity_max=humidity_max,
+                                    humidity_min=humidity_min,
+                                    # humidity_mean = 50.44,
+                                    radiation_s=r,
+                                    )
+            eto = day.eto()
+            print("eto :", eto)
+            ET0o.objects.create(value=eto, WSavg=ws, Tmax=temp_max, Tmin=temp_min, Hmax=humidity_max, Hmin=humidity_min,
+                                Raym=round(rad, 2), U2=day.wind_speed_2m(),
+                                Delta=B2, i=i)
+            print("__________________________________ET_O open Calculé________________________________")
+        else:
+            print(f"A record with i={i} already exists in the database. Skipping insertion.")
+        existing_records = ET0o.objects.filter(i=i)
+        if existing_records.exists():
+            if existing_records.count() > 1:
+                # if there are more than one record with the same value of "i", delete all but the last one
+                existing_records[:-1].delete()
+                print(f"Removed {existing_records.count() - 1} duplicate records with i={i} from the database.")
+            else:
+                # if there's only one record with the same value of "i", skip the insertion and print a message
+                print(f"A record with i={i} already exists in the database. Skipping insertion.")
+                return
+    if ss[0] == "8":
+        print(ss)
+    if ss[0] == "2":
         id_dev = ss[0]
         temp = ss[1]
         hum = ss[2]
         ec = ss[3]
         sal = ss[4]
         v_batt = ss[5]
+
         print("ID-Dev :" + str(id_dev))
         print("temp :" + str(temp))
         print("hum :" + str(hum))
@@ -48,13 +145,14 @@ def on_message(client, userdata, msg):
         s = CapSol.objects.create(devId=id_dev,Temp=temp, Hum=hum,Ec=ec, Sal=sal,Bat=v_batt)
         print(s)
 
-    if ss[0] == "03":
+    if ss[0] == "3":
         id_dev = ss[0]
         temp = ss[1]
         hum = ss[2]
         ec = ss[3]
         sal = ss[4]
         v_batt = ss[5]
+
         print("ID-Dev :" + str(id_dev))
         print("temp :" + str(temp))
         print("hum :" + str(hum))
@@ -75,7 +173,9 @@ def on_message(client, userdata, msg):
         temp = ss[4]
         hum = ss[5]
         plo = ss[6]
-
+        alt = ss[7]
+        pr = ss[8]
+        d = ss[9]
         print("ID-Dev :" + str(id_dev))
         print("temp :" + str(temp))
         print("hum :" + str(hum))
@@ -88,8 +188,29 @@ def on_message(client, userdata, msg):
         batterie = round(float(batt),2)
         print("batterie : ",batterie)
         if ss[5] != "0":
-            Data.objects.create(ID_Device=id_dev,Temp=temp, Hum=hum,Ray=ray, Wind_Speed=vite,Rain=plo, Bat=batterie)
-            print("created!!!")
+            existing_objs = Data.objects.filter(
+                ID_Device=id_dev,
+                Temp=temp,
+                Hum=hum,
+                Ray=ray,
+                Wind_Speed=vite,
+                Rain=plo,
+                Bat=batterie,
+                alt=alt,
+                pr=pr,
+                d=d,
+                Time_Stamp__year=timezone.now().year,
+                Time_Stamp__month=timezone.now().month,
+                Time_Stamp__day=timezone.now().day,
+                Time_Stamp__hour=timezone.now().hour,
+                Time_Stamp__minute=timezone.now().minute,
+
+            )
+            if existing_objs.exists():
+                print("Object already exists!")
+            else:
+                Data.objects.create(ID_Device=id_dev,Temp=temp, Hum=hum,Ray=ray, Wind_Speed=vite,Rain=plo, Bat=batterie, alt=alt,pr=pr, d=d)
+                print("created!!!")
         else:
             print("mesures fausse .............")
         # now = (datetime.datetime.now()).strftime("%M")
@@ -110,6 +231,7 @@ def on_message(client, userdata, msg):
 client = mqtt.Client()
 # client.username_pw_set(username="opensnz", password="opensnz")
 client.connect("broker.hivemq.com", 1883, 60)
+
 client.on_connect = on_connect
 client.on_message = on_message
 # client.reinitialise()

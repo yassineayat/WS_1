@@ -10,7 +10,9 @@ import paho.mqtt.client as mqtt
 from django.db.models import Sum, Avg, Max, Min
 from django.http import HttpResponseRedirect
 import penmon as pm
-from application.models import Ws, ET0, DataFwi,Ray, Data, ET0o
+from django.utils import timezone
+
+from application.models import Ws, ET0, DataFwiO,Ray, Data, ET0o
 
 postcodes = [
     "SW1A 1AA",
@@ -356,37 +358,37 @@ def FWI():
 
     def main():
         one_day_ago = datetime.datetime.now() - datetime.timedelta(days=1)
-        posts = Ws.objects.filter(date__gte=one_day_ago)
+        posts = Data.objects.filter(Time_Stamp__gte=one_day_ago)
         print("posts :", posts)
         # vent calcul
-        totalVent = posts.values('Vent').aggregate(Sum('Vent'))
-        nbrVent = posts.values('Vent').count()
-        wind = round((totalVent["Vent__sum"] / nbrVent), 2)
+        totalVent = posts.values('Wind_Speed').aggregate(Sum('Wind_Speed'))
+        nbrVent = posts.values('Wind_Speed').count()
+        wind = round((totalVent["Wind_Speed__sum"] / nbrVent), 2)
         print("totalevent : ", totalVent, nbrVent, wind)
         # temperature calcul
-        Maxtemp = posts.values('Temperature').aggregate(Max('Temperature'))
-        Mintemp = posts.values('Temperature').aggregate(Min('Temperature'))
-        temp = (Maxtemp["Temperature__max"] + Mintemp["Temperature__min"]) / 2
+        Maxtemp = posts.values('Temp').aggregate(Max('Temp'))
+        Mintemp = posts.values('Temp').aggregate(Min('Temp'))
+        temp = (Maxtemp["Temp__max"] + Mintemp["Temp__min"]) / 2
         print("moyTemp :", temp)
         # humiidity calcul
-        MaxHum = posts.values('Humidity').aggregate(Max('Humidity'))
-        MinHum = posts.values('Humidity').aggregate(Min('Humidity'))
-        rhum = (MaxHum["Humidity__max"] + MinHum["Humidity__min"]) / 2
+        MaxHum = posts.values('Hum').aggregate(Max('Hum'))
+        MinHum = posts.values('Hum').aggregate(Min('Hum'))
+        rhum = (MaxHum["Hum__max"] + MinHum["Hum__min"]) / 2
         print("moyHum : ", rhum)
         if rhum > 100.0:
             rhum = 100.0
         # pluie calcul
-        totalrain = posts.values('Pluv').aggregate(Sum('Pluv'))
-        nmbrRain = posts.values('Pluv').count()
-        prcp = totalrain['Pluv__sum'] / nmbrRain
+        totalrain = posts.values('Rain').aggregate(Sum('Rain'))
+        nmbrRain = posts.values('Rain').count()
+        prcp = totalrain['Rain__sum'] / nmbrRain
         print("moyRain :", prcp)
-        initfw = DataFwi.objects.last()
+        initfw = DataFwiO.objects.last()
         print("initfw :",initfw)
-        ffmc0 = initfw.ffmc
+        ffmc0 = initfw.ffmc #85#
         print("ffmc0 :", ffmc0)
-        dmc0 = initfw.dmc
+        dmc0 = initfw.dmc #6#
         print("dmc0 :", dmc0)
-        dc0 = initfw.dc
+        dc0 = initfw.dc #15#
         print("dc0 :", dc0)
         mth = datetime.datetime.today().month
         print(mth)  # 4
@@ -397,8 +399,25 @@ def FWI():
         isi = fwisystem.ISIcalc(ffmc)
         bui = fwisystem.BUIcalc(dmc, dc)
         fwi = fwisystem.FWIcalc(isi, bui)
-        DataFwi.objects.create(ffmc=round(ffmc, 1), dmc=round(dmc, 1), dc=round(dc, 1), isi=round(isi, 1),
-                               bui=round(bui, 1), fwi=round(fwi, 2))
+        # assuming the name of the DateTimeField in the DataFwiO model is 'created_at'
+        date_time = timezone.now()
+        existing_objs = DataFwiO.objects.filter(
+            ffmc=round(ffmc, 1), dmc=round(dmc, 1), dc=round(dc, 1), isi=round(isi, 1),
+            bui=round(bui, 1), fwi=round(fwi, 2),   Time_Stamp__year=timezone.now().year,
+                Time_Stamp__month=timezone.now().month,
+                Time_Stamp__day=timezone.now().day)
+        print("exit object :", existing_objs)
+
+        if existing_objs.exists():
+            # an object with the same attribute values and date/time already exists
+            existing_obj = existing_objs.first()
+        else:
+            # create a new object if no existing object is found
+            new_obj = DataFwiO.objects.create(
+                ffmc=round(ffmc, 1), dmc=round(dmc, 1), dc=round(dc, 1), isi=round(isi, 1),
+                bui=round(bui, 1), fwi=round(fwi, 2))
+        # DataFwiO.objects.create(ffmc=round(ffmc, 1), dmc=round(dmc, 1), dc=round(dc, 1), isi=round(isi, 1),
+        #                        bui=round(bui, 1), fwi=round(fwi, 2))
         print("__________________________________FWI Calculé________________________________")
 
 
@@ -433,24 +452,24 @@ def ET0o_calc():
     print("_____________________________________fin filtre par heure __________________________________")
 
     """ wind speed opensnz"""
-    wind_s = Ws.objects.filter(date__gte=one_day_ago, date__lte=now)
-    wind_avg = wind_s.aggregate(Avg('Vent'))
-    print(wind_avg)
-    dicttolistVent = list(wind_avg.items())
-    avgvent = (round(dicttolistVent[0][1] / 3.6, 4))
-    print(avgvent)
-    wind_sp = wind_s.aggregate(Max('Vent'))
-    spw = list(wind_sp.items())
-    sw = float(spw[0][1])
-    print("speed max visio :", sw)
+    # wind_s = Ws.objects.filter(date__gte=one_day_ago, date__lte=now)
+    # wind_avg= wind_s.aggregate(Avg('Vent'))
+    # print(wind_avg)
+    # dicttolistVent = list(wind_avg.items())
+    # avgvent = (round(dicttolistVent[0][1] / 3.6, 4))
+    # print(avgvent)
+    # wind_sp = wind_s.aggregate(Max('Vent'))
+    # spw = list(wind_sp.items())
+    # sw = float(spw[0][1])
+    # print("speed max visio :", sw)
 
-    wsp = Data.objects.filter(Time_Stamp__gte=onedayRay, Time_Stamp__lte=todayRay, Wind_Speed__lte=sw)
+    wsp = Data.objects.filter(Time_Stamp__gte=onedayRay, Time_Stamp__lte=todayRay)
     awsp = wsp.aggregate(Sum('Wind_Speed'))
     listws = list(awsp.items())
     avgws = round(listws[0][1] / rav, 4)
     print("avrege open snz vent :", avgws)
-    dif_ws = avgws - avgvent
-    print("difference vent :", dif_ws)
+    # dif_ws=avgws-avgvent
+    # print("difference vent :", dif_ws)
     totalRay = post.values('Ray').aggregate(Sum('Ray'))
     Maxtemp = posts.values('Temp').aggregate(Max('Temp'))
     Mintemp = posts.values('Temp').aggregate(Min('Temp'))
@@ -486,12 +505,13 @@ def ET0o_calc():
     Tmax = Tmmax
     HRmin = Hmin
     HRmax = Hmax
-    u = avgws - dif_ws  # m/s moyen
+    u = avgws  # m/s moyen
     print("--------------------------------------------------------------")
     station = pm.Station(latitude=33.01, altitude=640)
     station.anemometer_height = 2
     r = round(rayonnement * 0.0864, 2)
     print(r)
+
     day = station.day_entry(B2,
                             temp_min=Tmmin,
                             temp_max=Tmmax,
@@ -502,7 +522,8 @@ def ET0o_calc():
                             radiation_s=r,
                             )
     print("ETo opensnz for this day is", day.eto())
-    print("--------------------------------------------------------------")
+    eto = day.eto()
+
     M = round(rayonnement, 2)  # radiation/h
     print("ray ", M)
     N = round(M * 3600 * 0.000001 * 24, 2)  # Rs [MJm-2d-1]
@@ -537,24 +558,16 @@ def ET0o_calc():
 
     ET = round(ET_0, 2)
     print("ET_0", ET)
+
+    # ET0.objects.create(value=ET, WSavg=avgvent, Tmax=Tmax, Tmin=Tmin, Hmax=HRmax, Hmin=HRmin, Raym=M, U2=u2, Delta=B2)
+    print("__________________________________ET_O Calculé________________________________")
     etoop = day.eto()
     dur = etoop/0.05
     print("duréé irrigation ..............", dur)
     print("ETo opensnz for this day is", etoop)
     print("--------------------------------------------------------------")
-    # import paho.mqtt.client as mqtt
-    #     #
-    #     # client = mqtt.Client()
-    #     #
-    #     # client.connect("broker.hivemq.com", 1883, 80)
-    #     #
-    #     # client.publish("et", round(dur))  # publish the message typed by the user
-    #     # print(msg)
-    #     # client.disconnect(); #disconnect from server
-    # ET0.objects.create(value=ET, WSavg=avgvent, Tmax=Tmax, Tmin=Tmin, Hmax=HRmax, Hmin=HRmin, Raym=M, U2=u2, Delta=B2)
-    # print("__________________________________ET_O Calculé________________________________")
 
-    ET0o.objects.create(value=etoop, WSavg=avgvent, Tmax=Tmax, Tmin=Tmin, Hmax=HRmax, Hmin=HRmin, Raym=M, U2=u2, Delta=B2)
+    ET0o.objects.create(value=etoop, WSavg=avgws, Tmax=Tmax, Tmin=Tmin, Hmax=HRmax, Hmin=HRmin, Raym=M, U2=u2, Delta=B2)
     print("__________________________________ET_O open Calculé________________________________")
 
 

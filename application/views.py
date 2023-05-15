@@ -106,7 +106,7 @@ def tsol3(request):
     print("all", all)
     for i in all:
         labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        print("labels", labels)
+        # print("labels", labels)
         dataa.append(i.Temp)
     lst = Data.objects.last()
     context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
@@ -120,7 +120,7 @@ def tsol7(request):
     print("all", all)
     for i in all:
         labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        print("labels", labels)
+        # print("labels", labels)
         dataa.append(i.Temp)
     lst = Data.objects.last()
     context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
@@ -134,7 +134,7 @@ def tsol15(request):
     print("all", all)
     for i in all:
         labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        print("labels", labels)
+        # print("labels", labels)
         dataa.append(i.Temp)
     lst = Data.objects.last()
     context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
@@ -163,7 +163,7 @@ def tsol23(request):
     print("all", all)
     for i in all:
         labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        print("labels", labels)
+        # print("labels", labels)
         dataa.append(i.Temp)
     lst = Data.objects.last()
     context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
@@ -177,7 +177,7 @@ def tsol27(request):
     print("all", all)
     for i in all:
         labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        print("labels", labels)
+        # print("labels", labels)
         dataa.append(i.Temp)
     lst = Data.objects.last()
     context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
@@ -191,7 +191,7 @@ def tsol215(request):
     print("all", all)
     for i in all:
         labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        print("labels", labels)
+        # print("labels", labels)
         dataa.append(i.Temp)
     lst = Data.objects.last()
     context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
@@ -221,7 +221,7 @@ def hsol3(request):
     print("all", all)
     for i in all:
         labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        print("labels", labels)
+        # print("labels", labels)
         dataa.append(i.Hum)
     lst = Data.objects.last()
     context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
@@ -235,7 +235,7 @@ def hsol7(request):
     print("all", all)
     for i in all:
         labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        print("labels", labels)
+        # print("labels", labels)
         dataa.append(i.Hum)
     lst = Data.objects.last()
     context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
@@ -249,7 +249,7 @@ def hsol15(request):
     print("all", all)
     for i in all:
         labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        print("labels", labels)
+        # print("labels", labels)
         dataa.append(i.Hum)
     lst = Data.objects.last()
     context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
@@ -278,7 +278,7 @@ def hsol23(request):
     print("all", all)
     for i in all:
         labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        print("labels", labels)
+        # print("labels", labels)
         dataa.append(i.Hum)
     lst = Data.objects.last()
     context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
@@ -292,7 +292,7 @@ def hsol27(request):
     print("all", all)
     for i in all:
         labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        print("labels", labels)
+        # print("labels", labels)
         dataa.append(i.Hum)
     lst = Data.objects.last()
     context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
@@ -306,7 +306,7 @@ def hsol215(request):
     print("all", all)
     for i in all:
         labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        print("labels", labels)
+        # print("labels", labels)
         dataa.append(i.Hum)
     lst = Data.objects.last()
     context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
@@ -336,7 +336,7 @@ def ssol3(request):
     print("all", all)
     for i in all:
         labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        print("labels", labels)
+        # print("labels", labels)
         dataa.append(i.Sal)
     lst = Data.objects.last()
     context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
@@ -350,7 +350,7 @@ def ssol7(request):
     print("all", all)
     for i in all:
         labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        print("labels", labels)
+        # print("labels", labels)
         dataa.append(i.Sal)
     lst = Data.objects.last()
     context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
@@ -364,7 +364,7 @@ def ssol15(request):
     print("all", all)
     for i in all:
         labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        print("labels", labels)
+        # print("labels", labels)
         dataa.append(i.Sal)
     lst = Data.objects.last()
     context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
@@ -393,7 +393,7 @@ def ssol23(request):
     print("all", all)
     for i in all:
         labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        print("labels", labels)
+        # print("labels", labels)
         dataa.append(i.Sal)
     lst = Data.objects.last()
     context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
@@ -407,7 +407,7 @@ def ssol27(request):
     print("all", all)
     for i in all:
         labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        print("labels", labels)
+        # print("labels", labels)
         dataa.append(i.Sal)
     lst = Data.objects.last()
     context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
@@ -421,7 +421,7 @@ def ssol215(request):
     print("all", all)
     for i in all:
         labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        print("labels", labels)
+        # print("labels", labels)
         dataa.append(i.Sal)
     lst = Data.objects.last()
     context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
@@ -451,7 +451,7 @@ def esol3(request):
     print("all", all)
     for i in all:
         labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        print("labels", labels)
+        #print("labels", labels)
         dataa.append(i.Ec)
     lst = Data.objects.last()
     context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
@@ -465,7 +465,7 @@ def esol7(request):
     print("all", all)
     for i in all:
         labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        print("labels", labels)
+        # print("labels", labels)
         dataa.append(i.Ec)
     lst = Data.objects.last()
     context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
@@ -479,7 +479,7 @@ def esol15(request):
     print("all", all)
     for i in all:
         labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        print("labels", labels)
+        # print("labels", labels)
         dataa.append(i.Ec)
     lst = Data.objects.last()
     context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
@@ -510,7 +510,7 @@ def esol23(request):
     print("all", all)
     for i in all:
         labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        print("labels", labels)
+        # print("labels", labels)
         dataa.append(i.Ec)
     lst = Data.objects.last()
     context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
@@ -524,7 +524,7 @@ def esol27(request):
     print("all", all)
     for i in all:
         labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        print("labels", labels)
+        # print("labels", labels)
         dataa.append(i.Ec)
     lst = Data.objects.last()
     context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
@@ -538,7 +538,7 @@ def esol215(request):
     print("all", all)
     for i in all:
         labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        print("labels", labels)
+        # print("labels", labels)
         dataa.append(i.Ec)
     lst = Data.objects.last()
     context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
@@ -568,7 +568,7 @@ def bsol3(request):
     print("all", all)
     for i in all:
         labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        print("labels", labels)
+        # print("labels", labels)
         dataa.append(i.Bat)
     lst = Data.objects.last()
     context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
@@ -582,7 +582,7 @@ def bsol7(request):
     print("all", all)
     for i in all:
         labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        print("labels", labels)
+        # print("labels", labels)
         dataa.append(i.Bat)
     lst = Data.objects.last()
     context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
@@ -596,7 +596,7 @@ def bsol15(request):
     print("all", all)
     for i in all:
         labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        print("labels", labels)
+        # print("labels", labels)
         dataa.append(i.Bat)
     lst = Data.objects.last()
     context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
@@ -625,7 +625,7 @@ def bsol23(request):
     print("all", all)
     for i in all:
         labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        print("labels", labels)
+        # print("labels", labels)
         dataa.append(i.Bat)
     lst = Data.objects.last()
     context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
@@ -639,7 +639,7 @@ def bsol27(request):
     print("all", all)
     for i in all:
         labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        print("labels", labels)
+        # print("labels", labels)
         dataa.append(i.Bat)
     lst = Data.objects.last()
     context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
@@ -653,7 +653,7 @@ def bsol215(request):
     print("all", all)
     for i in all:
         labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        print("labels", labels)
+        # print("labels", labels)
         dataa.append(i.Bat)
     lst = Data.objects.last()
     context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
@@ -685,7 +685,7 @@ def data3(request):
     print("all", all)
     for i in all:
         labels.append((i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S"))
-        print("labels", labels)
+        # print("labels", labels)
         dataa.append(i.Temp)
     lst = Data.objects.last()
     context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
@@ -699,7 +699,7 @@ def data7(request):
     print("all", all)
     for i in all:
         labels.append((i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S"))
-        print("labels", labels)
+        # print("labels", labels)
         dataa.append(i.Temp)
     lst = Data.objects.last()
     context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
@@ -744,7 +744,7 @@ def hum3(request):
     print("all", all)
     for i in all:
         labels.append((i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S"))
-        print("labels", labels)
+        # print("labels", labels)
         dataa.append(i.Hum)
     lst = Data.objects.last()
     context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
@@ -758,7 +758,7 @@ def hum7(request):
     print("all", all)
     for i in all:
         labels.append((i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S"))
-        print("labels", labels)
+        # print("labels", labels)
         dataa.append(i.Hum)
     lst = Data.objects.last()
     context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
@@ -921,7 +921,7 @@ def plu3(request):
     print("all", all)
     for i in all:
         labels.append((i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S"))
-        print("labels", labels)
+        # print("labels", labels)
         dataa.append(i.Rain)
     lst = Data.objects.last()
     context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
@@ -935,7 +935,7 @@ def plu7(request):
     print("all", all)
     for i in all:
         labels.append((i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S"))
-        print("labels", labels)
+        # print("labels", labels)
         dataa.append(i.Rain)
     lst = Data.objects.last()
     context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
@@ -980,7 +980,7 @@ def bat3(request):
     print("all", all)
     for i in all:
         labels.append((i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S"))
-        print("labels", labels)
+        # print("labels", labels)
         dataa.append(i.Bat)
     lst = Data.objects.last()
     context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
@@ -994,7 +994,7 @@ def bat7(request):
     print("all", all)
     for i in all:
         labels.append((i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S"))
-        print("labels", labels)
+        # print("labels", labels)
         dataa.append(i.Bat)
     lst = Data.objects.last()
     context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
@@ -1039,6 +1039,18 @@ def et0(request):
 
     context = {'all': all, 'labels': labels, 'dataa': dataa}
     return render(request, "ET0/et0.html", context)
+
+def fwi0(request):
+    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=15)).replace(hour=0,minute=0,second=0,microsecond=0)
+    labels = []
+    dataa = []
+    all = DataFwiO.objects.filter(Time_Stamp__gte=one_day_ago)
+    for i in all:
+        labels.append((i.Time_Stamp).strftime("%Y-%m-%d "))
+        dataa.append(i.fwi)
+
+    context = {'all': all, 'labels': labels, 'dataa': dataa}
+    return render(request, "fwi/fwi.html", context)
 
 
 def charthum(request):
@@ -1573,6 +1585,7 @@ def weatherS(request):
     v = round(lst.Vent,1)
     r = round(lst.Rafale,1)
     p = round(lst.Pluv,1)
+
     lstR=Ray.objects.last()
     ray = round(lstR.Ray, 1)
     print(ray)
@@ -1756,7 +1769,7 @@ def wsopen(request):
     now=(datetime.datetime.now()).replace(hour=0,minute=0,second=0,microsecond=0)
     print(now)
     hm = Data.objects.filter(Time_Stamp__gte=now)
-
+    lstfwi = DataFwiO.objects.last()
     """ temperature """
     maxt = hm.aggregate(Max('Temp'))
     dicttolisTmax = list(maxt.items())
@@ -1818,7 +1831,7 @@ def wsopen(request):
     p1h = r1h[0][1]
     p8h = r8h[0][1]
     p24h = round(r24h[0][1],2)
-    p1w = round(rw[0][1],2)
+    p1w = 0
     # client = mqtt.Client()
     #
     # client.connect("broker.hivemq.com", 1883, 80)
@@ -1836,7 +1849,7 @@ def wsopen(request):
     # exemple()
     # print("eto", eto)
     context={'tab':tab,'eto':eto,'p1w':p1w, 'p24h':p24h,'p8h':p8h,'p1h':p1h, 'Rx':Rx, 'Rm':Rm, 'Sx':Sx,'Sm':Sm, 'Hx':Hx,
-             'Hm':Hm,'Tmmax':Tmmax,'Tmmin':Tmmin}
+             'Hm':Hm,'Tmmax':Tmmax,'Tmmin':Tmmin,"lstfwi":lstfwi}
     return render(request,"ws_open.html",context)
 
 
@@ -1884,24 +1897,24 @@ def ET0o_calc():
     print("_____________________________________fin filtre par heure __________________________________")
 
     """ wind speed opensnz"""
-    wind_s = Ws.objects.filter(date__gte=one_day_ago, date__lte=now)
-    wind_avg= wind_s.aggregate(Avg('Vent'))
-    print(wind_avg)
-    dicttolistVent = list(wind_avg.items())
-    avgvent = (round(dicttolistVent[0][1] / 3.6, 4))
-    print(avgvent)
-    wind_sp = wind_s.aggregate(Max('Vent'))
-    spw = list(wind_sp.items())
-    sw = float(spw[0][1])
-    print("speed max visio :", sw)
+    # wind_s = Ws.objects.filter(date__gte=one_day_ago, date__lte=now)
+    # wind_avg= wind_s.aggregate(Avg('Vent'))
+    # print(wind_avg)
+    # dicttolistVent = list(wind_avg.items())
+    # avgvent = (round(dicttolistVent[0][1] / 3.6, 4))
+    # print(avgvent)
+    # wind_sp = wind_s.aggregate(Max('Vent'))
+    # spw = list(wind_sp.items())
+    # sw = float(spw[0][1])
+    # print("speed max visio :", sw)
 
     wsp = Data.objects.filter(Time_Stamp__gte=onedayRay, Time_Stamp__lte=todayRay)
     awsp = wsp.aggregate(Sum('Wind_Speed'))
     listws = list(awsp.items())
     avgws = round(listws[0][1]/rav,4)
     print("avrege open snz vent :", avgws)
-    dif_ws=avgws-avgvent
-    print("difference vent :", dif_ws)
+    # dif_ws=avgws-avgvent
+    # print("difference vent :", dif_ws)
     totalRay = post.values('Ray').aggregate(Sum('Ray'))
     Maxtemp = posts.values('Temp').aggregate(Max('Temp'))
     Mintemp = posts.values('Temp').aggregate(Min('Temp'))

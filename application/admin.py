@@ -8,7 +8,6 @@ admin.site.register(CapSol2)
 admin.site.register(Ws)
 admin.site.register(Data)
 admin.site.register(ET0)
-admin.site.register(DataFwi)
+admin.site.register(DataFwiO)
 admin.site.register(Ray)
-
 admin.site.register(ET0o)

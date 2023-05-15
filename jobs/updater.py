@@ -12,11 +12,11 @@ def start():
 	TEST = CronTrigger(
 			year="*", month="*", day="*", hour="2", minute="49", second="50"
 		)
-	E = CronTrigger(
-		year="*", month="*", day="*", hour="01", minute="00", second="00"
+	et = CronTrigger(
+		year="*", month="*", day="*", hour="1", minute="05", second="30"
 	)
-	ET0 = CronTrigger(
-		year="*", month="*", day="*", hour="01", minute="00", second="10"
+	ETo0 = CronTrigger(
+		year="*", month="*", day="*", hour="00", minute="25", second="00"
 	)
 	FWIC = CronTrigger(
 		year="*", month="*", day="*", hour="13", minute="30", second="00"
@@ -24,12 +24,12 @@ def start():
 
 
 	scheduler.add_job(schedule_api, trigger=TEST)
-	scheduler.add_job(ET0_calc, trigger=E)
+	# scheduler.add_job(ET0_calc, trigger=et)
 	scheduler.add_job(FWI, trigger=FWIC)
-	scheduler.add_job(ET0o_calc, trigger=ET0)
-	scheduler.add_job(schedule_api2, 'interval', minutes=1,seconds=30)
-	scheduler.add_job(schedule_api3, 'interval', seconds=30)
-	scheduler.add_job(evp, 'interval', seconds=30)
+	#scheduler.add_job(ET0o_calc, trigger=ETo0)
+	#scheduler.add_job(schedule_api2, 'interval', minutes=1,seconds=30)
+	#scheduler.add_job(schedule_api3, 'interval', seconds=30)
+	#scheduler.add_job(evp, 'interval', seconds=30)
 
 	# print("ok")
 
