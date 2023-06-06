@@ -48,21 +48,24 @@ def on_message(client, userdata, msg):
         bui = ss[5]
         fwi = ss[6]
         i=ss[7]
-        if not DataFwiO.objects.filter(i=i).exists():
-            DataFwiO.objects.create(ffmc=ffmc, dmc=dmc, dc=dc, isi=isi, bui=bui, fwi=fwi, i=i)
-        else:
-            print(f"A record with i={i} already exists in the database. Skipping insertion.")
-        existing_records = DataFwiO.objects.filter(i=i)
-        if existing_records.exists():
-            if existing_records.count() > 1:
-                # if there are more than one record with the same value of "i", delete all but the last one
-                existing_records[:-1].delete()
-                print(f"Removed {existing_records.count() - 1} duplicate records with i={i} from the database.")
+        try:
+            if not DataFwiO.objects.filter(i=i).exists():
+                DataFwiO.objects.create(ffmc=ffmc, dmc=dmc, dc=dc, isi=isi, bui=bui, fwi=fwi, i=i)
             else:
-                # if there's only one record with the same value of "i", skip the insertion and print a message
                 print(f"A record with i={i} already exists in the database. Skipping insertion.")
-                return
-        print("__________________________________FWI Calculé________________________________")
+            existing_records = DataFwiO.objects.filter(i=i)
+            if existing_records.exists():
+                if existing_records.count() > 1:
+                    # if there are more than one record with the same value of "i", delete all but the last one
+                    existing_records[:-1].delete()
+                    print(f"Removed {existing_records.count() - 1} duplicate records with i={i} from the database.")
+                else:
+                    # if there's only one record with the same value of "i", skip the insertion and print a message
+                    print(f"A record with i={i} already exists in the database. Skipping insertion.")
+                    return
+            print("__________________________________FWI Calculé________________________________")
+        except:
+            pass
     if ss[0]=="33":
         B2 = int(ss[1])
         temp_max = float(ss[2])
@@ -78,40 +81,25 @@ def on_message(client, userdata, msg):
         station.anemometer_height = 2
         r = round(rad * 0.0864, 2)
         print(r)
-        ### getting a day instance for August 16th
-        # day = station.day_entry(B2,
-        #                         temp_min=temp_min,
-        #                         temp_max=temp_max,
-        #                         wind_speed=ws,
-        #                         humidity_max=humidity_max,
-        #                         humidity_min=humidity_min,
-        #                         # humidity_mean = 50.44,
-        #                         radiation_s=r,
-        #                         )
-        # eto=day.eto()
-        # print("eto :",eto)
-        # ET0o.objects.create(value=eto, WSavg=ws, Tmax=temp_max, Tmin=temp_min, Hmax=humidity_max, Hmin=humidity_min, Raym=round(rad,2), U2=day.wind_speed_2m(),
-        #                     Delta=B2,i=i)
-        # print("__________________________________ET_O open Calculé________________________________")
-        if not ET0o.objects.filter(i=i).exists():
-            ### getting a day instance for August 16th
-            day = station.day_entry(B2,
-                                    temp_min=temp_min,
-                                    temp_max=temp_max,
-                                    wind_speed=ws,
-                                    humidity_max=humidity_max,
-                                    humidity_min=humidity_min,
-                                    # humidity_mean = 50.44,
-                                    radiation_s=r,
-                                    )
-            eto = day.eto()
-            print("eto :", eto)
-            ET0o.objects.create(value=eto, WSavg=ws, Tmax=temp_max, Tmin=temp_min, Hmax=humidity_max, Hmin=humidity_min,
-                                Raym=round(rad, 2), U2=day.wind_speed_2m(),
-                                Delta=B2, i=i)
-            print("__________________________________ET_O open Calculé________________________________")
-        else:
-            print(f"A record with i={i} already exists in the database. Skipping insertion.")
+        try:
+            if not ET0o.objects.filter(i=i).exists():
+                ET0o.objects.create(value=eto, WSavg=ws, Tmax=temp_max, Tmin=temp_min, Hmax=humidity_max, Hmin=humidity_min,
+                                    Raym=round(rad, 2), U2=ws, Delta=B2, i=i)
+                print("__________________________________ET_O open Calculé________________________________")
+            else:
+                print(f"A record with i={i} already exists in the database. Skipping insertion.")
+            existing_records = ET0o.objects.filter(i=i)
+            if existing_records.exists():
+                if existing_records.count() > 1:
+                    # if there are more than one record with the same value of "i", delete all but the last one
+                    existing_records[:-1].delete()
+                    print(f"Removed {existing_records.count() - 1} duplicate records with i={i} from the database.")
+                else:
+                    # if there's only one record with the same value of "i", skip the insertion and print a message
+                    print(f"A record with i={i} already exists in the database. Skipping insertion.")
+                    return
+        except:
+            pass
         existing_records = ET0o.objects.filter(i=i)
         if existing_records.exists():
             if existing_records.count() > 1:
@@ -176,6 +164,7 @@ def on_message(client, userdata, msg):
         alt = ss[7]
         pr = ss[8]
         d = ss[9]
+        i = ss[10]
         print("ID-Dev :" + str(id_dev))
         print("temp :" + str(temp))
         print("hum :" + str(hum))
@@ -184,48 +173,48 @@ def on_message(client, userdata, msg):
         print("plo :" + str(plo))
 
         print("batt :" + str(batt))
-
+        print("id : ",i)
         batterie = round(float(batt),2)
         print("batterie : ",batterie)
         if ss[5] != "0":
-            existing_objs = Data.objects.filter(
-                ID_Device=id_dev,
-                Temp=temp,
-                Hum=hum,
-                Ray=ray,
-                Wind_Speed=vite,
-                Rain=plo,
-                Bat=batterie,
-                alt=alt,
-                pr=pr,
-                d=d,
-                Time_Stamp__year=timezone.now().year,
-                Time_Stamp__month=timezone.now().month,
-                Time_Stamp__day=timezone.now().day,
-                Time_Stamp__hour=timezone.now().hour,
-                Time_Stamp__minute=timezone.now().minute,
+            try:
+                if not Data.objects.filter(i=i).exists():
+                    Data.objects.create(ID_Device=id_dev, Temp=temp, Hum=hum, Ray=ray, Wind_Speed=vite, Rain=plo,
+                                        Bat=batterie, alt=alt, pr=pr, d=d,i=i)
+                    print("created!!!")
+                else:
+                    print(f"A record with i={i} already exists in the database. Skipping insertion.")
+                existing_records = Data.objects.filter(i=i)
+                print("number record ws :",existing_records.count())
+                if existing_records.exists():
+                    if existing_records.count() > 1:
+                        # if there are more than one record with the same value of "i", delete all but the last one
+                        existing_records[:-1].delete()
+                        print(f"Removed {existing_records.count() - 1} duplicate records with i={i} from the database.")
+                    else:
+                        # if there's only one record with the same value of "i", skip the insertion and print a message
+                        print(f"A record with i={i} already exists in the database. Skipping insertion.")
+                        return
+                print("__________________________________WS created________________________________")
+            except Exception as e:
+                print(" error WS :", e)
 
-            )
-            if existing_objs.exists():
-                print("Object already exists!")
+        existing_records = Data.objects.filter(i=i)
+        if existing_records.exists():
+            if existing_records.count() > 1:
+                # if there are more than one record with the same value of "i", delete all but the last one
+                existing_records[:-1].delete()
+                print(f"Removed {existing_records.count() - 1} duplicate records with i={i} from the database.")
             else:
-                Data.objects.create(ID_Device=id_dev,Temp=temp, Hum=hum,Ray=ray, Wind_Speed=vite,Rain=plo, Bat=batterie, alt=alt,pr=pr, d=d)
-                print("created!!!")
-        else:
-            print("mesures fausse .............")
-        # now = (datetime.datetime.now()).strftime("%M")
-        #
-        # if not CapSol.objects.filter(time__minute=now).exists():
-        #     print(now)
+                # if there's only one record with the same value of "i", skip the insertion and print a message
+                print(f"A record with i={i} already exists in the database. Skipping insertion.")
+                return
     if ss[0][-1] == "9":
         id = ss[0][-1]
         batt = ss[3]
         print("batterie vanne ", batt)
         batvanne.objects.create(bat=batt)
         print("created batterie vanne !!!")
-
-# HOST = "102.53.10.67"
-
 
 
 client = mqtt.Client()
@@ -234,19 +223,17 @@ client.connect("broker.hivemq.com", 1883, 60)
 
 client.on_connect = on_connect
 client.on_message = on_message
+
+client2 = mqtt.Client()
+# client.username_pw_set(username="opensnz", password="opensnz")
+client2.connect("test.mosquitto.org", 1883, 60)
+
+client2.on_connect = on_connect
+client2.on_message = on_message
 # client.reinitialise()
 
 client.loop_start() #do not disconnect
-
-# except Exception as e:
-#     print(e)
-#     pass
-
-
-
-
-
-
+client2.loop_start()
 
 # def save(self, commit=False, *args, **kwargs):
 #     msg=self.onoff

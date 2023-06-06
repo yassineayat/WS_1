@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     # 'django_browser_reload',
 
     'django.contrib.staticfiles',
-    'application'
+    'application',
+    'rest_framework',
 ]
 
 # DJANGO_LIVESYNC = {'PORT': 8080,

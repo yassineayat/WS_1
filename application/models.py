@@ -96,14 +96,12 @@ class Data(models.Model):
     Ray = models.FloatField(null=True)
     Wind_Speed = models.FloatField(null=True)
     Rain = models.FloatField(null=True)
-    Wind_Dir = models.CharField(max_length=50,null=True)
     Bat = models.FloatField(null=True)
     alt = models.FloatField(null=True)
     pr = models.FloatField(null=True)
     d = models.FloatField(null=True)
     Time_Stamp = models.DateTimeField(auto_now_add=True)
-    diff = models.DurationField(null=True, blank=True)
-
+    i = models.IntegerField(null=True)
     def __str__(self):
         return str(self.d) + str(self.Time_Stamp)
     #

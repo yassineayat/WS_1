@@ -1,6 +1,6 @@
 from django.urls import path
 
-from application import views
+from application import views, api
 
 urlpatterns = [
     path('', views.home,name="home"),
@@ -101,4 +101,11 @@ urlpatterns = [
     path('2bs3jrs/', views.bsol23, name="2bs3acc"),
     path('2bs7jrs/', views.bsol27, name="2bs7acc"),
     path('2bs15jrs/', views.bsol215, name="2bs15acc"),
+##api
+    path('api/list', api.Dlist, name='DHT11List'),
+
+    # genericViews
+    path('api/post', api.Dataviews.as_view(), name='WS_post'),
+    path('api/post1', api.ETviews.as_view(), name='ET_post'),
+    path('api/post2', api.FWIviews.as_view(), name='FWI_post'),
 ]

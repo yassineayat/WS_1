@@ -1828,10 +1828,26 @@ def wsopen(request):
     r8h = list(rain8h.items())
     r24h = list(rain24h.items())
     rw = list(rain7d.items())
-    p1h = r1h[0][1]
-    p8h = r8h[0][1]
-    p24h = round(r24h[0][1],2)
-    p1w = 0
+    if r1h[0][1] is not None:
+        p1h = round(r1h[0][1], 2)
+    else:
+        p1h = 0  # Set a default value if r1h[0][1] is None
+    # p1h = round(r1h[0][1],3)
+    if r8h[0][1] is not None:
+        p8h = round(r8h[0][1], 2)
+    else:
+        p8h = 0  # Set a default value if r1h[0][1] is None
+    # p8h = round(r8h[0][1],2)
+    if r24h[0][1] is not None:
+        p24h = round(r24h[0][1], 2)
+    else:
+        p24h = 0  # Set a default value if r1h[0][1] is None
+    # p24h = round(r24h[0][1],2)
+
+    if rw[0][1] is not None:
+        p1w = round(rw[0][1], 2)
+    else:
+        p1w = 0  # Set a default value if r1h[0][1] is None
     # client = mqtt.Client()
     #
     # client.connect("broker.hivemq.com", 1883, 80)
@@ -1839,13 +1855,13 @@ def wsopen(request):
     # client.publish("et", 35)  # publish the message typed by the user
 
     # client.disconnect();  # disconnect from server
-    print("ok.......data")
+    # print("ok.......data")
 
     tab = Data.objects.last()
     eto = ET0o.objects.last()
-    print(eto.value)
+    # print(eto.value)
     # ET0o_calc()
-    print("-----------------------------//------------------------------")
+    # print("-----------------------------//------------------------------")
     # exemple()
     # print("eto", eto)
     context={'tab':tab,'eto':eto,'p1w':p1w, 'p24h':p24h,'p8h':p8h,'p1h':p1h, 'Rx':Rx, 'Rm':Rm, 'Sx':Sx,'Sm':Sm, 'Hx':Hx,
