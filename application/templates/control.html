@@ -1,0 +1,21 @@
+<form method="POST" action="{% url 'send_command' %}">
+    {% csrf_token %}
+    
+    <label>Commande :</label>
+    <select name="command">
+        <option value="ON">ON</option>
+        <option value="OFF">OFF</option>
+    </select>
+    
+    <label>Valeur :</label>
+    <input type="number" name="value" min="0" max="255" required>
+    
+    <button type="submit">Envoyer</button>
+</form>
+
+{% if success %}
+<p style="color: green;">{{ success }}</p>
+{% endif %}
+{% if error %}
+<p style="color: red;">{{ error }}</p>
+{% endif %}

@@ -15,7 +15,16 @@
 
     <!-- FontAwesome JS-->
     <script defer src="{% static 'assets/plugins/fontawesome/js/all.min.js'%}"></script>
+	<script>
+    window.setInterval('refresh()', 120000);
+    // Call a function every 10000 milliseconds
+    // (OR 10 seconds).
 
+    // Refresh or reload page.
+    function refresh() {
+        window .location.reload();
+    }
+</script>
     <!-- App CSS -->
     <link id="theme-style" rel="stylesheet" href="{% static 'assets/css/portal.css'%}">
 
@@ -24,11 +33,11 @@
     .app {
         background-color: #EBEBEB;
         background-image: url(../../static/bg3.jpg);
-            padding: 14px;
-            padding-right: 14px;
-            padding-top: 14px;
-            padding-left: 14px;
-            padding-bottom: 14px;
+            padding: 44px;
+            padding-right: 44px;
+            padding-top: 44px;
+            padding-left: 44px;
+            padding-bottom: 44px;
     		flex-grow: 1;
     }
 
@@ -149,16 +158,19 @@ input:checked + .slider .off
 <script src="https://unpkg.com/htmx.org@1.6.0"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 
-													<script>
-    window.setInterval('refresh()', 240000);
-    // Call a function every 10000 milliseconds
-    // (OR 10 seconds).
+													<script type="text/javascript">
+													  var clickHandler = () => {
+													  if (clickHandler.running)
+														return
 
-    // Refresh or reload page.
-    function refresh() {
-        window .location.reload();
-    }
-</script>
+													  clickHandler.running = true
+													  setTimeout(() => { clickHandler.running = false }, 5000)
+
+													  console.log(new Date())
+													  }
+
+													$('#getmore').click(clickHandler)
+													</script>
 <body class="app">
     <header class="app-header fixed-top  background-color: #808080;">
 
@@ -342,7 +354,7 @@ input:checked + .slider .off
   <circle cx="3.5" cy="10.5" r=".5"/>
 </svg>
 						         </span>
-		                         <span class="nav-link-text">Station Méteo</span>
+		                         <span class="nav-link-text">Visio G WS </span>
 					        </a><!--//nav-link-->
 					    </li><!--//nav-item-->
 						<li class="nav-item">
@@ -357,7 +369,22 @@ input:checked + .slider .off
   <circle cx="3.5" cy="10.5" r=".5"/>
 </svg>
 						         </span>
-		                         <span class="nav-link-text">Station Méteo openSNZ</span>
+		                         <span class="nav-link-text">SenseCap WS</span>
+					        </a><!--//nav-link-->
+					    </li><!--//nav-item-->
+					    <li class="nav-item">
+					        <!--//Bootstrap Icons: https://icons.getbootstrap.com/ -->
+					        <a class="nav-link" href="{% url 'env'%}">
+						        <span class="nav-icon">
+						        <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-card-list" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <path fill-rule="evenodd" d="M14.5 3h-13a.5.5 0 0 0-.5.5v9a.5.5 0 0 0 .5.5h13a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5zm-13-1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-13z"/>
+  <path fill-rule="evenodd" d="M5 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 5 8zm0-2.5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5zm0 5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5z"/>
+  <circle cx="3.5" cy="5.5" r=".5"/>
+  <circle cx="3.5" cy="8" r=".5"/>
+  <circle cx="3.5" cy="10.5" r=".5"/>
+</svg>
+						         </span>
+		                         <span class="nav-link-text">Dragino WS</span>
 					        </a><!--//nav-link-->
 					    </li><!--//nav-item-->
 <!--					    <li class="nav-item has-submenu">-->
@@ -1018,10 +1045,10 @@ function filterData(){
 	}
 	console.log(myLine.config.data.labels);
 	</script>
-    
+
     <!-- Page Specific JS -->
     <script src="{% static 'assets/js/app.js'%}"></script>
 
 </body>
-</html> 
+</html>
 

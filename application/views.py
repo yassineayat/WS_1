@@ -1,20 +1,44 @@
 # Create your views here.
 import datetime
 import math
-
+from django.utils.timezone import localtime
+import numpy as np
+import pandas as pd
+from django.utils import timezone
 from django.db.models import Max, Min, Sum, Avg
 from django.http import HttpResponseRedirect
 from django.shortcuts import render,HttpResponse
 from django.views.generic import TemplateView
-import paho.mqtt.client as mqtt
+# import paho.mqtt.client as mqtt
 
 from .models import *
 import requests
 import json
-import penmon as pm
 
+from collections import Counter
+from django.http import JsonResponse
+# import penmon as pm
+#programmation chirpstack
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
 
+WS_DEVEUI_OPENSNZ = '57c32e0eb4160806'
+valve_eui= '2ee5270e481778ff'
+black_device_eui= '13e08e2951742243'
+red_device_eui= '6f8e5550f7ec89e9'
+npk_device_eui= 'fe86cac7b467a956'
+pyranometre = '71ca6b16b8e4ac42'
+pyranometre_jaune = '18362e0eb4160834'
+WsSENSECAP_WeatherStation = '2cf7f1c04430038d'
+module_drajino = 'a84041834189a939'
+pyraGV = 'a84041fc4188657b'
 
+Capteurdesol ='a84041d10858e027'
+#fin progra
+
+def aqi(request):
+    context={}
+    return render(request,"tab.html",context)
 
 def chart(request):
     tab=CapSol.objects.all()
@@ -312,7 +336,7 @@ def hsol215(request):
     context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
     return render(request, "sol2/Hsol15.html", context)
 
-""" salinite """
+
 def ssol1(request):
     one_day_ago = (datetime.datetime.today()).replace(hour=0,minute=0,second=0,microsecond=0)
     print("oui ......",one_day_ago)
@@ -544,6 +568,294 @@ def esol215(request):
     context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
     return render(request, "sol2/Esol15.html", context)
 
+#N
+def nsol1(request):
+    one_day_ago = (datetime.datetime.today()).replace(hour=0, minute=0, second=0, microsecond=0)
+    labels = []
+    dataa = []  # Contiendra les valeurs de l'azote (N)
+    all = CapSol2.objects.filter(dt__gte=one_day_ago)
+    for i in all:
+        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
+        dataa.append(i.N)  # Utilisation de N pour l'azote
+
+    context = {'all': all, 'labels': labels, 'dataa': dataa}
+    return render(request, "sol/Nsol1.html", context)
+
+def nsol3(request):
+    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=3)).replace(hour=0, minute=0, second=0, microsecond=0)
+    labels = []
+    dataa = []  # Contiendra les valeurs de l'azote (N)
+    all = CapSol2.objects.filter(dt__gte=one_day_ago)
+    for i in all:
+        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
+        dataa.append(i.N)  # Utilisation de N pour l'azote
+    lst = Data.objects.last()
+    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
+    return render(request, "sol/Nsol3.html", context)
+
+def nsol7(request):
+    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=7)).replace(hour=0, minute=0, second=0, microsecond=0)
+    labels = []
+    dataa = []  # Contiendra les valeurs de l'azote (N)
+    all = CapSol2.objects.filter(dt__gte=one_day_ago)
+    for i in all:
+        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
+        dataa.append(i.N)  # Utilisation de N pour l'azote
+    lst = Data.objects.last()
+    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
+    return render(request, "sol/Nsol7.html", context)
+
+def nsol15(request):
+    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=15)).replace(hour=0, minute=0, second=0, microsecond=0)
+    labels = []
+    dataa = []  # Contiendra les valeurs de l'azote (N)
+    all = CapSol2.objects.filter(dt__gte=one_day_ago)
+    for i in all:
+        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
+        dataa.append(i.N)  # Utilisation de N pour l'azote
+    lst = Data.objects.last()
+    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
+    return render(request, "sol/Nsol15.html", context)
+
+def nsol21(request):
+    one_day_ago = (datetime.datetime.today()).replace(hour=0, minute=0, second=0, microsecond=0)
+    labels = []
+    dataa = []  # Contiendra les valeurs de l'azote (N)
+    all = CapSol.objects.filter(dt__gte=one_day_ago)
+    for i in all:
+        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
+        dataa.append(i.N)  # Utilisation de N pour l'azote
+    context = {'all': all, 'labels': labels, 'dataa': dataa}
+    return render(request, "sol2/Nsol1.html", context)
+
+def nsol23(request):
+    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=3)).replace(hour=0, minute=0, second=0, microsecond=0)
+    labels = []
+    dataa = []  # Contiendra les valeurs de l'azote (N)
+    all = CapSol.objects.filter(dt__gte=one_day_ago)
+    for i in all:
+        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
+        dataa.append(i.N)  # Utilisation de N pour l'azote
+    lst = Data.objects.last()
+    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
+    return render(request, "sol2/Nsol3.html", context)
+
+def nsol27(request):
+    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=7)).replace(hour=0, minute=0, second=0, microsecond=0)
+    labels = []
+    dataa = []  # Contiendra les valeurs de l'azote (N)
+    all = CapSol.objects.filter(dt__gte=one_day_ago)
+    for i in all:
+        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
+        dataa.append(i.N)  # Utilisation de N pour l'azote
+    lst = Data.objects.last()
+    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
+    return render(request, "sol2/Nsol7.html", context)
+
+def nsol215(request):
+    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=15)).replace(hour=0, minute=0, second=0, microsecond=0)
+    labels = []
+    dataa = []  # Contiendra les valeurs de l'azote (N)
+    all = CapSol.objects.filter(dt__gte=one_day_ago)
+    for i in all:
+        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
+        dataa.append(i.N)  # Utilisation de N pour l'azote
+    lst = Data.objects.last()
+    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
+    return render(request, "sol2/Nsol15.html", context)
+
+#P
+def psol1(request):
+    one_day_ago = (datetime.datetime.today()).replace(hour=0, minute=0, second=0, microsecond=0)
+    labels = []
+    dataa = []  # Contiendra les valeurs du phosphore (P)
+    all = CapSol2.objects.filter(dt__gte=one_day_ago)
+    for i in all:
+        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
+        dataa.append(i.P)  # Utilisation de P pour le phosphore
+
+    context = {'all': all, 'labels': labels, 'dataa': dataa}
+    return render(request, "sol/Psol1.html", context)
+
+def psol3(request):
+    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=3)).replace(hour=0, minute=0, second=0, microsecond=0)
+    labels = []
+    dataa = []  # Contiendra les valeurs du phosphore (P)
+    all = CapSol2.objects.filter(dt__gte=one_day_ago)
+    for i in all:
+        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
+        dataa.append(i.P)  # Utilisation de P pour le phosphore
+    lst = Data.objects.last()
+    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
+    return render(request, "sol/Psol3.html", context)
+
+def psol7(request):
+    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=7)).replace(hour=0, minute=0, second=0, microsecond=0)
+    labels = []
+    dataa = []  # Contiendra les valeurs du phosphore (P)
+    all = CapSol2.objects.filter(dt__gte=one_day_ago)
+    for i in all:
+        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
+        dataa.append(i.P)  # Utilisation de P pour le phosphore
+    lst = Data.objects.last()
+    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
+    return render(request, "sol/Psol7.html", context)
+
+def psol15(request):
+    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=15)).replace(hour=0, minute=0, second=0, microsecond=0)
+    labels = []
+    dataa = []  # Contiendra les valeurs du phosphore (P)
+    all = CapSol2.objects.filter(dt__gte=one_day_ago)
+    for i in all:
+        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
+        dataa.append(i.P)  # Utilisation de P pour le phosphore
+    lst = Data.objects.last()
+    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
+    return render(request, "sol/Psol15.html", context)
+
+def psol21(request):
+    one_day_ago = (datetime.datetime.today()).replace(hour=0, minute=0, second=0, microsecond=0)
+    labels = []
+    dataa = []  # Contiendra les valeurs du phosphore (P)
+    all = CapSol.objects.filter(dt__gte=one_day_ago)
+    for i in all:
+        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
+        dataa.append(i.P)  # Utilisation de P pour le phosphore
+    context = {'all': all, 'labels': labels, 'dataa': dataa}
+    return render(request, "sol2/Psol1.html", context)
+
+def psol23(request):
+    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=3)).replace(hour=0, minute=0, second=0, microsecond=0)
+    labels = []
+    dataa = []  # Contiendra les valeurs du phosphore (P)
+    all = CapSol.objects.filter(dt__gte=one_day_ago)
+    for i in all:
+        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
+        dataa.append(i.P)  # Utilisation de P pour le phosphore
+    lst = Data.objects.last()
+    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
+    return render(request, "sol2/Psol3.html", context)
+
+def psol27(request):
+    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=7)).replace(hour=0, minute=0, second=0, microsecond=0)
+    labels = []
+    dataa = []  # Contiendra les valeurs du phosphore (P)
+    all = CapSol.objects.filter(dt__gte=one_day_ago)
+    for i in all:
+        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
+        dataa.append(i.P)  # Utilisation de P pour le phosphore
+    lst = Data.objects.last()
+    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
+    return render(request, "sol2/Psol7.html", context)
+
+def psol215(request):
+    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=15)).replace(hour=0, minute=0, second=0, microsecond=0)
+    labels = []
+    dataa = []  # Contiendra les valeurs du phosphore (P)
+    all = CapSol.objects.filter(dt__gte=one_day_ago)
+    for i in all:
+        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
+        dataa.append(i.P)  # Utilisation de P pour le phosphore
+    lst = Data.objects.last()
+    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
+    return render(request, "sol2/Psol15.html", context)
+
+#K
+def ksol1(request):
+    one_day_ago = (datetime.datetime.today()).replace(hour=0, minute=0, second=0, microsecond=0)
+    labels = []
+    dataa = []  # Contiendra les valeurs du potassium (K)
+    all = CapSol2.objects.filter(dt__gte=one_day_ago)
+    for i in all:
+        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
+        dataa.append(i.K)  # Utilisation de K pour le potassium
+
+    context = {'all': all, 'labels': labels, 'dataa': dataa}
+    return render(request, "sol/Ksol1.html", context)
+
+def ksol3(request):
+    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=3)).replace(hour=0, minute=0, second=0, microsecond=0)
+    labels = []
+    dataa = []  # Contiendra les valeurs du potassium (K)
+    all = CapSol2.objects.filter(dt__gte=one_day_ago)
+    for i in all:
+        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
+        dataa.append(i.K)  # Utilisation de K pour le potassium
+    lst = Data.objects.last()
+    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
+    return render(request, "sol/Ksol3.html", context)
+
+def ksol7(request):
+    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=7)).replace(hour=0, minute=0, second=0, microsecond=0)
+    labels = []
+    dataa = []  # Contiendra les valeurs du potassium (K)
+    all = CapSol2.objects.filter(dt__gte=one_day_ago)
+    for i in all:
+        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
+        dataa.append(i.K)  # Utilisation de K pour le potassium
+    lst = Data.objects.last()
+    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
+    return render(request, "sol/Ksol7.html", context)
+
+def ksol15(request):
+    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=15)).replace(hour=0, minute=0, second=0, microsecond=0)
+    labels = []
+    dataa = []  # Contiendra les valeurs du potassium (K)
+    all = CapSol2.objects.filter(dt__gte=one_day_ago)
+    for i in all:
+        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
+        dataa.append(i.K)  # Utilisation de K pour le potassium
+    lst = Data.objects.last()
+    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
+    return render(request, "sol/Ksol15.html", context)
+
+def ksol21(request):
+    one_day_ago = (datetime.datetime.today()).replace(hour=0, minute=0, second=0, microsecond=0)
+    labels = []
+    dataa = []  # Contiendra les valeurs du potassium (K)
+    all = CapSol.objects.filter(dt__gte=one_day_ago)
+    for i in all:
+        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
+        dataa.append(i.K)  # Utilisation de K pour le potassium
+    context = {'all': all, 'labels': labels, 'dataa': dataa}
+    return render(request, "sol2/Ksol1.html", context)
+
+def ksol23(request):
+    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=3)).replace(hour=0, minute=0, second=0, microsecond=0)
+    labels = []
+    dataa = []  # Contiendra les valeurs du potassium (K)
+    all = CapSol.objects.filter(dt__gte=one_day_ago)
+    for i in all:
+        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
+        dataa.append(i.K)  # Utilisation de K pour le potassium
+    lst = Data.objects.last()
+    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
+    return render(request, "sol2/Ksol3.html", context)
+
+def ksol27(request):
+    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=7)).replace(hour=0, minute=0, second=0, microsecond=0)
+    labels = []
+    dataa = []  # Contiendra les valeurs du potassium (K)
+    all = CapSol.objects.filter(dt__gte=one_day_ago)
+    for i in all:
+        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
+        dataa.append(i.K)  # Utilisation de K pour le potassium
+    lst = Data.objects.last()
+    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
+    return render(request, "sol2/Ksol7.html", context)
+
+def ksol215(request):
+    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=15)).replace(hour=0, minute=0, second=0, microsecond=0)
+    labels = []
+    dataa = []  # Contiendra les valeurs du potassium (K)
+    all = CapSol.objects.filter(dt__gte=one_day_ago)
+    for i in all:
+        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
+        dataa.append(i.K)  # Utilisation de K pour le potassium
+    lst = Data.objects.last()
+    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
+    return render(request, "sol2/Ksol15.html", context)
+
 #Batterie
 def bsol1(request):
     one_day_ago = (datetime.datetime.today()).replace(hour=0,minute=0,second=0,microsecond=0)
@@ -667,7 +979,7 @@ def dash(request):
     print("oui ......",one_day_ago)
     labels = []
     dataa = []
-    all = Data.objects.filter(Time_Stamp__gte=one_day_ago)
+    all = Data2.objects.filter(Time_Stamp__gte=one_day_ago)
     # print("all", all)
     for i in all:
         labels.append((i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S"))
@@ -681,7 +993,7 @@ def data3(request):
     one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=3)).replace(hour=0,minute=0,second=0,microsecond=0)
     labels = []
     dataa = []
-    all = Data.objects.filter(Time_Stamp__gte=one_day_ago)
+    all = Data2.objects.filter(Time_Stamp__gte=one_day_ago)
     print("all", all)
     for i in all:
         labels.append((i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S"))
@@ -695,7 +1007,7 @@ def data7(request):
     one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=7)).replace(hour=0,minute=0,second=0,microsecond=0)
     labels = []
     dataa = []
-    all = Data.objects.filter(Time_Stamp__gte=one_day_ago)
+    all = Data2.objects.filter(Time_Stamp__gte=one_day_ago)
     print("all", all)
     for i in all:
         labels.append((i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S"))
@@ -709,7 +1021,7 @@ def data15(request):
     one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=15)).replace(hour=0,minute=0,second=0,microsecond=0)
     labels = []
     dataa = []
-    all = Data.objects.filter(Time_Stamp__gte=one_day_ago)
+    all = Data2.objects.filter(Time_Stamp__gte=one_day_ago)
     # print("all", all)
     for i in all:
         labels.append((i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S"))
@@ -726,7 +1038,7 @@ def hum1(request):
     print("oui ......",one_day_ago)
     labels = []
     dataa = []
-    all = Data.objects.filter(Time_Stamp__gte=one_day_ago)
+    all = Data2.objects.filter(Time_Stamp__gte=one_day_ago)
     # print("all", all)
     for i in all:
         labels.append((i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S"))
@@ -740,7 +1052,7 @@ def hum3(request):
     one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=3)).replace(hour=0,minute=0,second=0,microsecond=0)
     labels = []
     dataa = []
-    all = Data.objects.filter(Time_Stamp__gte=one_day_ago)
+    all = Data2.objects.filter(Time_Stamp__gte=one_day_ago)
     print("all", all)
     for i in all:
         labels.append((i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S"))
@@ -754,7 +1066,7 @@ def hum7(request):
     one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=7)).replace(hour=0,minute=0,second=0,microsecond=0)
     labels = []
     dataa = []
-    all = Data.objects.filter(Time_Stamp__gte=one_day_ago)
+    all = Data2.objects.filter(Time_Stamp__gte=one_day_ago)
     print("all", all)
     for i in all:
         labels.append((i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S"))
@@ -768,7 +1080,7 @@ def hum15(request):
     one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=15)).replace(hour=0,minute=0,second=0,microsecond=0)
     labels = []
     dataa = []
-    all = Data.objects.filter(Time_Stamp__gte=one_day_ago)
+    all = Data2.objects.filter(Time_Stamp__gte=one_day_ago)
     # print("all", all)
     for i in all:
         labels.append((i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S"))
@@ -785,7 +1097,7 @@ def vit1(request):
     # print("oui ......",one_day_ago)
     labels = []
     dataa = []
-    all = Data.objects.filter(Time_Stamp__gte=one_day_ago)
+    all = Data2.objects.filter(Time_Stamp__gte=one_day_ago)
     # print("all", all)
     for i in all:
         labels.append((i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S"))
@@ -799,7 +1111,7 @@ def vit3(request):
     one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=3)).replace(hour=0,minute=0,second=0,microsecond=0)
     labels = []
     dataa = []
-    all = Data.objects.filter(Time_Stamp__gte=one_day_ago)
+    all = Data2.objects.filter(Time_Stamp__gte=one_day_ago)
     # print("all", all)
     for i in all:
         labels.append((i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S"))
@@ -813,7 +1125,7 @@ def vit7(request):
     one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=7)).replace(hour=0,minute=0,second=0,microsecond=0)
     labels = []
     dataa = []
-    all = Data.objects.filter(Time_Stamp__gte=one_day_ago)
+    all = Data2.objects.filter(Time_Stamp__gte=one_day_ago)
     # print("all", all)
     for i in all:
         labels.append((i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S"))
@@ -827,7 +1139,7 @@ def vit15(request):
     one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=15)).replace(hour=0,minute=0,second=0,microsecond=0)
     labels = []
     dataa = []
-    all = Data.objects.filter(Time_Stamp__gte=one_day_ago)
+    all = Data2.objects.filter(Time_Stamp__gte=one_day_ago)
     # print("all", all)
     for i in all:
         labels.append((i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S"))
@@ -844,10 +1156,10 @@ def ray1(request):
     # print("oui ......",one_day_ago)
     labels = []
     dataa = []
-    all = Data.objects.filter(Time_Stamp__gte=one_day_ago)
+    all = Ray2.objects.filter(DateRay__gte=one_day_ago)
     # print("all", all)
     for i in all:
-        labels.append((i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S"))
+        labels.append((i.DateRay).strftime("%Y-%m-%d %H:%M:%S"))
         # print("labels", labels)
         dataa.append(i.Ray)
     lst = Data.objects.last()
@@ -858,10 +1170,10 @@ def ray3(request):
     one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=3)).replace(hour=0,minute=0,second=0,microsecond=0)
     labels = []
     dataa = []
-    all = Data.objects.filter(Time_Stamp__gte=one_day_ago)
+    all = Ray2.objects.filter(DateRay__gte=one_day_ago)
     # print("all", all)
     for i in all:
-        labels.append((i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S"))
+        labels.append((i.DateRay).strftime("%Y-%m-%d %H:%M:%S"))
         # print("labels", labels)
         dataa.append(i.Ray)
     lst = Data.objects.last()
@@ -872,10 +1184,10 @@ def ray7(request):
     one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=7)).replace(hour=0,minute=0,second=0,microsecond=0)
     labels = []
     dataa = []
-    all = Data.objects.filter(Time_Stamp__gte=one_day_ago)
+    all = Ray2.objects.filter(DateRay__gte=one_day_ago)
     # print("all", all)
     for i in all:
-        labels.append((i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S"))
+        labels.append((i.DateRay).strftime("%Y-%m-%d %H:%M:%S"))
         # print("labels", labels)
         dataa.append(i.Ray)
     lst = Data.objects.last()
@@ -886,10 +1198,10 @@ def ray15(request):
     one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=15)).replace(hour=0,minute=0,second=0,microsecond=0)
     labels = []
     dataa = []
-    all = Data.objects.filter(Time_Stamp__gte=one_day_ago)
+    all = Ray2.objects.filter(DateRay__gte=one_day_ago)
     # print("all", all)
     for i in all:
-        labels.append((i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S"))
+        labels.append((i.DateRay).strftime("%Y-%m-%d %H:%M:%S"))
         # print("labels", labels)
         dataa.append(i.Ray)
     lst = Data.objects.last()
@@ -903,7 +1215,7 @@ def plu1(request):
     print("oui ......",one_day_ago)
     labels = []
     dataa = []
-    all = Data.objects.filter(Time_Stamp__gte=one_day_ago)
+    all = Data2.objects.filter(Time_Stamp__gte=one_day_ago)
     # print("all", all)
     for i in all:
         labels.append((i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S"))
@@ -917,7 +1229,7 @@ def plu3(request):
     one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=3)).replace(hour=0,minute=0,second=0,microsecond=0)
     labels = []
     dataa = []
-    all = Data.objects.filter(Time_Stamp__gte=one_day_ago)
+    all = Data2.objects.filter(Time_Stamp__gte=one_day_ago)
     print("all", all)
     for i in all:
         labels.append((i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S"))
@@ -931,7 +1243,7 @@ def plu7(request):
     one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=7)).replace(hour=0,minute=0,second=0,microsecond=0)
     labels = []
     dataa = []
-    all = Data.objects.filter(Time_Stamp__gte=one_day_ago)
+    all = Data2.objects.filter(Time_Stamp__gte=one_day_ago)
     print("all", all)
     for i in all:
         labels.append((i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S"))
@@ -945,7 +1257,7 @@ def plu15(request):
     one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=15)).replace(hour=0,minute=0,second=0,microsecond=0)
     labels = []
     dataa = []
-    all = Data.objects.filter(Time_Stamp__gte=one_day_ago)
+    all = Data2.objects.filter(Time_Stamp__gte=one_day_ago)
     # print("all", all)
     for i in all:
         labels.append((i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S"))
@@ -962,7 +1274,7 @@ def bat1(request):
     print("oui ......",one_day_ago)
     labels = []
     dataa = []
-    all = Data.objects.filter(Time_Stamp__gte=one_day_ago)
+    all = Data2.objects.filter(Time_Stamp__gte=one_day_ago)
     # print("all", all)
     for i in all:
         labels.append((i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S"))
@@ -976,7 +1288,7 @@ def bat3(request):
     one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=3)).replace(hour=0,minute=0,second=0,microsecond=0)
     labels = []
     dataa = []
-    all = Data.objects.filter(Time_Stamp__gte=one_day_ago)
+    all = Data2.objects.filter(Time_Stamp__gte=one_day_ago)
     print("all", all)
     for i in all:
         labels.append((i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S"))
@@ -990,7 +1302,7 @@ def bat7(request):
     one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=7)).replace(hour=0,minute=0,second=0,microsecond=0)
     labels = []
     dataa = []
-    all = Data.objects.filter(Time_Stamp__gte=one_day_ago)
+    all = Data2.objects.filter(Time_Stamp__gte=one_day_ago)
     print("all", all)
     for i in all:
         labels.append((i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S"))
@@ -1004,7 +1316,7 @@ def bat15(request):
     one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=15)).replace(hour=0,minute=0,second=0,microsecond=0)
     labels = []
     dataa = []
-    all = Data.objects.filter(Time_Stamp__gte=one_day_ago)
+    all = Data2.objects.filter(Time_Stamp__gte=one_day_ago)
     # print("all", all)
     for i in all:
         labels.append((i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S"))
@@ -1013,6 +1325,64 @@ def bat15(request):
     lst = Data.objects.last()
     context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
     return render(request, "bat/bat15.html", context)
+""" fin bat"""
+#batterie
+def bat11(request):
+    one_day_ago = (datetime.datetime.today()).replace(hour=0,minute=0,second=0,microsecond=0)
+    print("oui ......",one_day_ago)
+    labels = []
+    dataa = []
+    all = Ray2.objects.filter(DateRay__gte=one_day_ago)
+    # print("all", all)
+    for i in all:
+        labels.append((i.DateRay).strftime("%Y-%m-%d %H:%M:%S"))
+        # print("labels", labels)
+        dataa.append(i.Bat)
+    lst = Data.objects.last()
+    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
+    return render(request, "batt/bat1.html", context)
+
+def bat31(request):
+    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=3)).replace(hour=0,minute=0,second=0,microsecond=0)
+    labels = []
+    dataa = []
+    all = Ray2.objects.filter(DateRay__gte=one_day_ago)
+    print("all", all)
+    for i in all:
+        labels.append((i.DateRay).strftime("%Y-%m-%d %H:%M:%S"))
+        # print("labels", labels)
+        dataa.append(i.Bat)
+    lst = Data.objects.last()
+    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
+    return render(request, "batt/bat3.html", context)
+
+def bat71(request):
+    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=7)).replace(hour=0,minute=0,second=0,microsecond=0)
+    labels = []
+    dataa = []
+    all = Ray2.objects.filter(DateRay__gte=one_day_ago)
+    print("all", all)
+    for i in all:
+        labels.append((i.DateRay).strftime("%Y-%m-%d %H:%M:%S"))
+        # print("labels", labels)
+        dataa.append(i.Bat)
+    lst = Data.objects.last()
+    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
+    return render(request, "batt/bat7.html", context)
+
+def bat151(request):
+    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=15)).replace(hour=0,minute=0,second=0,microsecond=0)
+    labels = []
+    dataa = []
+    all = Ray2.objects.filter(DateRay__gte=one_day_ago)
+    # print("all", all)
+    for i in all:
+        labels.append((i.DateRay).strftime("%Y-%m-%d %H:%M:%S"))
+        # print("labels", labels)
+        dataa.append(i.Bat)
+    lst = Data.objects.last()
+    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
+    return render(request, "batt/bat15.html", context)
 """ fin bat"""
 
 def et(request):
@@ -1116,7 +1486,7 @@ def charthum(request):
 
     context={'tab':tab,'labels':labels,'dataa':dataa,'dataa2':dataa2}
     return render(request,"chartshum.html",context)
-
+"""
 def chartsal(request):
     tab=CapSol.objects.all()
     labels = []
@@ -1177,14 +1547,14 @@ def chartsal(request):
 
     context={'tab':tab,'labels':labels,'dataa':dataa}
     return render(request,"chartssal.html",context)
-
-def chartec(request):
+"""
+def chartN(request):
     tab=CapSol.objects.all()
     labels = []
     dataa = []
     for data in tab:
         labels.append((data.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        dataa.append(data.Ec)
+        dataa.append(data.N)
         print("labels0", type(labels))
     if (request.method == "POST"):
         labels.clear()
@@ -1210,7 +1580,7 @@ def chartec(request):
             print("created_documents5", created_documents5)
             for data in created_documents5:
                 labels.append((data.dt).strftime("%d %b %Y %H:%M:%S"))
-                dataa.append(data.Ec)
+                dataa.append(data.N)
 
                 print("labelfiltter", labels)
                 # return HttpResponseRedirect('/')
@@ -1229,15 +1599,137 @@ def chartec(request):
 
             for data in created_documents6:
                 labels.append((data.dt).strftime("%d %b %Y %H:%M:%S"))
-                dataa.append(data.Ec)
+                dataa.append(data.N)
 
                 print("lab", labels)
-                return HttpResponseRedirect('/Chartec')
+                return HttpResponseRedirect('/ChartN')
 
             print("todate", type(todate))
 
     context={'tab':tab,'labels':labels,'dataa':dataa}
-    return render(request,"chartsec.html",context)
+    return render(request,"chartsN.html",context)
+
+def chartP(request):
+    tab=CapSol.objects.all()
+    labels = []
+    dataa = []
+    for data in tab:
+        labels.append((data.dt).strftime("%Y-%m-%d %H:%M:%S"))
+        dataa.append(data.P)
+        print("labels0", type(labels))
+    if (request.method == "POST"):
+        labels.clear()
+        dataa.clear()
+
+        fromdate = request.POST.get('startdate')
+        # print(type(datetime.datetime.now()))
+        print("fromdate")
+        print(fromdate)
+        todate = request.POST.get('enddate')
+        print("todate")
+        print(todate)
+        first = CapSol.objects.first()
+        print("first date", str(first.dt))
+        lastdate = CapSol.objects.last()
+        print("last date", str(lastdate.dt))
+        if fromdate != "" and todate != "":
+            # to = datetime.datetime.strptime(todate, '%Y-%m-%d')+datetime.timedelta(days=1)
+            to = datetime.datetime.strptime(todate, '%Y-%m-%d') + datetime.timedelta(days=1)
+            print("to", to)
+            # fromdate = datetime.datetime("07-07")
+            created_documents5 = CapSol.objects.filter(dt__range=[fromdate, to]).order_by('dt')
+            print("created_documents5", created_documents5)
+            for data in created_documents5:
+                labels.append((data.dt).strftime("%d %b %Y %H:%M:%S"))
+                dataa.append(data.P)
+
+                print("labelfiltter", labels)
+                # return HttpResponseRedirect('/')
+            # print("labelfiltter",labels)
+        if fromdate == "":
+            fromdate = first.dt
+
+        if todate == "":
+            to = (lastdate.dt) + datetime.timedelta(days=1)
+            todate = to + datetime.timedelta(days=1)
+            labels.clear()
+            dataa.clear()
+
+            created_documents6 = CapSol.objects.filter(dt__range=[fromdate, todate]).order_by('id')
+            print("created_documents6", created_documents6)
+
+            for data in created_documents6:
+                labels.append((data.dt).strftime("%d %b %Y %H:%M:%S"))
+                dataa.append(data.P)
+
+                print("lab", labels)
+                return HttpResponseRedirect('/ChartP')
+
+            print("todate", type(todate))
+
+    context={'tab':tab,'labels':labels,'dataa':dataa}
+    return render(request,"chartsP.html",context)
+
+def chartK(request):
+    tab=CapSol.objects.all()
+    labels = []
+    dataa = []
+    for data in tab:
+        labels.append((data.dt).strftime("%Y-%m-%d %H:%M:%S"))
+        dataa.append(data.K)
+        print("labels0", type(labels))
+    if (request.method == "POST"):
+        labels.clear()
+        dataa.clear()
+
+        fromdate = request.POST.get('startdate')
+        # print(type(datetime.datetime.now()))
+        print("fromdate")
+        print(fromdate)
+        todate = request.POST.get('enddate')
+        print("todate")
+        print(todate)
+        first = CapSol.objects.first()
+        print("first date", str(first.dt))
+        lastdate = CapSol.objects.last()
+        print("last date", str(lastdate.dt))
+        if fromdate != "" and todate != "":
+            # to = datetime.datetime.strptime(todate, '%Y-%m-%d')+datetime.timedelta(days=1)
+            to = datetime.datetime.strptime(todate, '%Y-%m-%d') + datetime.timedelta(days=1)
+            print("to", to)
+            # fromdate = datetime.datetime("07-07")
+            created_documents5 = CapSol.objects.filter(dt__range=[fromdate, to]).order_by('dt')
+            print("created_documents5", created_documents5)
+            for data in created_documents5:
+                labels.append((data.dt).strftime("%d %b %Y %H:%M:%S"))
+                dataa.append(data.K)
+
+                print("labelfiltter", labels)
+                # return HttpResponseRedirect('/')
+            # print("labelfiltter",labels)
+        if fromdate == "":
+            fromdate = first.dt
+
+        if todate == "":
+            to = (lastdate.dt) + datetime.timedelta(days=1)
+            todate = to + datetime.timedelta(days=1)
+            labels.clear()
+            dataa.clear()
+
+            created_documents6 = CapSol.objects.filter(dt__range=[fromdate, todate]).order_by('id')
+            print("created_documents6", created_documents6)
+
+            for data in created_documents6:
+                labels.append((data.dt).strftime("%d %b %Y %H:%M:%S"))
+                dataa.append(data.K)
+
+                print("lab", labels)
+                return HttpResponseRedirect('/ChartK')
+
+            print("todate", type(todate))
+
+    context={'tab':tab,'labels':labels,'dataa':dataa}
+    return render(request,"chartsK.html",context)
 
 def chartbat(request):
     tab=CapSol.objects.all()
@@ -1313,12 +1805,12 @@ def exemple():
     print("heure", one_day_ago)
     print("to heure", todayRay)
 
-    post = Ray.objects.filter(dateRay__gte=one_day_ago, dateRay__lte=now)
+    post = Ray.objects.filter(DateRay__gte=one_day_ago, DateRay__lte=now)
     rav = post.count()
     print("nbrs ray1", rav)
     print("____________________________________filtre par heure _______________________________________")
 
-    filtresup=Ray.objects.filter(dateRay__gte=onedayRay,dateRay__lte=todayRay)
+    filtresup=Ray.objects.filter(DateRay__gte=onedayRay,DateRay__lte=todayRay)
     print("filtre nbr:",filtresup.count())
     w=filtresup.aggregate(Sum('Ray'))
     print("filtreRay :", w)
@@ -1627,7 +2119,10 @@ def home(request):
     # print("date",str((datetime.datetime.now())))
     # print("date2", str((datetime.datetime.now()).strftime("%M")))
     tab=CapSol.objects.last()
-
+    cap1_last_data = CapSol2.objects.filter(devId="1").latest('dt')
+    cap2_last_data = CapSol2.objects.filter(devId="2").latest('dt')
+    cap3_last_data = CapSol2.objects.filter(devId="3").latest('dt')
+    cap4_last_data = CapSol2.objects.filter(devId="4").latest('dt')
     cap2 = CapSol2.objects.last()
 
     bv= batvanne.objects.last()
@@ -1641,7 +2136,8 @@ def home(request):
     moy=(max_temp["Temp__max"]+min_temp["Temp__min"])/2
     print((max_temp["Temp__max"]+min_temp["Temp__min"])/2)
 
-    context = {'tab': tab,'tab2':tab2,'max_temp':max_temp,'min_temp':min_temp,'moy':moy,'f':f}
+    context = {'tab': tab,'tab2':tab2,'max_temp':max_temp,'min_temp':min_temp,'moy':moy,'f':f,'cap1_last_data':cap1_last_data,'cap2_last_data':cap2_last_data,
+    'cap3_last_data':cap3_last_data, 'cap4_last_data':cap4_last_data}
 
     #tab2 = CapSol.objects.last().filter(devId='03')
     if (request.method == "POST"):
@@ -1750,7 +2246,8 @@ def home(request):
         #         dataa.append(data.Temp)
         #         dataa2.append(data.Hum)
 
-    context = {'tab': tab,'tab2':tab2,'max_temp':max_temp,'min_temp':min_temp,'moy':moy,'f':f,'labels':labels,'dataa':dataa,'dataa2':dataa2,'cap2':cap2, 'bv':bv}
+    context = {'tab': tab,'tab2':tab2,'max_temp':max_temp,'min_temp':min_temp,'moy':moy,'f':f,'labels':labels,'dataa':dataa,'dataa2':dataa2,'cap2':cap2, 'bv':bv,'cap1_last_data':cap1_last_data,'cap2_last_data':cap2_last_data,
+    'cap3_last_data':cap3_last_data, 'cap4_last_data':cap4_last_data}
     return render(request, "index.html", context)
 
 
@@ -1763,113 +2260,469 @@ def home(request):
     # geek_object.save()
     # toSave.save()
     # print(toSave)
+def fetch_data_for_eto():
+    # Période de données : hier de 00:00 à aujourd’hui 00:00
+    start_of_yesterday = (timezone.now() - timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
+    start_of_today = start_of_yesterday + timedelta(days=1)
+
+    # Moyennes des autres paramètres (hors Ray)
+    weather_data = Data2.objects.filter(Time_Stamp__range=(start_of_yesterday, start_of_today)).aggregate(
+        Avg('Temp'),
+        Avg('Hum'),
+        Avg('Wind_Speed'),
+        Avg('Pr')
+    )
+
+    # Min/max température et humidité
+    temp_max = Data2.objects.filter(Time_Stamp__range=(start_of_yesterday, start_of_today)).order_by('-Temp').first().Temp
+    temp_min = Data2.objects.filter(Time_Stamp__range=(start_of_yesterday, start_of_today)).order_by('Temp').first().Temp
+    hum_max = Data2.objects.filter(Time_Stamp__range=(start_of_yesterday, start_of_today)).order_by('-Hum').first().Hum
+    hum_min = Data2.objects.filter(Time_Stamp__range=(start_of_yesterday, start_of_today)).order_by('Hum').first().Hum
+
+    temp_avg = weather_data['Temp__avg']
+    wind_speed_avg = round(weather_data['Wind_Speed__avg'] / 3.6, 2) if weather_data['Wind_Speed__avg'] else 0
+
+    # Moyenne horaire de Ray (24 intervalles horaires)
+    hourly_ray_averages = []
+    for hour in range(24):
+        interval_start = start_of_yesterday + timedelta(hours=hour)
+        interval_end = interval_start + timedelta(hours=1)
+        avg_ray = Ray2.objects.filter(DateRay__range=(interval_start, interval_end)).aggregate(avg=Avg('Ray'))['avg']
+        if avg_ray is not None:
+            hourly_ray_averages.append(avg_ray)
+
+    # Moyenne journalière sur les 24 heures
+    if hourly_ray_averages:
+        daily_ray_avg = sum(hourly_ray_averages) / len(hourly_ray_averages)
+    else:
+        daily_ray_avg = 0
+
+    # Conversion en MJ/m²
+    radiation_sum = daily_ray_avg * 0.0864
+
+    # Numéro du jour dans l’année (pour hier)
+    day_of_year = start_of_yesterday.timetuple().tm_yday
+
+    return {
+        'altitude': 532,
+        'latitude': 33.51,
+        'day_of_year': day_of_year,
+        'pressure': weather_data['Pr__avg'],
+        'humidity_max': hum_max,
+        'humidity_min': hum_min,
+        'temp_avg': temp_avg,
+        'temp_max': temp_max,
+        'temp_min': temp_min,
+        'radiation_sum': radiation_sum,
+        'wind_speed_avg': wind_speed_avg
+    }
+def fetch_data_for_etoDR():
+    # Début et fin de la journée d'hier
+    start_of_yesterday = (timezone.now() - timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
+    start_of_today = start_of_yesterday + timedelta(days=1)
+
+    # Moyennes globales (hors illumination)
+    weather_data = wsd.objects.filter(Time_Stamp__range=(start_of_yesterday, start_of_today)).aggregate(
+        Avg('TEM'),
+        Avg('HUM'),
+        Avg('wind_speed')
+    )
+    weather_data1 = Data2.objects.filter(Time_Stamp__range=(start_of_yesterday, start_of_today)).aggregate(
+        Avg('Pr')
+    )
+
+    # Température et humidité min/max
+    temp_max = wsd.objects.filter(Time_Stamp__range=(start_of_yesterday, start_of_today)).order_by('-TEM').first().TEM
+    temp_min = wsd.objects.filter(Time_Stamp__range=(start_of_yesterday, start_of_today)).order_by('TEM').first().TEM
+    hum_max = wsd.objects.filter(Time_Stamp__range=(start_of_yesterday, start_of_today)).order_by('-HUM').first().HUM
+    hum_min = wsd.objects.filter(Time_Stamp__range=(start_of_yesterday, start_of_today)).order_by('HUM').first().HUM
+
+    # Calcul des 24 moyennes horaires d'illumination
+    hourly_illum_averages = []
+    for hour in range(24):
+        interval_start = start_of_yesterday + timedelta(hours=hour)
+        interval_end = interval_start + timedelta(hours=1)
+        avg_illum = wsd.objects.filter(Time_Stamp__range=(interval_start, interval_end)).aggregate(avg=Avg('illumination'))['avg']
+        if avg_illum is not None:
+            hourly_illum_averages.append(avg_illum)
+
+    # Moyenne des 24 moyennes horaires
+    if hourly_illum_averages:
+        daily_illum_avg = sum(hourly_illum_averages) / len(hourly_illum_averages)
+    else:
+        daily_illum_avg = 0
+
+    # Conversion en MJ/m²
+    radiation_sum = daily_illum_avg * 0.0864
+
+    wind_speed_avg = round(weather_data['wind_speed__avg'] / 3.6, 2) if weather_data['wind_speed__avg'] else 0
+
+    # Numéro du jour dans l’année pour hier
+    day_of_year = start_of_yesterday.timetuple().tm_yday
+
+    return {
+        'altitude': 532,
+        'latitude': 33.51,
+        'day_of_year': day_of_year,
+        'pressure': weather_data1['Pr__avg'],
+        'humidity_max': hum_max,
+        'humidity_min': hum_min,
+        'temp_avg': weather_data['TEM__avg'],
+        'temp_max': temp_max,
+        'temp_min': temp_min,
+        'radiation_sum': radiation_sum,
+        'wind_speed_avg': wind_speed_avg
+    }
+def ETODR():
+    data = fetch_data_for_etoDR()
+
+    A6 = data['altitude']  # Altitude (m)
+    B6 = data['latitude']  # Latitude (degrés)
+    C6 = 2  # Hauteur de l'anémomètre (m)
+    D11 = data['day_of_year']  # Jour de l'année
+    E6 = data['pressure']  # Pression moyenne (hPa)
+    F11 = data['humidity_max']  # Humidité max (%)
+    G11 = data['humidity_min']  # Humidité min (%)
+    H11 = data['temp_avg']  # Température moyenne (°C)
+    I11 = data['temp_max']  # Température max (°C)
+    J11 = data['temp_min']  # Température min (°C)
+    K11 = data['radiation_sum']  # Radiation solaire (MJ/m²)
+    L11 = data['wind_speed_avg']  # Vitesse moyenne du vent (m/s)
+
+    # Remplacement des None par une valeur par défaut (ex: 0 ou une moyenne raisonnable)
+    # I11 = I11 if I11 is not None else 0
+    # J11 = J11 if J11 is not None else 0
+    # H11 = H11 if H11 is not None else (I11 + J11) / 2
+    # F11 = F11 if F11 is not None else 0
+    # G11 = G11 if G11 is not None else 0
+    # E6 = E6 if E6 is not None else 1013  # Pression atmosphérique standard
+
+    # Calculs
+    P = 1013 * ((293 - 0.0065 * A6) / 293) ** 5.256
+    λ = 694.5 * (1 - 0.000946 * H11)
+    γ = 0.2805555 * E6 / (0.622 * λ)
+    U2 = 4.868 * L11 / np.log(67.75 * C6 - 5.42)
+    γ_prime = γ * (1 + 0.34 * U2)
+
+    if np.isnan(H11):
+        ea_Tmoy = 6.108 * np.exp((17.27 * (I11 + J11) / 2) / ((I11 + J11) / 2 + 237.3))
+    else:
+        ea_Tmoy = 6.108 * np.exp((17.27 * H11) / (H11 + 237.3))
+
+    if pd.isna(F11) or pd.isna(I11):
+        ed = ea_Tmoy * E6 / 100
+    else:
+        ed = (6.108 * np.exp((17.27 * J11) / (J11 + 237.3)) * F11 +
+              6.108 * np.exp((17.27 * I11) / (I11 + 237.3)) * G11) / 200
+
+    Δ = 4098.171 * ea_Tmoy / (ea_Tmoy + 237.3) ** 2
+    dr = 1 + 0.033 * np.cos(2 * np.pi * D11 / 365)
+    δ = 0.4093 * np.sin(2 * np.pi * (284 + D11) / 365)
+    ωs = np.arccos(-np.tan(np.radians(B6)) * np.tan(δ))
+    Rsmm = K11 / λ
+    Ra = (24 / np.pi) * 1367 * dr * (ωs * np.sin(np.radians(B6)) * np.sin(δ) +
+                                     np.cos(np.radians(B6)) * np.cos(δ) * np.sin(ωs))
+    Ramm = Ra / λ
+    Rso = (0.75 + 2 * (10 ** -5) * A6) * Ramm
+
+    if pd.isna(F11) or pd.isna(I11):
+        Rn = 0.77 * Rsmm - (1.35 * (Rsmm / Rso) - 0.35) * (0.34 - 0.14 * np.sqrt(ed)) * (1360.8 * (10 ** -9) / λ) * (H11 + 273.16) ** 4
+    else:
+        Rn = (0.77 * Rsmm - (1.35 * (Rsmm / Rso) - 0.35) * (0.34 - 0.14 * np.sqrt(ed)) * (1360.8 * (10 ** -9) / λ) *
+              ((I11 + 273.16) ** 4 + (J11 + 273.16) ** 4) / 2)
+
+    ETrad = (Δ * Rn) / (Δ + γ_prime)
+
+    if np.isnan(H11):
+        ETaero = (γ * (90 / ((I11 + J11) / 2 + 273.16)) * U2 * (ea_Tmoy - ed)) / (Δ + γ_prime)
+    else:
+        ETaero = (γ * (90 / (H11 + 273.16)) * U2 * (ea_Tmoy - ed)) / (Δ + γ_prime)
+
+    ETo = ETrad + ETaero
+
+    # Résultats
+    print(f"ETo: {ETo} mm/jour")
+
+    # Enregistrement dans la base de données
+    ET0DR.objects.create(
+        value=round(ETo, 2),
+        WSavg=L11,
+        Tmax=I11,
+        Tmin=J11,
+        Tavg=H11,
+        Hmax=F11,
+        Hmin=G11,
+        Raym=round(K11, 2),
+        U2=U2,
+        Delta=D11
+    )
+
+def ETO():
+    data = fetch_data_for_eto()
+
+    A6 = data['altitude']  # Altitude (m)
+    B6 = data['latitude']  # Latitude (degrés)
+    C6 = 2  # Hauteur de l'anémomètre (m)
+    D11 = data['day_of_year']  # Jour de l'année
+    E6 = data['pressure']  # Pression moyenne (hPa)
+    F11 = data['humidity_max']  # Humidité max (%)
+    G11 = data['humidity_min']  # Humidité min (%)
+    H11 = data['temp_avg']  # Température moyenne (°C)
+    I11 = data['temp_max']  # Température max (°C)
+    J11 = data['temp_min']  # Température min (°C)
+    K11 = data['radiation_sum']  # Radiation solaire (MJ/m²)
+    L11 = data['wind_speed_avg']  # Vitesse moyenne du vent (m/s)
+
+    # Calculs
+    P = 1013 * ((293 - 0.0065 * A6) / 293) ** 5.256
+    λ = 694.5 * (1 - 0.000946 * H11)
+    γ = 0.2805555 * E6 / (0.622 * λ)
+    U2 = 4.868 * L11 / np.log(67.75 * C6 - 5.42)
+    γ_prime = γ * (1 + 0.34 * U2)
+
+    if np.isnan(H11):
+        ea_Tmoy = 6.108 * np.exp((17.27 * (I11 + J11) / 2) / ((I11 + J11) / 2 + 237.3))
+    else:
+        ea_Tmoy = 6.108 * np.exp((17.27 * H11) / (H11 + 237.3))
+
+    if pd.isna(F11) or pd.isna(I11):
+        ed = ea_Tmoy * E6 / 100
+    else:
+        ed = (6.108 * np.exp((17.27 * J11) / (J11 + 237.3)) * F11 +
+              6.108 * np.exp((17.27 * I11) / (I11 + 237.3)) * G11) / 200
+
+    Δ = 4098.171 * ea_Tmoy / (ea_Tmoy + 237.3) ** 2
+    dr = 1 + 0.033 * np.cos(2 * np.pi * D11 / 365)
+    δ = 0.4093 * np.sin(2 * np.pi * (284 + D11) / 365)
+    ωs = np.arccos(-np.tan(np.radians(B6)) * np.tan(δ))
+    Rsmm = K11 / λ
+    Ra = (24 / np.pi) * 1367 * dr * (ωs * np.sin(np.radians(B6)) * np.sin(δ) +
+                                     np.cos(np.radians(B6)) * np.cos(δ) * np.sin(ωs))
+    Ramm = Ra / λ
+    Rso = (0.75 + 2 * (10 ** -5) * A6) * Ramm
+
+    if pd.isna(F11) or pd.isna(I11):
+        Rn = 0.77 * Rsmm - (1.35 * (Rsmm / Rso) - 0.35) * (0.34 - 0.14 * np.sqrt(ed)) * (1360.8 * (10 ** -9) / λ) * (H11 + 273.16) ** 4
+    else:
+        Rn = (0.77 * Rsmm - (1.35 * (Rsmm / Rso) - 0.35) * (0.34 - 0.14 * np.sqrt(ed)) * (1360.8 * (10 ** -9) / λ) *
+              ((I11 + 273.16) ** 4 + (J11 + 273.16) ** 4) / 2)
+
+    ETrad = (Δ * Rn) / (Δ + γ_prime)
+
+    if np.isnan(H11):
+        ETaero = (γ * (90 / ((I11 + J11) / 2 + 273.16)) * U2 * (ea_Tmoy - ed)) / (Δ + γ_prime)
+    else:
+        ETaero = (γ * (90 / (H11 + 273.16)) * U2 * (ea_Tmoy - ed)) / (Δ + γ_prime)
+
+    ETo = ETrad + ETaero
+
+    # Résultats
+    print(f"ETo: {ETo} mm/jour")
+
+    # Enregistrement dans la base de données
+    ET0o.objects.create(
+        value=round(ETo,2),
+        WSavg=L11,
+        Tmax=I11,
+        Tmin=J11,
+        Tavg=H11,
+        Hmax=F11,
+        Hmin=G11,
+        Raym=round(K11, 2),
+        U2=U2,
+        Delta=D11
+    )
+
+#ETO()
+
+# def run_eto_once_per_day():
+#     current_date = now().date()
+#     current_time = now()
+
+#     print(f"Vérification à {current_time}...")
+
+#     # Vérifier si ET0 a été calculé aujourd'hui
+#     already_executed = ET0ExecutionLog.objects.filter(date=current_date).exists()
+
+#     if not already_executed and current_time.hour == 1:
+#         # Exécuter ET0 et enregistrer l'exécution
+#         ETO()
+#         print("✅ ET0 calculé et enregistré.")
+
+#         # Sauvegarde de l'exécution
+#         ET0ExecutionLog.objects.create(date=current_date)
+#     else:
+#         print("⏳ ET0 a déjà été calculé aujourd'hui ou il n'est pas encore temps.")
+from django.utils.timezone import now as dj_now
+
+def et0_job(request):
+    current_time = dj_now()  # Utilisation de la gestion des fuseaux horaires Django
+    current_date = current_time.date()
+
+    print(f"📅 Date actuelle : {current_date}")
+    print(f"⏳ Heure actuelle : {current_time.time()}")
+
+    # Vérifier si ET0 a déjà été calculé aujourd'hui
+    last_eto_entry = ET0o.objects.filter(Time_Stamp__date=current_date).last()
+    last_eto_entry1 = ET0DR.objects.filter(Time_Stamp__date=current_date).last()
+
+    print(f"🔍 Dernière entrée ET0 : {last_eto_entry}")
+    print(f"🔍 Dernière entrée ET0 Dragino : {last_eto_entry1}")
+
+    # Vérifier si on est entre 1h et 2h du matin
+    if 0 <= current_time.hour < 1:
+        if not last_eto_entry and not last_eto_entry1:
+            print("🚀 Calcul simultané de ET0 et ET0 Dragino...")
+            ETO()
+            ETODR()
+            print(f"✅ ET0 et ET0 Dragino calculés et enregistrés à {current_time}")
+        else:
+            if last_eto_entry:
+                print(f"⚠️ ET0 déjà calculé aujourd'hui à : {last_eto_entry.Time_Stamp}")
+            else:
+                print("✅ Calcul de ET0...")
+                ETO()
+
+            if last_eto_entry1:
+                print(f"⚠️ ET0 Dragino déjà calculé aujourd'hui à : {last_eto_entry1.Time_Stamp}")
+            else:
+                print("✅ Calcul de ET0 Dragino...")
+                ETODR()
+    else:
+        print("⏳ Il n'est pas encore temps de calculer ET0 (attendre entre 1h et 2h du matin).")
+
+    return render(request, "job.html", {})
+from django.utils import timezone
+import pytz
 
 def wsopen(request):
+    maroc_tz = pytz.timezone('Africa/Casablanca')
+    now = timezone.now().astimezone(maroc_tz).replace(hour=0, minute=0, second=0, microsecond=0)
+    print("La date aujourd'hui est ", now)
 
-    now=(datetime.datetime.now()).replace(hour=0,minute=0,second=0,microsecond=0)
-    print(now)
-    hm = Data.objects.filter(Time_Stamp__gte=now)
+    current_time = timezone.now().astimezone(maroc_tz)
+    current_date = current_time.date()  # Date actuelle sans l'heure
+    print("Le temps de comparaison : ", current_time)
+
+    # Récupération des données à partir de minuit
+    hm = Data2.objects.filter(Time_Stamp__gte=now)
+    hm1 = Ray2.objects.filter(DateRay__gte=now)
+    # send_simple_message()
+    # Calcul des valeurs max et min
+    Tmmax = hm.aggregate(Max('Temp'))['Temp__max'] or 0
+    Tmmin = hm.aggregate(Min('Temp'))['Temp__min'] or 0
+    Hx = hm.aggregate(Max('Hum'))['Hum__max'] or 0
+    Hm = hm.aggregate(Min('Hum'))['Hum__min'] or 0
+    Sx = hm.aggregate(Max('Wind_Speed'))['Wind_Speed__max'] or 0
+    Sm = hm.aggregate(Min('Wind_Speed'))['Wind_Speed__min'] or 0
+    Rx = hm1.aggregate(Max('Ray'))['Ray__max'] or 0
+    Rm = hm1.aggregate(Min('Ray'))['Ray__min'] or 0
+    Tmavg = hm.aggregate(Avg('Temp'))['Temp__avg'] or 0
+    Havg = hm.aggregate(Avg('Hum'))['Hum__avg'] or 0
+    Savg = hm.aggregate(Avg('Wind_Speed'))['Wind_Speed__avg'] or 0
+    Ravg = hm1.aggregate(Avg('Ray'))['Ray__avg'] or 0
+
+    # Fonction pour récupérer les précipitations sur une période donnée
+    def get_rain_sum(start_time):
+        return Data2.objects.filter(Time_Stamp__gte=start_time, Time_Stamp__lte=current_time).aggregate(Sum('Rain'))['Rain__sum'] or 0
+
+    one_hour_ago = current_time - timezone.timedelta(hours=1)
+    eight_hours_ago = current_time - timezone.timedelta(hours=8)
+    one_day_ago = current_time - timezone.timedelta(days=1)
+    one_week_ago = current_time - timezone.timedelta(days=7)
+
+    p1h = round(get_rain_sum(one_hour_ago), 2)
+    p8h = round(get_rain_sum(eight_hours_ago), 2)
+    p24h = round(get_rain_sum(one_day_ago), 2)
+    p1w = round(get_rain_sum(one_week_ago), 2)
+
+    tab = Data2.objects.last()
+    tab2 = Ray2.objects.last()
+    eto = ET0o.objects.last()
     lstfwi = DataFwiO.objects.last()
-    """ temperature """
-    maxt = hm.aggregate(Max('Temp'))
-    dicttolisTmax = list(maxt.items())
-    Tmmax = dicttolisTmax[0][1]
-    print(Tmmax)
-    Tmin = hm.aggregate(Min('Temp'))
-    dicttolisTmin = list(Tmin.items())
-    Tmmin= dicttolisTmin[0][1]
-    print(Tmmin)
-    """ humidité """
-    Hmmax = hm.aggregate(Max('Hum'))
-    Hmmin = hm.aggregate(Min('Hum'))
-    dicttolisHmax = list(Hmmax.items())
-    dicttolisHmin = list(Hmmin.items())
-    Hx= dicttolisHmax[0][1]
-    Hm = dicttolisHmin[0][1]
 
-    """ vitesse de vent """
-    Wind_Speed_max = hm.aggregate(Max('Wind_Speed'))
-    Wind_Speed_min = hm.aggregate(Min('Wind_Speed'))
-    dicttolissmax = list(Wind_Speed_max.items())
-    dicttolissmin = list(Wind_Speed_min.items())
-    Sx = dicttolissmax[0][1]
-    Sm = dicttolissmin[0][1]
+    context = {
+    'tab': tab, 'tab2': tab2, 'eto': eto, 'p1w': p1w, 'p24h': p24h, 'p8h': p8h, 'p1h': p1h,
+    'Rx': Rx, 'Rm': Rm, 'Sx': Sx, 'Sm': Sm, 'Hx': Hx, 'Hm': Hm, 'Tmmax': Tmmax, 'Tmmin': Tmmin,
+    'Tmavg': round(Tmavg, 2), 'Havg': round(Havg, 2), 'Savg': round(Savg, 2), 'Ravg': round(Ravg, 2),
+    'lstfwi': lstfwi
+    }
+    return render(request, "ws_open.html", context)
 
-    """ Rayonnement """
-    Ray_max = hm.aggregate(Max('Ray'))
-    Ray_min = hm.aggregate(Min('Ray'))
-    dicttolisrmax = list(Ray_max.items())
-    dicttolisrmin = list(Ray_min.items())
-    Rx = dicttolisrmax[0][1]
-    Rm = dicttolisrmin[0][1]
+
+def wsopen1(request):
+    now = (datetime.datetime.now()).replace(hour=0, minute=0, second=0, microsecond=0)
+    print(now)
+    current_time = datetime.datetime.now()
+    current_date = current_time.date()
+    print(current_time)
+
+    # last_eto_entry = ET0o.objects.filter(Time_Stamp__date=current_date).last()
+
+    # if current_time.hour == 1 and not last_eto_entry:
+    #     ETO()
+    #     print("ET0 calculé et enregistré.")
+    # else:
+    #     print("ET0 a déjà été calculé aujourd'hui ou il n'est pas encore temps.")
+
+    hm = wsd.objects.filter(Time_Stamp__gte=now)
+    lstfwi = DataFwiO.objects.last()
+    # ETODR()
+    """ Température """
+    Tmmax = hm.aggregate(Max('TEM'))['TEM__max']
+    Tmmin = hm.aggregate(Min('TEM'))['TEM__min']
+    Tmavg = hm.aggregate(Avg('TEM'))['TEM__avg'] or 0
+
+    """ Humidité """
+    Hx = hm.aggregate(Max('HUM'))['HUM__max']
+    Hm = hm.aggregate(Min('HUM'))['HUM__min']
+    Havg = hm.aggregate(Avg('HUM'))['HUM__avg'] or 0
+
+    """ Vitesse du vent """
+    Sx = hm.aggregate(Max('wind_speed'))['wind_speed__max']
+    Sm = hm.aggregate(Min('wind_speed'))['wind_speed__min']
+    Savg = hm.aggregate(Avg('wind_speed'))['wind_speed__avg'] or 0
+
+    """ Illumination """
+    Rx = hm.aggregate(Max('illumination'))['illumination__max']
+    Rm = hm.aggregate(Min('illumination'))['illumination__min']
+    Ravg = hm.aggregate(Avg('illumination'))['illumination__avg'] or 0
 
     """ Pluie """
-    one_hour = (datetime.datetime.now() - datetime.timedelta(hours=1))
-    huit_hour = (datetime.datetime.now() - datetime.timedelta(hours=8))
-    one_day = (datetime.datetime.now() - datetime.timedelta(days=1))
-    print(one_day)
-    week=(datetime.datetime.now() - datetime.timedelta(days=7))
-    now = datetime.datetime.now()
-    y=datetime.datetime.now()-datetime.timedelta(minutes=7)
-    x=y.time().strftime("%H:%M:%S")
-    posts = Data.objects.filter(Time_Stamp__gte=one_hour,Time_Stamp__lte=now)
-    post8 = Data.objects.filter(Time_Stamp__gte=huit_hour,Time_Stamp__lte=now)
-    post24 = Data.objects.filter(Time_Stamp__gte=one_day,Time_Stamp__lte=now)
-    postweek = Data.objects.filter(Time_Stamp__gte=week,Time_Stamp__lte=now)
+    one_hour = current_time - datetime.timedelta(hours=1)
+    huit_hour = current_time - datetime.timedelta(hours=8)
+    one_day = current_time - datetime.timedelta(days=1)
+    week = current_time - datetime.timedelta(days=7)
 
-    #post24c = Data.objects.filter(Time_Stamp__date=now.date())
-    #print(post24c)
+    posts = wsd.objects.filter(Time_Stamp__gte=one_hour, Time_Stamp__lte=current_time)
+    post8 = wsd.objects.filter(Time_Stamp__gte=huit_hour, Time_Stamp__lte=current_time)
+    post24 = wsd.objects.filter(Time_Stamp__gte=one_day, Time_Stamp__lte=current_time)
+    postweek = wsd.objects.filter(Time_Stamp__gte=week, Time_Stamp__lte=current_time)
 
-    rain1h = posts.aggregate(Avg('Rain'))
-    rain8h = post8.aggregate(Avg('Rain'))
-    rain24h = post24.aggregate(Avg('Rain'))
-    rain7d = postweek.aggregate(Avg('Rain'))
-    r1h = list(rain1h.items())
-    r8h = list(rain8h.items())
-    r24h = list(rain24h.items())
-    rw = list(rain7d.items())
-    if r1h[0][1] is not None:
-        p1h = round(r1h[0][1], 2)
-    else:
-        p1h = 0  # Set a default value if r1h[0][1] is None
-    # p1h = round(r1h[0][1],3)
-    if r8h[0][1] is not None:
-        p8h = round(r8h[0][1], 2)
-    else:
-        p8h = 0  # Set a default value if r1h[0][1] is None
-    # p8h = round(r8h[0][1],2)
-    if r24h[0][1] is not None:
-        p24h = round(r24h[0][1], 2)
-    else:
-        p24h = 0  # Set a default value if r1h[0][1] is None
-    # p24h = round(r24h[0][1],2)
+    def get_rain_sum(queryset):
+        rain_sum = queryset.aggregate(Sum('rain_gauge'))['rain_gauge__sum']
+        return round(rain_sum, 2) if rain_sum is not None else 0
 
-    if rw[0][1] is not None:
-        p1w = round(rw[0][1], 2)
-    else:
-        p1w = 0  # Set a default value if r1h[0][1] is None
-    # client = mqtt.Client()
-    #
-    # client.connect("broker.hivemq.com", 1883, 80)
-    # # client.reinitialise()
-    # client.publish("et", 35)  # publish the message typed by the user
+    p1h = get_rain_sum(posts)
+    p8h = get_rain_sum(post8)
+    p24h = get_rain_sum(post24)
+    p1w = get_rain_sum(postweek)
 
-    # client.disconnect();  # disconnect from server
-    # print("ok.......data")
-
-    tab = Data.objects.last()
+    tab = wsd.objects.last()
     eto = ET0o.objects.last()
-    # print(eto.value)
-    # ET0o_calc()
-    # print("-----------------------------//------------------------------")
-    # exemple()
-    # print("eto", eto)
-    context={'tab':tab,'eto':eto,'p1w':p1w, 'p24h':p24h,'p8h':p8h,'p1h':p1h, 'Rx':Rx, 'Rm':Rm, 'Sx':Sx,'Sm':Sm, 'Hx':Hx,
-             'Hm':Hm,'Tmmax':Tmmax,'Tmmin':Tmmin,"lstfwi":lstfwi}
-    return render(request,"ws_open.html",context)
+    last_et0dr = ET0DR.objects.last()
+    context = {
+    'tab': tab, 'eto': eto, 'p1w': p1w, 'p24h': p24h, 'p8h': p8h, 'p1h': p1h,
+    'Rx': Rx, 'Rm': Rm, 'Ravg': round(Ravg, 2),
+    'Sx': Sx, 'Sm': Sm, 'Savg': round(Savg, 2),
+    'Hx': Hx, 'Hm': Hm, 'Havg': round(Havg, 2),
+    'Tmmax': Tmmax, 'Tmmin': Tmmin, 'Tmavg': round(Tmavg, 2),
+    'lstfwi': lstfwi, 'last_et0dr': last_et0dr
+    }
 
+    return render(request, "ws_open1.html", context)
 
-# def dash(request):
+# def test0(request):
 #     one_day_ago = datetime.datetime.now() - datetime.timedelta(days=1)
 #     labels = []
 #     dataa = []
@@ -1881,8 +2734,20 @@ def wsopen(request):
 #         dataa.append(i.Temperature)
 #     lst = Ws.objects.last()
 #     context={'all':all,'lst':lst,'labels':labels,'dataa':dataa}
-#     return render(request,"acc.html",context)
+#     return render(request,"test.html",context)
 
+# def test0(request):
+#     return render(request,"test.html")
+def cwsi_data(request):
+    # Retrieve all records from the cwsi model
+    cwsi_records = cwsi.objects.all()
+    cw = cwsiO.objects.all()
+    # Pass the data to the template
+    context = {
+        'cwsi_records': cwsi_records,
+        'cw' : cw
+    }
+    return render(request, 'cwsi/cwsi01.html', context)
 
 def ET0o_calc():
 
@@ -2034,6 +2899,8 @@ def ET0o_calc():
     # ET0.objects.create(value=ET, WSavg=avgvent, Tmax=Tmax, Tmin=Tmin, Hmax=HRmax, Hmin=HRmin, Raym=M, U2=u2, Delta=B2)
     print("__________________________________ET_O Calculé________________________________")
 
+
+
 # def pm():
 #     import penmon as pm
 #
@@ -2089,3 +2956,1679 @@ def ET0o_calc():
 #     print(" blot :", DayEntry.dew_point(self=day))
 #     print("ETo for this day
 #     is", day.eto())
+def envfct(request):
+
+    from django.db.models import Max, Min
+import datetime
+
+def envfct(request):
+    # Obtenir le début de la journée actuelle
+    now = datetime.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+
+    # Dernier enregistrement pour chaque capteur (S1, S2, S3)
+    s1_last_data = Envdata.objects.filter(devId="S1").latest('Time_Stamp')
+    s2_last_data = Envdata.objects.filter(devId="S2").latest('Time_Stamp')
+    s3_last_data = Envdata.objects.filter(devId="S3").latest('Time_Stamp')
+
+    # Dernier enregistrement pour wsd (si "TEM" est None, le remplacer par 0)
+    last_wsd_data = wsd.objects.latest('Time_Stamp')
+    last_wsd_value = last_wsd_data.TEM if last_wsd_data.TEM is not None else 0
+
+    # Dernier enregistrement pour Data2 (si "Temp" est None, le remplacer par 0)
+    last_data2 = Data2.objects.latest('Time_Stamp')
+    last_data2_value = last_data2.Temp if last_data2.Temp is not None else 0
+
+    context = {
+        "s1_last_data": s1_last_data,
+        "s2_last_data": s2_last_data,
+        "s3_last_data": s3_last_data,
+        "last_wsd_value": last_wsd_value,  # Ajouter la valeur de wsd
+        "last_data2_value": last_data2_value,  # Ajouter la valeur de Data2
+    }
+
+    return render(request, "env1.html", context)
+
+
+
+
+""" pm10"""
+# For PM10
+def pm10_data(request, days, template_name):
+    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=days)).replace(hour=0, minute=0, second=0,
+                                                                                    microsecond=0)
+    labels = []
+    dataa = []
+    labels1 = []
+    dataa1 = []
+    labels2 = []
+    dataa2 = []
+
+    all_data = Envdata.objects.filter(Time_Stamp__gte=one_day_ago)
+
+    for i in all_data:
+        timestamp_str = (i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S")
+        if i.devId == "S1":
+            labels.append(timestamp_str)
+            dataa.append(i.pm10)
+        elif i.devId == "S2":
+            labels1.append(timestamp_str)
+            dataa1.append(i.pm10)
+        else:
+            labels2.append(timestamp_str)
+            dataa2.append(i.pm10)
+
+    last_data = Envdata.objects.last()
+
+    context = {
+        'all_data': all_data,
+        'last_data': last_data,
+        'labels': labels,
+        'dataa': dataa,
+        'labels1': labels1,
+        'dataa1': dataa1,
+        'labels2': labels2,
+        'dataa2': dataa2,
+    }
+
+    return render(request, template_name, context)
+
+def pm101(request):
+    return pm10_data(request, 1, "enviro/pm101.html")
+
+def pm103(request):
+    return pm10_data(request, 3, "enviro/pm103.html")
+
+def pm107(request):
+    return pm10_data(request, 7, "enviro/pm107.html")
+
+def pm1015(request):
+    return pm10_data(request, 15, "enviro/pm1015.html")
+
+""" fin pm10"""
+
+"""pm1"""
+# For PM
+def pm_data(request, days, template_name):
+    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=days)).replace(hour=0, minute=0, second=0,
+                                                                                    microsecond=0)
+    labels = []
+    dataa = []
+    labels1 = []
+    dataa1 = []
+    labels2 = []
+    dataa2 = []
+
+    all_data = Envdata.objects.filter(Time_Stamp__gte=one_day_ago)
+
+    for i in all_data:
+        timestamp_str = (i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S")
+        if i.devId == "S1":
+            labels.append(timestamp_str)
+            dataa.append(i.pm)
+        elif i.devId == "S2":
+            labels1.append(timestamp_str)
+            dataa1.append(i.pm)
+        else:
+            labels2.append(timestamp_str)
+            dataa2.append(i.pm)
+
+    last_data = Envdata.objects.last()
+
+    context = {
+        'all_data': all_data,
+        'last_data': last_data,
+        'labels': labels,
+        'dataa': dataa,
+        'labels1': labels1,
+        'dataa1': dataa1,
+        'labels2': labels2,
+        'dataa2': dataa2,
+    }
+
+    return render(request, template_name, context)
+
+def pm1(request):
+    return pm_data(request, 1, "enviro/pm1.html")
+
+def pm3(request):
+    return pm_data(request, 3, "enviro/pm3.html")
+
+def pm7(request):
+    return pm_data(request, 7, "enviro/pm7.html")
+
+def pm15(request):
+    return pm_data(request, 15, "enviro/pm15.html")
+
+
+""" fin pm1"""
+"""pm25"""
+# For PM2.5
+def pm25_data(request, days, template_name):
+    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=days)).replace(hour=0, minute=0, second=0,
+                                                                                    microsecond=0)
+    labels = []
+    dataa = []
+    labels1 = []
+    dataa1 = []
+    labels2 = []
+    dataa2 = []
+
+    all_data = Envdata.objects.filter(Time_Stamp__gte=one_day_ago)
+
+    for i in all_data:
+        timestamp_str = (i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S")
+        if i.devId == "S1":
+            labels.append(timestamp_str)
+            dataa.append(i.pm25)
+        elif i.devId == "S2":
+            labels1.append(timestamp_str)
+            dataa1.append(i.pm25)
+        else:
+            labels2.append(timestamp_str)
+            dataa2.append(i.pm25)
+
+    last_data = Envdata.objects.last()
+
+    context = {
+        'all_data': all_data,
+        'last_data': last_data,
+        'labels': labels,
+        'dataa': dataa,
+        'labels1': labels1,
+        'dataa1': dataa1,
+        'labels2': labels2,
+        'dataa2': dataa2,
+    }
+
+    return render(request, template_name, context)
+
+def pm251(request):
+    return pm25_data(request, 1, "enviro/pm251.html")
+
+def pm253(request):
+    return pm25_data(request, 3, "enviro/pm253.html")
+
+def pm257(request):
+    return pm25_data(request, 7, "enviro/pm257.html")
+
+def pm2515(request):
+    return pm25_data(request, 15, "enviro/pm2515.html")
+
+""" fin pm25"""
+
+""" fin co2"""
+# For CO2
+def co2_data(request, days, template_name):
+    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=days)).replace(hour=0, minute=0, second=0,
+                                                                                    microsecond=0)
+    labels = []
+    dataa = []
+    labels1 = []
+    dataa1 = []
+    labels2 = []
+    dataa2 = []
+
+    all_data = Envdata.objects.filter(Time_Stamp__gte=one_day_ago)
+
+    for i in all_data:
+        timestamp_str = (i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S")
+        if i.devId == "S1":
+            labels.append(timestamp_str)
+            dataa.append(i.co2)
+        elif i.devId == "S2":
+            labels1.append(timestamp_str)
+            dataa1.append(i.co2)
+        else:
+            labels2.append(timestamp_str)
+            dataa2.append(i.co2)
+
+    last_data = Envdata.objects.last()
+
+    context = {
+        'all_data': all_data,
+        'last_data': last_data,
+        'labels': labels,
+        'dataa': dataa,
+        'labels1': labels1,
+        'dataa1': dataa1,
+        'labels2': labels2,
+        'dataa2': dataa2,
+    }
+
+    return render(request, template_name, context)
+
+def co2v1(request):
+    return co2_data(request, 1, "enviro/co21.html")
+
+def co2v3(request):
+    return co2_data(request, 3, "enviro/co23.html")
+
+def co2v7(request):
+    return co2_data(request, 7, "enviro/co27.html")
+
+def co2v15(request):
+    return co2_data(request, 15, "enviro/co215.html")
+
+""" fin co2"""
+""" ch2o"""
+# For CH2O
+def ch2o_data(request, days, template_name):
+    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=days)).replace(hour=0, minute=0, second=0,
+                                                                                    microsecond=0)
+    labels = []
+    dataa = []
+    labels1 = []
+    dataa1 = []
+    labels2 = []
+    dataa2 = []
+
+    all_data = Envdata.objects.filter(Time_Stamp__gte=one_day_ago)
+
+    for i in all_data:
+        timestamp_str = (i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S")
+        if i.devId == "S1":
+            labels.append(timestamp_str)
+            dataa.append(i.ch2o)
+        elif i.devId == "S2":
+            labels1.append(timestamp_str)
+            dataa1.append(i.ch2o)
+        else:
+            labels2.append(timestamp_str)
+            dataa2.append(i.ch2o)
+
+    last_data = Envdata.objects.last()
+
+    context = {
+        'all_data': all_data,
+        'last_data': last_data,
+        'labels': labels,
+        'dataa': dataa,
+        'labels1': labels1,
+        'dataa1': dataa1,
+        'labels2': labels2,
+        'dataa2': dataa2,
+    }
+
+    return render(request, template_name, context)
+
+def ch2ov1(request):
+    return ch2o_data(request, 1, "enviro/ch2o1.html")
+
+def ch2ov3(request):
+    return ch2o_data(request, 3, "enviro/ch2o3.html")
+
+def ch2ov7(request):
+    return ch2o_data(request, 7, "enviro/ch2o7.html")
+
+def ch2ov15(request):
+    return ch2o_data(request, 15, "enviro/ch2o15.html")
+
+""" fin ch2o"""
+# For o3
+# For O3
+def o3_data(request, days, template_name):
+    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=days)).replace(hour=0, minute=0, second=0,
+                                                                                    microsecond=0)
+    labels = []
+    dataa = []
+    labels1 = []
+    dataa1 = []
+    labels2 = []
+    dataa2 = []
+
+    all_data = Envdata.objects.filter(Time_Stamp__gte=one_day_ago)
+
+    for i in all_data:
+        timestamp_str = (i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S")
+        if i.devId == "S1":
+            labels.append(timestamp_str)
+            dataa.append(i.o3)
+        elif i.devId == "S2":
+            labels1.append(timestamp_str)
+            dataa1.append(i.o3)
+        else:
+            labels2.append(timestamp_str)
+            dataa2.append(i.o3)
+
+    last_data = Envdata.objects.last()
+
+    context = {
+        'all_data': all_data,
+        'last_data': last_data,
+        'labels': labels,
+        'dataa': dataa,
+        'labels1': labels1,
+        'dataa1': dataa1,
+        'labels2': labels2,
+        'dataa2': dataa2,
+    }
+
+    return render(request, template_name, context)
+
+def o31(request):
+    return o3_data(request, 1, "enviro/o31.html")
+
+def o33(request):
+    return o3_data(request, 3, "enviro/o33.html")
+
+def o37(request):
+    return o3_data(request, 7, "enviro/o37.html")
+
+def o315(request):
+    return o3_data(request, 15, "enviro/o315.html")
+
+
+# For co
+# For CO
+def co_data(request, days, template_name):
+    one_day_ago = (timezone.now() - datetime.timedelta(days=days)).replace(hour=0, minute=0, second=0,
+                                                                            microsecond=0)
+    labels = []
+    dataa = []
+    labels1 = []
+    dataa1 = []
+    labels2 = []
+    dataa2 = []
+
+    all_data = Envdata.objects.filter(Time_Stamp__gte=one_day_ago)
+
+    for i in all_data:
+        local_timestamp = localtime(i.Time_Stamp)
+        timestamp_str = local_timestamp.strftime("%Y-%m-%d %H:%M:%S")
+        # timestamp_str = (i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S")
+        if i.devId == "S1":
+            labels.append(timestamp_str)
+            dataa.append(i.co)
+        elif i.devId == "S2":
+            labels1.append(timestamp_str)
+            dataa1.append(i.co)
+        else:
+            labels2.append(timestamp_str)
+            dataa2.append(i.co)
+
+    last_data = Envdata.objects.last()
+
+    context = {
+        'all_data': all_data,
+        'last_data': last_data,
+        'labels': labels,
+        'dataa': dataa,
+        'labels1': labels1,
+        'dataa1': dataa1,
+        'labels2': labels2,
+        'dataa2': dataa2,
+    }
+
+    return render(request, template_name, context)
+
+def co1(request):
+    return co_data(request, 1, "enviro/co1.html")
+
+def co3(request):
+    return co_data(request, 3, "enviro/co3.html")
+
+def co7(request):
+    return co_data(request, 7, "enviro/co7.html")
+
+def co15(request):
+    return co_data(request, 15, "enviro/co15.html")
+
+# For TVOC
+def tvoc_data(request, days, template_name):
+    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=days)).replace(hour=0, minute=0, second=0,
+                                                                                    microsecond=0)
+    labels = []
+    dataa = []
+    labels1 = []
+    dataa1 = []
+    labels2 = []
+    dataa2 = []
+
+    all_data = Envdata.objects.filter(Time_Stamp__gte=one_day_ago)
+
+    for i in all_data:
+        timestamp_str = (i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S")
+        if i.devId == "S1":
+            labels.append(timestamp_str)
+            dataa.append(i.tvoc)
+        elif i.devId == "S2":
+            labels1.append(timestamp_str)
+            dataa1.append(i.tvoc)
+        else:
+            labels2.append(timestamp_str)
+            dataa2.append(i.tvoc)
+
+    last_data = Envdata.objects.last()
+
+    context = {
+        'all_data': all_data,
+        'last_data': last_data,
+        'labels': labels,
+        'dataa': dataa,
+        'labels1': labels1,
+        'dataa1': dataa1,
+        'labels2': labels2,
+        'dataa2': dataa2,
+    }
+
+    return render(request, template_name, context)
+
+def tvoc1(request):
+    return tvoc_data(request, 1, "enviro/tvoc1.html")
+
+def tvoc3(request):
+    return tvoc_data(request, 3, "enviro/tvoc3.html")
+
+def tvoc7(request):
+    return tvoc_data(request, 7, "enviro/tvoc7.html")
+
+def tvoc15(request):
+    return tvoc_data(request, 15, "enviro/tvoc15.html")
+
+
+# For no2
+# For NO2
+def no2_data(request, days, template_name):
+    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=days)).replace(hour=0, minute=0, second=0,
+                                                                                    microsecond=0)
+    labels = []
+    dataa = []
+    labels1 = []
+    dataa1 = []
+    labels2 = []
+    dataa2 = []
+
+    all_data = Envdata.objects.filter(Time_Stamp__gte=one_day_ago)
+
+    for i in all_data:
+        timestamp_str = (i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S")
+        if i.devId == "S1":
+            labels.append(timestamp_str)
+            dataa.append(i.no2)
+        elif i.devId == "S2":
+            labels1.append(timestamp_str)
+            dataa1.append(i.no2)
+        else:
+            labels2.append(timestamp_str)
+            dataa2.append(i.no2)
+
+    last_data = Envdata.objects.last()
+
+    context = {
+        'all_data': all_data,
+        'last_data': last_data,
+        'labels': labels,
+        'dataa': dataa,
+        'labels1': labels1,
+        'dataa1': dataa1,
+        'labels2': labels2,
+        'dataa2': dataa2,
+    }
+
+    return render(request, template_name, context)
+
+def no21(request):
+    return no2_data(request, 1, "enviro/no21.html")
+
+def no23(request):
+    return no2_data(request, 3, "enviro/no23.html")
+
+def no27(request):
+    return no2_data(request, 7, "enviro/no27.html")
+
+def no215(request):
+    return no2_data(request, 15, "enviro/no215.html")
+
+#temp
+# For temp
+def tempv1(request):
+    one_day_ago = (datetime.datetime.today()).replace(hour=0, minute=0, second=0, microsecond=0)
+    labels = []
+    dataa = []
+    labels1 = []
+    dataa1 = []
+    labels2 = []
+    dataa2 = []
+
+    all_data = Envdata.objects.filter(Time_Stamp__gte=one_day_ago)
+
+    for i in all_data:
+        timestamp_str = (i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S")
+        if i.devId == "S1":
+            labels.append(timestamp_str)
+            dataa.append(i.temp)
+        elif i.devId == "S2":
+            labels1.append(timestamp_str)
+            dataa1.append(i.temp)
+        else:
+            labels2.append(timestamp_str)
+            dataa2.append(i.temp)
+
+    last_data = Envdata.objects.last()
+
+    context = {
+        'all_data': all_data,
+        'last_data': last_data,
+        'labels': labels,
+        'dataa': dataa,
+        'labels1': labels1,
+        'dataa1': dataa1,
+        'labels2': labels2,
+        'dataa2': dataa2,
+    }
+
+    return render(request, "enviro/temp1.html", context)
+
+
+def tempv3(request):
+    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=3)).replace(hour=0, minute=0, second=0,
+                                                                                microsecond=0)
+    labels = []
+    dataa = []
+    labels1 = []
+    dataa1 = []
+    labels2 = []
+    dataa2 = []
+
+    all_data = Envdata.objects.filter(Time_Stamp__gte=one_day_ago)
+
+    for i in all_data:
+        timestamp_str = (i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S")
+        if i.devId == "S1":
+            labels.append(timestamp_str)
+            dataa.append(round(i.temp,2))
+        elif i.devId == "S2":
+            labels1.append(timestamp_str)
+            dataa1.append(round(i.temp,2))
+        else:
+            labels2.append(timestamp_str)
+            dataa2.append(round(i.temp,2))
+
+    last_data = Envdata.objects.last()
+
+    context = {
+        'all_data': all_data,
+        'last_data': last_data,
+        'labels': labels,
+        'dataa': dataa,
+        'labels1': labels1,
+        'dataa1': dataa1,
+        'labels2': labels2,
+        'dataa2': dataa2,
+    }
+
+    return render(request, "enviro/temp3.html", context)
+
+
+def tempv7(request):
+    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=7)).replace(hour=0, minute=0, second=0,
+                                                                                microsecond=0)
+    labels = []
+    dataa = []
+    labels1 = []
+    dataa1 = []
+    labels2 = []
+    dataa2 = []
+
+    all_data = Envdata.objects.filter(Time_Stamp__gte=one_day_ago)
+
+    for i in all_data:
+        timestamp_str = (i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S")
+        if i.devId == "S1":
+            labels.append(timestamp_str)
+            dataa.append(i.temp)
+        elif i.devId == "S2":
+            labels1.append(timestamp_str)
+            dataa1.append(i.temp)
+        else:
+            labels2.append(timestamp_str)
+            dataa2.append(i.temp)
+
+    last_data = Envdata.objects.last()
+
+    context = {
+        'all_data': all_data,
+        'last_data': last_data,
+        'labels': labels,
+        'dataa': dataa,
+        'labels1': labels1,
+        'dataa1': dataa1,
+        'labels2': labels2,
+        'dataa2': dataa2,
+    }
+
+    return render(request, "enviro/temp7.html", context)
+
+def tempv15(request):
+    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=15)).replace(hour=0, minute=0, second=0,
+                                                                                 microsecond=0)
+    labels = []
+    dataa = []
+    labels1 = []
+    dataa1 = []
+    labels2 = []
+    dataa2 = []
+
+    all_data = Envdata.objects.filter(Time_Stamp__gte=one_day_ago)
+
+    for i in all_data:
+        timestamp_str = (i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S")
+        if i.devId == "S1":
+            labels.append(timestamp_str)
+            dataa.append(i.temp)
+        elif i.devId == "S2":
+            labels1.append(timestamp_str)
+            dataa1.append(i.temp)
+        else:
+            labels2.append(timestamp_str)
+            dataa2.append(i.temp)
+
+    last_data = Envdata.objects.last()
+
+    context = {
+        'all_data': all_data,
+        'last_data': last_data,
+        'labels': labels,
+        'dataa': dataa,
+        'labels1': labels1,
+        'dataa1': dataa1,
+        'labels2': labels2,
+        'dataa2': dataa2,
+    }
+
+    return render(request, "enviro/temp15.html", context)
+
+
+# For hum
+def humv1(request):
+    one_day_ago = (datetime.datetime.today()).replace(hour=0, minute=0, second=0, microsecond=0)
+    labels = []
+    dataa = []
+    labels1 = []
+    dataa1 = []
+    labels2 = []
+    dataa2 = []
+
+    all_data = Envdata.objects.filter(Time_Stamp__gte=one_day_ago)
+
+    for i in all_data:
+        timestamp_str = (i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S")
+        if i.devId == "S1":
+            labels.append(timestamp_str)
+            dataa.append(i.hum)
+        elif i.devId == "S2":
+            labels1.append(timestamp_str)
+            dataa1.append(i.hum)
+        else:
+            labels2.append(timestamp_str)
+            dataa2.append(i.hum)
+
+    last_data = Envdata.objects.last()
+
+    context = {
+        'all_data': all_data,
+        'last_data': last_data,
+        'labels': labels,
+        'dataa': dataa,
+        'labels1': labels1,
+        'dataa1': dataa1,
+        'labels2': labels2,
+        'dataa2': dataa2,
+    }
+
+    return render(request, "enviro/hum1.html", context)
+
+# Repeat a similar structure for humv3, humv7, and humv15 with the corresponding conditions.
+
+
+def humv3(request):
+    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=3)).replace(hour=0, minute=0, second=0,
+                                                                                microsecond=0)
+    labels = []
+    dataa = []
+    labels1 = []
+    dataa1 = []
+    labels2 = []
+    dataa2 = []
+
+    all_data = Envdata.objects.filter(Time_Stamp__gte=one_day_ago)
+
+    for i in all_data:
+        timestamp_str = (i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S")
+        if i.devId == "S1":
+            labels.append(timestamp_str)
+            dataa.append(i.hum)
+        elif i.devId == "S2":
+            labels1.append(timestamp_str)
+            dataa1.append(i.hum)
+        else:
+            labels2.append(timestamp_str)
+            dataa2.append(i.hum)
+
+    last_data = Envdata.objects.last()
+
+    context = {
+        'all_data': all_data,
+        'last_data': last_data,
+        'labels': labels,
+        'dataa': dataa,
+        'labels1': labels1,
+        'dataa1': dataa1,
+        'labels2': labels2,
+        'dataa2': dataa2,
+    }
+
+    return render(request, "enviro/hum3.html", context)
+
+# Repeat a similar structure for humv7 and humv15 with the corresponding conditions.
+
+
+def humv7(request):
+    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=7)).replace(hour=0, minute=0, second=0,
+                                                                                microsecond=0)
+    labels = []
+    dataa = []
+    labels1 = []
+    dataa1 = []
+    labels2 = []
+    dataa2 = []
+
+    all_data = Envdata.objects.filter(Time_Stamp__gte=one_day_ago)
+
+    for i in all_data:
+        timestamp_str = (i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S")
+        if i.devId == "S1":
+            labels.append(timestamp_str)
+            dataa.append(i.hum)
+        elif i.devId == "S2":
+            labels1.append(timestamp_str)
+            dataa1.append(i.hum)
+        else:
+            labels2.append(timestamp_str)
+            dataa2.append(i.hum)
+
+    last_data = Envdata.objects.last()
+
+    context = {
+        'all_data': all_data,
+        'last_data': last_data,
+        'labels': labels,
+        'dataa': dataa,
+        'labels1': labels1,
+        'dataa1': dataa1,
+        'labels2': labels2,
+        'dataa2': dataa2,
+    }
+
+    return render(request, "enviro/hum7.html", context)
+
+
+def humv15(request):
+    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=15)).replace(hour=0, minute=0, second=0,
+                                                                                 microsecond=0)
+    labels = []
+    dataa = []
+    labels1 = []
+    dataa1 = []
+    labels2 = []
+    dataa2 = []
+
+    all_data = Envdata.objects.filter(Time_Stamp__gte=one_day_ago)
+
+    for i in all_data:
+        timestamp_str = (i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S")
+        if i.devId == "S1":
+            labels.append(timestamp_str)
+            dataa.append(i.hum)
+        elif i.devId == "S2":
+            labels1.append(timestamp_str)
+            dataa1.append(i.hum)
+        else:
+            labels2.append(timestamp_str)
+            dataa2.append(i.hum)
+
+    last_data = Envdata.objects.last()
+
+    context = {
+        'all_data': all_data,
+        'last_data': last_data,
+        'labels': labels,
+        'dataa': dataa,
+        'labels1': labels1,
+        'dataa1': dataa1,
+        'labels2': labels2,
+        'dataa2': dataa2,
+    }
+
+    return render(request, "enviro/hum15.html", context)
+
+
+# For bat
+def bat_data(request, days, template_name):
+    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=days)).replace(hour=0, minute=0, second=0,
+                                                                                    microsecond=0)
+    labels = []
+    dataa = []
+    labels1 = []
+    dataa1 = []
+    labels2 = []
+    dataa2 = []
+
+    all_data = Envdata.objects.filter(Time_Stamp__gte=one_day_ago)
+
+    for i in all_data:
+        timestamp_str = (i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S")
+        if i.devId == "S1":
+            labels.append(timestamp_str)
+            dataa.append(i.bat)
+        elif i.devId == "S2":
+            labels1.append(timestamp_str)
+            dataa1.append(i.bat)
+        else:
+            labels2.append(timestamp_str)
+            dataa2.append(i.bat)
+
+    last_data = Envdata.objects.last()
+
+    context = {
+        'all_data': all_data,
+        'last_data': last_data,
+        'labels': labels,
+        'dataa': dataa,
+        'labels1': labels1,
+        'dataa1': dataa1,
+        'labels2': labels2,
+        'dataa2': dataa2,
+    }
+
+    return render(request, template_name, context)
+
+def batv1(request):
+    return bat_data(request, 1, "enviro/bat1.html")
+
+def batv3(request):
+    return bat_data(request, 3, "enviro/bat3.html")
+
+def batv7(request):
+    return bat_data(request, 7, "enviro/bat7.html")
+
+def batv15(request):
+    return bat_data(request, 15, "enviro/bat15.html")
+
+@require_POST
+@csrf_exempt
+def v_chirpstack(request):
+    print("**********************uplink")
+    if 'event' in request.GET:
+        event = str(request.GET['event'])
+        if event == 'up' :
+            print("*********************up")
+            try :
+                print("*************************try")
+                data = json.loads(request.body)
+                print(data)
+
+
+                if data['deviceInfo']['devEui'] == WsSENSECAP_WeatherStation:
+                    messages = data['object']['messages']
+                    print("messages: ", messages)
+                    batt_mesure = False
+                    for mesage in messages:
+                        for measurement in mesage:
+                            print("lenght messages: ", len(messages))
+                            if len(messages) >= 3 and not batt_mesure:
+                                bat = measurement['Battery(%)']
+                                batt_mesure = True
+                                break
+                            print(measurement['type'],measurement['measurementValue'])
+                            if measurement['type'] =="Air Temperature":
+                                airTemp = measurement['measurementValue']
+                                continue
+                            elif measurement['type'] =="Air Humidity":
+                                airHum = measurement['measurementValue']
+                                continue
+                            elif measurement['type'] =="Light Intensity":
+                                light = measurement['measurementValue']
+                                continue
+                            elif measurement['type'] =="UV Index":
+                                uv = measurement['measurementValue']
+                                continue
+                            elif measurement['type'] =="Wind Speed":
+                                windSpeed = measurement['measurementValue']
+                                continue
+                            elif measurement['type'] =="Wind Direction Sensor":
+                                windDirection = measurement['measurementValue']
+                                continue
+                            elif measurement['type'] =="Rain Gauge":
+                                rainfall = measurement['measurementValue']
+                                continue
+                            elif measurement['type'] =="Barometric Pressure":
+                                pressure = measurement['measurementValue']
+                                continue
+
+                    object_WsSENSECAP = Data2()
+                    object_WsSENSECAP.Temp = airTemp
+                    # print(object_WsSENSECAP)
+                    object_WsSENSECAP.Hum = airHum
+                    object_WsSENSECAP.Wind_Speed = round((float(windSpeed)*3.6),4)
+                    # object_WsSENSECAP.WindDirection = windDirection
+                    object_WsSENSECAP.Rain = rainfall/4
+                    # object_WsSENSECAP.Light = light
+                    # object_WsSENSECAP.UV = uv
+                    object_WsSENSECAP.Pr = pressure
+                    # if batt_mesure:
+                    #     object_WsSENSECAP.Bat = bat
+                    # else:
+                    #     object_WsSENSECAP_last_val_batt = WsSENSECAP.objects.last()
+                    #     object_WsSENSECAP.Bat = object_WsSENSECAP_last_val_batt.Bat
+                    object_WsSENSECAP.save()
+
+                    # Vérifier si le devEui correspond au dispositif Model WSC1-L
+                if data['deviceInfo']['devEui'] == 'a84041b02458e028':
+                    print("Données reçues du dispositif Model WSC1-L")
+
+                    # Récupération des données depuis 'object'
+                    object_data = data.get('object', {})
+
+                    # Création de l'objet `wsd`
+                    object_wsd = wsd()
+
+                    # Affectation des valeurs avec `get()` pour éviter les erreurs si une clé est absente
+                    object_wsd.wind_direction_angle = object_data.get('wind_direction_angle', None)
+                    object_wsd.wind_direction = object_data.get('wind_direction', None)
+                    object_wsd.HUM = object_data.get('TEM', None)
+                    object_wsd.rain_gauge = object_data.get('rain_gauge', None)
+                    object_wsd.wind_speed = round((float(object_data.get('wind_speed', 0.0)) * 3.6), 4)  # Convertir en km/h
+                    object_wsd.illumination = object_data.get('A1', None)
+                    if object_wsd.illumination is not None:  # Vérifie que la valeur n'est pas None
+                        object_wsd.illumination = round((float(object_wsd.illumination) * 0.8),2)  # Convertir et multiplier
+                    object_wsd.TEM = object_data.get('HUM', None)
+
+
+                    try:
+                        # Sauvegarde dans la base de données
+                        object_wsd.save()
+                        print("Données enregistrées avec succès :", object_wsd)
+                    except Exception as e:
+                        print("Erreur lors de l'enregistrement :", e)
+                else:
+                    print("Dispositif non reconnu, données ignorées.")
+
+                if data['deviceInfo']['devEui']==pyraGV:
+                    input_mA: float = data['object']['IDC_intput_mA']
+                    ray = 2000 * (1 + (input_mA - 20) / 16)
+                    bat = data['object']['Bat_V']
+                    db_obj = Ray2()
+                    db_obj.Ray = round(ray,2)
+                    db_obj.Bat = bat
+
+                    try:
+                        # Sauvegarde dans la base de données
+                        db_obj.save()
+                        print("Données enregistrées avec succès greeene vision :", db_obj)
+                    except Exception as e:
+                        print("Erreur lors de l'enregistrement :", e)
+                else:
+                    print("Dispositif non reconnu, données ignorées.")
+
+
+                if data['deviceInfo']['devEui'] == 'a84041d10858e027':  # Vérifie si c'est bien le capteur de sol
+                    print("📡 Données reçues du Capteur de sol")
+
+                    # Récupération des données depuis 'object'
+                    object_data = data.get('object', {})
+                    batterie = object_data.get('Batterie', '0')  # Valeur par défaut '0' si absente
+
+                    print("📊 object_data complet :", object_data)
+
+                    # Boucle sur les capteurs de sol (Capteur_1 à Capteur_4)
+                    for i in range(1, 5):
+                        capteur_key = f"Capteur_{i}"
+                        if capteur_key in object_data:
+                            capteur_data = object_data[capteur_key]
+                            print(f"🔎 {capteur_key} trouvé :", capteur_data)
+
+                            try:
+                                CapSol2.objects.create(
+                                    devId=i,
+                                    Temp=capteur_data.get('Temperature', '0'),
+                                    Hum=capteur_data.get('Humidite', '0'),
+                                    ec=capteur_data.get('Conductivite', '0'),
+                                    N=capteur_data.get('Azote', '0'),
+                                    P=capteur_data.get('Phosphore', '0'),
+                                    K=capteur_data.get('Potassium', '0'),
+                                    Sal=0,  # Valeur par défaut
+                                    Bat=batterie
+                                )
+                                print(f"✅ Données enregistrées pour {capteur_key}: {capteur_data}")
+                            except Exception as e:
+                                print(f"❌ Erreur lors de l'enregistrement de {capteur_key}: {e}")
+
+                if data['devEui'] == 'a84041d10858e027':
+                    print("Données reçues du dispositif contenant plusieurs capteurs")
+
+                    # Extraction des valeurs des capteurs
+                    humidites = data.get("Humidite", [])
+                    temperatures = data.get("Temperature", [])
+                    conductivites = data.get("Conductivite", [])
+                    azotes = data.get("Azote", [])
+                    phosphores = data.get("Phosphore", [])
+                    potassiums = data.get("Potassium", [])
+
+                    # Vérifier que toutes les listes ont la même longueur (nombre de capteurs détectés)
+                    capteur_count = min(len(humidites), len(temperatures), len(conductivites), len(azotes), len(phosphores), len(potassiums))
+
+                    for i in range(capteur_count):
+                        print(f"Traitement du capteur {i + 1}")
+
+                        capteur = CapSol()
+                        capteur.sensor_id = i + 1  # Numéro du capteur
+                        capteur.Hum = humidites[i]
+                        capteur.Temp = temperatures[i]
+                        capteur.Ec = conductivites[i]
+                        capteur.N = azotes[i]
+                        capteur.P = phosphores[i]
+                        capteur.K = potassiums[i]
+
+                        try:
+                            # Sauvegarde dans la base de données
+                            capteur.save()
+                            print(f"Données du capteur {i + 1} enregistrées avec succès :", capteur)
+                        except Exception as e:
+                            print(f"Erreur lors de l'enregistrement du capteur {i + 1} :", e)
+                else:
+                    print("Dispositif non reconnu, données ignorées.")
+
+
+
+            except :
+                print("chirpstack integration error")
+
+
+    return HttpResponse(status=200)
+
+# def cwsi_data(request):
+#     # Retrieve all records from the cwsi model
+#     cwsi_records = cwsi.objects.all()
+
+#     # Pass the data to the template
+#     context = {
+#         'cwsi_records': cwsi_records
+#     }
+#     return render(request, 'cwsi/cwsi01.html', context)
+
+from django.utils.timezone import make_aware
+import datetime
+from django.shortcuts import render
+from .models import Data2, wsd  # Assurez-vous que ces modèles sont correctement importés
+
+def filter_data(request, field_data2, field_wsd, template_name):
+    """
+    Fonction générique pour filtrer les données avec des champs différents pour Data2 et wsd.
+    - field_data2 : Nom du champ à récupérer pour Data2 (ex : 'Temp', 'Hum', etc.).
+    - field_wsd : Nom du champ à récupérer pour wsd (ex : 'TEM', 'HUM', etc.).
+    - template_name : Nom du fichier HTML à rendre.
+    """
+    # Récupération des dates depuis le formulaire GET
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+
+    # Si l'utilisateur a spécifié des dates, les convertir en datetime
+    if start_date and end_date:
+        start_date = make_aware(datetime.datetime.strptime(start_date, "%Y-%m-%d"))
+        end_date = make_aware(datetime.datetime.strptime(end_date, "%Y-%m-%d").replace(hour=23, minute=59, second=59))
+    else:
+        # Sinon, récupérer les données de la dernière journée
+        one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
+        start_date = make_aware(one_day_ago)
+        end_date = make_aware(datetime.datetime.now().replace(hour=23, minute=59, second=59))
+
+    # Filtrage des données dans la plage spécifiée
+    all_data2 = Data2.objects.filter(Time_Stamp__range=(start_date, end_date))
+    all_wsd = wsd.objects.filter(Time_Stamp__range=(start_date, end_date))
+    print("Dta filter wsd : ",all_wsd,all_data2)
+    # Extraction des données pour les graphiques
+    labels_data2 = [data.Time_Stamp.strftime("%Y-%m-%d %H:%M:%S") for data in all_data2]
+    labels_wsd = [data.Time_Stamp.strftime("%Y-%m-%d %H:%M:%S") for data in all_wsd]
+
+    data_data2 = [getattr(data, field_data2, 0) if getattr(data, field_data2, None) is not None else 0 for data in all_data2]
+    data_wsd = [getattr(data, field_wsd, 0) if getattr(data, field_wsd, None) is not None else 0 for data in all_wsd]
+    print("Dta filter wsd : ",data_wsd,data_data2)
+    # Récupération du dernier enregistrement (gestion des valeurs `None`)
+    lst_data2 = Data2.objects.last()
+    lst_wsd = wsd.objects.last()
+
+    last_data2_value = getattr(lst_data2, field_data2, 0) if lst_data2 and getattr(lst_data2, field_data2, None) is not None else 0
+    last_wsd_value = getattr(lst_wsd, field_wsd, 0) if lst_wsd and getattr(lst_wsd, field_wsd, None) is not None else 0
+    zipped_data2 = zip(labels_data2, data_data2)
+    zipped_datawsd = zip(labels_wsd, data_wsd)
+    # Création du contexte
+    context = {
+        'all_data2': all_data2,
+        'all_wsd': all_wsd,
+        'lst_data2': last_data2_value,
+        'lst_wsd': last_wsd_value,
+        'labels_data2': labels_data2,
+        'labels_wsd': labels_wsd,
+        'data_data2': data_data2,
+        'data_wsd': data_wsd,
+        'start_date': start_date.strftime("%Y-%m-%d"),
+        'end_date': end_date.strftime("%Y-%m-%d"),
+        'zipped_data2': list(zipped_data2),
+        'zipped_datawsd': list(zipped_datawsd),
+    }
+
+    return render(request, template_name, context)
+
+# Vue pour la température
+def data_filter(request):
+    return filter_data(request, field_data2='Temp', field_wsd='TEM', template_name="enviro/temp1.html")
+
+# Vue pour l'humidité
+def data_filter_hum(request):
+    return filter_data(request, field_data2='Hum', field_wsd='HUM', template_name="enviro/hum1.html")
+
+# Vue pour la vitesse de vent
+def data_filter_ws(request):
+    return filter_data(request, field_data2='Wind_Speed', field_wsd='wind_speed', template_name="enviro/tvoc1.html")
+
+# Vue pour la pluie
+def data_filter_pl(request):
+    return filter_data(request, field_data2='Rain', field_wsd='rain_gauge', template_name="enviro/tvoc3.html")
+
+def data_filter_pl(request):
+    return filter_data(request, field_data2='Rain', field_wsd='rain_gauge', template_name="enviro/tvoc3.html")
+
+def data_filter_ry(request):
+    # Récupération des valeurs du formulaire
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+
+    # Initialisation des listes
+    labels_data2 = []
+    labels_wsd = []
+    data_data2 = []
+    data_wsd = []
+
+    # Si l'utilisateur a spécifié des dates, on les utilise, sinon on prend la journée actuelle
+    if start_date and end_date:
+        # Conversion des chaînes de caractères en objets datetime
+        start_date = make_aware(datetime.datetime.strptime(start_date, "%Y-%m-%d"))
+        end_date = make_aware(datetime.datetime.strptime(end_date, "%Y-%m-%d"))
+
+        # Ajout de la fin de journée (23:59:59) à la date de fin pour inclure toute la journée
+        end_date = end_date.replace(hour=23, minute=59, second=59)
+
+        # Filtrage des données entre la date de début et la date de fin pour les deux modèles
+        all_data2 = Ray2.objects.filter(DateRay__range=(start_date, end_date))
+        all_wsd = wsd.objects.filter(Time_Stamp__range=(start_date, end_date))
+
+    else:
+        # Si aucune date n'est spécifiée, on récupère les données de la journée en cours
+        today = datetime.datetime.now()
+        one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=1)).replace(hour=0, minute=0, second=0,
+                                                                                 microsecond=0)
+        start_date = make_aware(datetime.datetime(today.year, today.month, today.day, 0, 0, 0))
+        end_date = make_aware(datetime.datetime(today.year, today.month, today.day, 23, 59, 59))
+
+        # Filtrage des données pour la journée actuelle
+        all_data2 = Ray2.objects.filter(DateRay__gte=one_day_ago)
+        all_wsd = wsd.objects.filter(Time_Stamp__gte=one_day_ago)
+
+    # Collecte des labels et des données pour les graphiques (pour chaque classe)
+    for data in all_data2:
+        labels_data2.append(data.DateRay.strftime("%Y-%m-%d %H:%M:%S"))
+        # Remplacement de None par 0
+        data_data2.append(data.Ray if data.Ray is not None else 0)
+
+    for data in all_wsd:
+        labels_wsd.append(data.Time_Stamp.strftime("%Y-%m-%d %H:%M:%S"))
+        # Remplacement de None par 0
+        data_wsd.append(data.illumination if data.illumination is not None else 0)
+
+    # Derniers objets de chaque modèle
+    lst_data2 = Ray2.objects.last()
+    lst_wsd = wsd.objects.last()
+
+    # Création du contexte pour passer les données à la vue
+    context = {
+        'all_data2': all_data2,
+        'all_wsd': all_wsd,
+        'lst_data2': lst_data2,
+        'lst_wsd': lst_wsd,
+        'labels_data2': labels_data2,
+        'labels_wsd': labels_wsd,
+        'data_data2': data_data2,
+        'data_wsd': data_wsd,
+        'start_date': start_date.strftime("%Y-%m-%d"),
+        'end_date': end_date.strftime("%Y-%m-%d"),
+    }
+
+    return render(request, "enviro/temp3.html", context)
+
+
+def data_filter_et0(request):
+    # Récupération des valeurs du formulaire
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+
+    # Initialisation des listes
+    labels_et0 = []
+    labels_et0dr = []
+    data_et0 = []
+    data_et0dr = []
+
+    # Si l'utilisateur a spécifié des dates, on les utilise, sinon on prend les 15 derniers jours
+    if start_date and end_date:
+        start_date = make_aware(datetime.datetime.strptime(start_date, "%Y-%m-%d"))
+        end_date = make_aware(datetime.datetime.strptime(end_date, "%Y-%m-%d")).replace(hour=23, minute=59, second=59)
+    else:
+        start_date = (datetime.datetime.now() - datetime.timedelta(days=15)).replace(hour=0, minute=0, second=0, microsecond=0)
+        end_date = datetime.datetime.now().replace(hour=23, minute=59, second=59)
+        start_date = make_aware(start_date)
+        end_date = make_aware(end_date)
+
+    # Filtrage des données pour les classes ET0o et ET0DR
+    all_et0 = ET0o.objects.filter(Time_Stamp__range=(start_date, end_date))
+    all_et0dr = ET0DR.objects.filter(Time_Stamp__range=(start_date, end_date))
+
+    # Collecte des labels et des données
+    for data in all_et0:
+        labels_et0.append(data.Time_Stamp.strftime("%Y-%m-%d"))
+        data_et0.append(data.value if data.value is not None else 0)
+
+    for data in all_et0dr:
+        labels_et0dr.append(data.Time_Stamp.strftime("%Y-%m-%d"))
+        data_et0dr.append(data.value if data.value is not None else 0)
+
+    # Derniers objets de chaque modèle
+    last_et0 = ET0o.objects.last()
+    last_et0dr = ET0DR.objects.last()
+
+    # Création du contexte
+    context = {
+        'all_et0': all_et0,
+        'all_et0dr': all_et0dr,
+        'last_et0': last_et0,
+        'last_et0dr': last_et0dr,
+        'labels_et0': labels_et0,
+        'labels_et0dr': labels_et0dr,
+        'data_et0': data_et0,
+        'data_et0dr': data_et0dr,
+        'start_date': start_date.strftime("%Y-%m-%d"),
+        'end_date': end_date.strftime("%Y-%m-%d"),
+    }
+
+    return render(request, "enviro/hum15.html", context)
+# def wind_rose_data(request):
+#     # Filtrer les données sur les 7 derniers jours
+#     wind_data = wsd.objects.filter(Time_Stamp__gte=timezone.now() - timezone.timedelta(days=7)).values_list('wind_direction', flat=True)
+
+#     # Compter les occurrences de chaque direction
+#     direction_counts = Counter(wind_data)
+
+#     # Calculer le pourcentage
+#     total = sum(direction_counts.values())
+#     wind_percentages = [{"direction": direction, "percentage": round((count / total) * 100, 2)} for direction, count in direction_counts.items()]
+
+#     return JsonResponse(wind_percentages, safe=False)
+
+# from django.shortcuts import render
+# import json
+
+# def mych(request):
+#     # Supposons que vous avez des données de ventes et des catégories de l'année
+#     sales_data = [30, 40, 35, 50, 49, 60, 70, 91, 125]
+#     categories_data = [1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999]
+
+#     # Convertir les données en JSON
+#     sales_data_json = json.dumps(sales_data)
+#     categories_data_json = json.dumps(categories_data)
+
+#     # Affichez le contenu de votre contexte pour le débogage
+#     print("Sales data JSON:", sales_data_json)
+#     print("Categories data JSON:", categories_data_json)
+
+#     # Passer les données vers le modèle HTML
+#     context = {
+#         'sales_data_json': sales_data_json,
+#         'categories_data_json': categories_data_json,
+#     }
+
+#     # Rendre le modèle HTML avec les données
+#     return render(request, 'test.html', context)
+
+# Configuration de ChirpStack
+CHIRPSTACK_API_URL = "http://213.32.91.140:8080/api/devices/ce7554dc00001057/queue"
+CHIRPSTACK_API_KEY = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJjaGlycHN0YWNrIiwiaXNzIjoiY2hpcnBzdGFjayIsInN1YiI6IjY5NTMzMjAxLWFmMzYtNDliNS05MjQxLTE5ZTBjMTg4MDFhMiIsInR5cCI6ImtleSJ9.klR4xIax_a1IOf5nDLlhosJHSU7_fmtCio1Jd6MGHJs"  # Remplace avec ta clé API
+@csrf_exempt
+def send_command(request):
+    if request.method == "POST":
+        command = request.POST.get("command")  # "ON" ou "OFF"
+        value = request.POST.get("value")  # Valeur entière (0-255)
+
+        if not command or not value:
+            return render(request, "control.html", {"error": "Commande ou valeur manquante !"})
+
+        # Convertir ON/OFF en binaire
+        command_bin = 1 if command == "ON" else 0
+        value_int = int(value)
+
+        # Création du payload : [ON/OFF, valeur]
+        payload_bytes = bytes([command_bin, value_int])
+        payload_hex = payload_bytes.hex()  # Conversion en hexadécimal
+
+        headers = {
+            "Content-Type": "application/json",
+            "Grpc-Metadata-Authorization": f"Bearer {CHIRPSTACK_API_KEY}"
+        }
+
+        payload = {
+            "deviceQueueItem": {
+                "confirmed": True,
+                "fPort": 1,
+                "data": payload_hex  # Encodé en hexadécimal
+            }
+        }
+
+        response = requests.post(CHIRPSTACK_API_URL, json=payload, headers=headers)
+
+        if response.status_code == 200:
+            return render(request, "control.html", {"success": "Commande envoyée avec succès !"})
+        else:
+            return render(request, "control.html", {"error": f"Échec de l'envoi ! {response.text}"})
+
+    return render(request, "control.html")
+
+from django.utils.timezone import now
+
+def compare_sensors(request):
+    # Définir la date limite (3 jours avant aujourd'hui)
+    date_limite = now() - pd.Timedelta(days=3)
+
+    # Récupérer les données des capteurs
+    ref_data = Ray2.objects.filter(DateRay__gte=date_limite).values("DateRay", "Ray")
+    dragino_data = wsd.objects.filter(Time_Stamp__gte=date_limite).values("Time_Stamp", "illumination")
+
+    # Convertir en DataFrame pandas
+    ref_df = pd.DataFrame(list(ref_data)).rename(columns={"DateRay": "timestamp", "Ray": "sensecap"})
+    dragino_df = pd.DataFrame(list(dragino_data)).rename(columns={"Time_Stamp": "timestamp", "illumination": "dragino"})
+
+    # Vérifier s'il y a assez de données
+    if ref_df.empty or dragino_df.empty:
+        return JsonResponse({"error": "Pas assez de données sur les 3 derniers jours"}, status=400)
+
+    # Filtrer les valeurs extrêmes (exemple : valeurs supérieures à 2000 W/m² ou nulles)
+    ref_df = ref_df[(ref_df["sensecap"] > 0) & (ref_df["sensecap"] < 2000)]
+    dragino_df = dragino_df[(dragino_df["dragino"] > 0) & (dragino_df["dragino"] < 2000)]
+
+    # Vérifier si les données sont encore valides après filtrage
+    if ref_df.empty or dragino_df.empty:
+        return JsonResponse({"error": "Toutes les valeurs valides ont été filtrées"}, status=400)
+
+    # Ajouter une colonne de date uniquement (sans l'heure) pour extraire la valeur maximale par jour
+    ref_df["date"] = ref_df["timestamp"].dt.date
+    dragino_df["date"] = dragino_df["timestamp"].dt.date
+
+    # Calculer les valeurs maximales par jour
+    max_ref = ref_df.groupby("date")["sensecap"].max().reset_index()
+    max_dragino = dragino_df.groupby("date")["dragino"].max().reset_index()
+
+    # Fusionner les résultats maximaux des deux capteurs sur la colonne 'date'
+    max_df = pd.merge(max_ref, max_dragino, on="date", how="inner")
+
+    # Vérifier si les données maximales existent
+    if max_df.empty:
+        return JsonResponse({"error": "Pas de données maximales disponibles"}, status=400)
+
+    # Calculer le facteur de calibration pour chaque jour en comparant les valeurs maximales
+    max_df["calibration_factor"] = max_df["sensecap"] / max_df["dragino"]
+
+    # Calculer la moyenne du facteur de calibration pour l'ensemble des jours
+    avg_calibration_factor = max_df["calibration_factor"].mean()
+
+    # Appliquer l'inverse du facteur de calibration (pour diminuer la valeur de dragino)
+    dragino_df["calibrated_dragino"] = dragino_df["dragino"] / avg_calibration_factor
+
+    # Fusionner les données de calibration avec celles de sensecap sur la base de 'date' (et non 'timestamp')
+    merged_df = pd.merge(dragino_df, ref_df[["timestamp", "sensecap", "date"]], on="date", how="left")
+
+    # Retourner les résultats en JSON avec les valeurs calibrées et les valeurs de sensecap
+    return JsonResponse({
+        "calibration_factor": round(avg_calibration_factor, 2),
+        "calibrated_values": merged_df[["timestamp", "sensecap", "dragino", "calibrated_dragino"]].to_dict(orient="records")
+    })
+
+# if data['deviceInfo']['devEui']==pyranometre:
+                #     time_test = datetime.datetime.now()
+                #     hour_minute = time_test.strftime('%H:%M')
+                #     print("***************************************pyranometre")
+                #     print(hour_minute)
+                #     payload_data = data["object"]["bytes"]
+                #     xpayload_data = [int(_byte) for _byte in payload_data]
+                #     taille_xpayload_data = len(xpayload_data)
+                #     print(xpayload_data)
+                #     print(taille_xpayload_data)
+                #     if taille_xpayload_data == 8:
+                #         ray = (xpayload_data[0]*256 + xpayload_data[1])
+                #         print(ray)
+                #         v_batt = (xpayload_data[2] * 256) + xpayload_data[3]
+                #         v_batt = float(v_batt/100)
+                #         print(v_batt)
+                #         db_obj = Ray()
+                #         db_obj.Bat = v_batt
+                #         db_obj.Ray = ray
+                #         db_obj.save()
+                #         print("******* les données du pyra sont bien registées")
+
+
+
+
+                # if (data['deviceInfo']['devEui']== black_device_eui or data['deviceInfo']['devEui']==  red_device_eui):
+                #     payload_data= data['object']['bytes']
+                #     xpayload_data= [int(_byte) for _byte in payload_data]
+                #     taille_xpayload_data = len(xpayload_data)
+                #     print(xpayload_data)
+                #     print(taille_xpayload_data)
+                #     if taille_xpayload_data == 14:
+                #         temp = (xpayload_data[0] * 256) + xpayload_data[1]
+                #         temp = float(temp/100)
+
+                #         hum = (xpayload_data[2] * 256) + xpayload_data[3]
+                #         hum = float(hum/100)
+
+                #         ec = (xpayload_data[4] * 256) + xpayload_data[5]
+                #         ec = float(ec)
+
+                #         sal = (xpayload_data[6] * 256) + xpayload_data[7]
+                #         sal = float(sal)
+
+                #         v_batt = (xpayload_data[8] * 256) + xpayload_data[9]
+                #         v_batt = float(v_batt/100)
+
+                #         deepsleep = (xpayload_data[13] << 24)  + (xpayload_data[12] << 16) + (xpayload_data[11] << 8) + (xpayload_data[10])
+                #         print('deepsleep : ', deepsleep)
+                #         if data['deviceInfo']['devEui']== black_device_eui:
+                #             db_obj= CapSol()
+                #             db_obj.devId= 2
+                #             db_obj.Temp= temp
+                #             db_obj.Hum= hum
+                #             db_obj.Ec= ec
+                #             db_obj.Sal= sal
+                #             db_obj.Bat= v_batt
+                #             db_obj.save()
+                #         else:
+                #             db_obj= CapSol2()
+                #             db_obj.devId= 3
+                #             db_obj.Temp= temp
+                #             db_obj.Hum= hum
+                #             db_obj.Ec= ec
+                #             db_obj.Sal= sal
+                #             db_obj.Bat= v_batt
+                #             db_obj.save()
+                #     else :
+                #         print("ya pas des données????!!!!")
+                #         v_batt = (xpayload_data[0] * 256) + xpayload_data[1]
+                #         v_batt = float(v_batt/100)
+                #         print(v_batt)
+                #         deepsleep = (xpayload_data[5] << 24)  + (xpayload_data[4] << 16) + (xpayload_data[3] << 8) + (xpayload_data[2])
+                #         print('deepsleep : ', deepsleep)
+
+                # if data['deviceInfo']['devEui']==npk_device_eui:
+                #     payload_data= data['object']['bytes']
+                #     xpayload_data= [int(_byte) for _byte in payload_data]
+                #     taille_xpayload_data = len(xpayload_data)
+                #     print(xpayload_data)
+                #     print(taille_xpayload_data)
+                #     if taille_xpayload_data == 12:
+                #         azt = xpayload_data[0]*256 + xpayload_data[1]
+                #         azt = float(azt)
+                #         pho = xpayload_data[2]*256 + xpayload_data[3]
+                #         pho = float(pho)
+                #         pot = xpayload_data[4]*256 + xpayload_data[5]
+                #         pot = float(pot)
+                #         v_batt = xpayload_data[6]*256 + xpayload_data[7]
+                #         v_batt = float(v_batt/100)
+                #         deepsleep = (xpayload_data[8]) + (xpayload_data[9] << 8) + (xpayload_data[10] << 16) + (xpayload_data[11] << 24)
+                #         print(azt)
+                #         db_obj= CapNPK()
+                #         db_obj.devId=4
+                #         db_obj.Azoute= azt
+                #         db_obj.Phosphore= pho
+                #         db_obj.Potassium= pot
+                #         db_obj.Bat= v_batt
+                #         db_obj.save()
+                #         print("deepsleep : ", deepsleep)
+                #     else :
+                #         print("ya pas des données????!!!!")
+                #         v_batt = (xpayload_data[0] * 256) + xpayload_data[1]
+                #         v_batt = float(v_batt/100)
+                #         print(v_batt)
+                #         deepsleep = (xpayload_data[5] << 24)  + (xpayload_data[4] << 16) + (xpayload_data[3] << 8) + (xpayload_data[2])
+                #         print('deepsleep : ', deepsleep)
+
+                # object_wsd = wsd()
+                    # object_wsd.wind_direction_angle = data['object']['wind_direction_angle']  # Direction du vent en degrés
+                    # print(data['object']['wind_direction_angle'])
+                    # object_wsd.wind_direction = data['object']['wind_direction']  # Direction du vent ('E' pour Est)
+                    # object_wsd.HUM = data['object']['TEM']  # Humidité
+                    # object_wsd.rain_gauge = data['object']['rain_gauge']  # Pluviométrie
+                    # object_wsd.wind_speed = data['object']['wind_speed']  # Vitesse du vent
+                    # object_wsd.illumination = data['object']['illumination']  # Illumination
+                    # object_wsd.TEM = data['object']['HUM']  # Température
+                    # object_wsd.pressure = data['object']['pressure']  # Pression
+                    # D'autres champs peuvent être affectés de manière similaire
+
+                    # Attribution des valeurs aux champs de l'objet à partir du dictionnaire
+                    # object_wsd.wind_direction_angle = wind_direction_angle  # Direction du vent en degrés
+                    # object_wsd.wind_direction = wind_direction # Direction du vent (ex: 'E' pour Est)
+                    # object_wsd.HUM = TEM  # Humidité
+                    # object_wsd.rain_gauge = rain_gauge  # Pluviométrie
+
+                    # object_wsd.wind_speed = wind_speed  # Vitesse du vent
+                    # object_wsd.illumination = illumination  # Illumination
+
+                    # object_wsd.TEM = HUM  # Température
+                    # object_wsd.save()
+
+                    # Vous pouvez aussi imprimer l'objet pour vérifier
+                    # print(object_wsd)
+                    # object_wsd.PM2_5 = 0.0  # Particules fines PM2.5
+                    # object_wsd.PM10 = 0.0  # Particules fines PM10
+                    # object_wsd.TSR = 0.0  # Taux de réflectance solaire (ou autre valeur si vous avez une autre signification)
+                    # object_wsd.wind_speed_level = 0.0  # Niveau de la vitesse du vent
+                    # object_wsd.pressure = 48.8  # Pression
+                    # object_wsd.CO2 = 0.0  # CO2
+                    # Sauvegarde de l'objet dans la base de données
+
+                #     payload_data= data['object']['bytes']
+                #     xpayload_data= [int(_byte) for _byte in payload_data]
+                #     taille_xpayload_data = len(xpayload_data)
+                #     print(xpayload_data)
+                #     print(taille_xpayload_data)
+                #     batt = (xpayload_data[0]*256 + xpayload_data[1])/1000
+                #     temp1 = (xpayload_data[3]*256 + xpayload_data[4])/10
+                #     hum1 = (xpayload_data[5]*256 + xpayload_data[6])/10
+                #     ce1 = xpayload_data[7]*256 + xpayload_data[8]
+                #     azt1 = xpayload_data[9]*256 + xpayload_data[10]
+                #     pho1 = xpayload_data[11]*256 + xpayload_data[12]
+                #     pot1 = xpayload_data[13]*256 + xpayload_data[14]
+
+                #     hum2 = (xpayload_data[15]*256 + xpayload_data[16])/10
+                #     temp2 = (xpayload_data[17]*256 + xpayload_data[18])/10
+                #     ce2 = xpayload_data[19]*256 + xpayload_data[20]
+                #     azt2 = xpayload_data[21]*256 + xpayload_data[22]
+                #     pho2 = xpayload_data[23]*256 + xpayload_data[24]
+                #     pot2 = xpayload_data[25]*256 + xpayload_data[26]
+
+                #     temp3 = (xpayload_data[27]*256 + xpayload_data[28])/100
+                #     hum3 = (xpayload_data[29]*256 + xpayload_data[30])/100
+                #     ce3 = xpayload_data[31]*256 + xpayload_data[32]
+                #     sal3 = xpayload_data[33]*256 + xpayload_data[34]
+
+                #     azt3 = xpayload_data[35]*256 + xpayload_data[36]
+                #     pho3 = xpayload_data[37]*256 + xpayload_data[38]
+                #     pot3 = xpayload_data[39]*256 + xpayload_data[40]
+
+                #     db_obj_THSCE= CapSol()
+                #     db_obj_THSCE.devId = 2
+                #     db_obj_THSCE.Temp = temp3
+                #     db_obj_THSCE.Hum = hum3
+                #     db_obj_THSCE.Sal = sal3
+                #     db_obj_THSCE.EC = ce3
+                #     db_obj_THSCE.Bat = batt
+                #     db_obj_THSCE.save()
+
+                #     db_obj_NPK = CapNPK()
+                #     db_obj_NPK.devId = 4
+                #     db_obj_NPK.Azoute = azt3
+                #     db_obj_NPK.Phosphore = pho3
+                #     db_obj_NPK.Potassium = pot3
+                #     db_obj_NPK.Bat = batt
+                #     db_obj_NPK.save()
+
+                #     db_obj_THSCEAPh1 = CapTHSCEAPhPo1()
+                #     db_obj_THSCEAPh1.Temp = temp1
+                #     db_obj_THSCEAPh1.Hum = hum1
+                #     db_obj_THSCEAPh1.CE = ce1
+                #     db_obj_THSCEAPh1.Azoute = azt1
+                #     db_obj_THSCEAPh1.Phosphore = pho1
+                #     db_obj_THSCEAPh1.Potassium = pot1
+                #     db_obj_THSCEAPh1.Bat = batt
+                #     db_obj_THSCEAPh1.save()
+
+                #     db_obj_THSCEAPh = CapTHSCEAPhPo()
+                #     db_obj_THSCEAPh.Temp = temp2
+                #     db_obj_THSCEAPh.Hum = hum2
+                #     db_obj_THSCEAPh.CE = ce2
+                #     db_obj_THSCEAPh.Azoute = azt2
+                #     db_obj_THSCEAPh.Phosphore = pho2
+                #     db_obj_THSCEAPh.Potassium = pot2
+                #     db_obj_THSCEAPh.Bat = batt
+                #     db_obj_THSCEAPh.save()
+
+                # if data['deviceInfo']['devEui'] == 'a84041b02458e028':
+                #     messages = data['object']['messages']
+                #     print("messages WEATHER STATION : ", messages)
+
+ # {'wind_direction_angle': 201.2, 'wind_direction': 'E', 'HUM': 16.7, 'rain_gauge': 51.2,
+    # 'CO2': 0.0, 'wind_speed': 0.0, 'illumination': 0.0, 'wind_speed_level': 0.0, 'pressure': 48.8, 'TEM': 57.2, 'PM2_5': 0.0, 'PM10': 0.0, 'TSR': 0.0}
+                    # Attribution des valeurs aux champs de l'objet
+                    # Instanciation de l'objet wsd
+                    # object_wsd = wsd(
+                    #     wind_direction_angle=201.2,
+                    #     wind_direction='E',
+                    #     HUM=16.7,
+                    #     rain_gauge=51.2,
+                    #     wind_speed=5.0,
+                    #     illumination=10.0,
+                    #     TEM=22.5
+                    #     # pressure=1013.0
+                    # )
+                    # object_wsd.save()
+                    # object_wsd.pressure = object_data.get('pressure', None)
+                    # object_wsd.CO2 = object_data.get('CO2', None)
+                    # object_wsd.wind_speed_level = object_data.get('wind_speed_level', None)
+                    # object_wsd.TSR = object_data.get('TSR', None)
+                    # object_wsd.PM2_5 = object_data.get('PM2_5', None)
+                    # object_wsd.PM10 = object_data.get('PM10', None)

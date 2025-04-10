@@ -1,0 +1,48 @@
+<!-- my_chart.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bar Chart Example</title>
+    <!-- Inclure la bibliothèque ApexCharts -->
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+</head>
+<body>
+    <!-- Créer une div avec un identifiant où le graphique sera rendu -->
+    <div id="chart"></div>
+
+    <script>
+        // Définir une fonction pour initialiser et afficher le graphique
+        function initializeChart() {
+            // Récupérer les données de Django et les utiliser dans le code JavaScript
+            var salesData = JSON.parse('{{ sales_data_json|escapejs }}');
+            var categoriesData = JSON.parse('{{ categories_data_json|escapejs }}');
+
+            // Définir les options du graphique
+            var options = {
+                chart: {
+                    type: 'bar'
+                },
+                series: [{
+                    name: 'sales',
+                    data: salesData
+                }],
+                xaxis: {
+                    categories: categoriesData
+                }
+            };
+
+            // Initialiser ApexCharts avec les options et le div d'identifiant
+            var chart = new ApexCharts(document.querySelector('#chart'), options);
+
+            // Rendre le graphique
+            chart.render();
+        }
+
+        // Appeler la fonction d'initialisation du graphique une fois que le DOM est prêt
+        document.addEventListener('DOMContentLoaded', initializeChart);
+    </script>
+</body>
+</html>

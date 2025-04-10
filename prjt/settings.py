@@ -33,7 +33,7 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
-    'channels',
+    # 'channels',
     'django.contrib.admin',
     'django.contrib.auth',
     # 'livesync',
@@ -44,17 +44,10 @@ INSTALLED_APPS = [
 
     'django.contrib.staticfiles',
     'application',
+    # 'jobs',
     'rest_framework',
 ]
 
-# DJANGO_LIVESYNC = {'PORT': 8080,
-#                    'HOST': '10.130.1.232'
-#                    }
-#
-#
-# MIDDLEWARE_CLASSES = [
-#     'livesync.core.middleware.DjangoLiveSyncMiddleware',
-# ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -93,17 +86,7 @@ WSGI_APPLICATION = 'prjt.wsgi.application'
 
 ASGI_APPLICATION = 'prjt.asgi.application'
 
-# CHANNEL_LAYERS = {
-#     'default': {
-#         'BACKEND': 'channels_redis.core.RedisChannelLayer',
-#         'CONFIG': {
-#             "hosts": [('127.0.0.1', 6379)],
-#         },
-#     },
-# }
 
-# Database
-# https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
 DATABASES = {
     'default': {
@@ -138,7 +121,8 @@ AUTH_PASSWORD_VALIDATORS = [
 LANGUAGE_CODE = 'en-us'
 
 
-TIME_ZONE = 'Etc/GMT-1'
+TIME_ZONE = 'Africa/Casablanca'
+
 
 USE_I18N = True
 
@@ -150,10 +134,11 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
-STATIC_URL = '/static/'
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static"),
-]
+STATIC_URL = '/home/wsensa/ws_irr/static/'
+STATIC_ROOT = "/home/wsensa/ws_irr/static/"
+# STATICFILES_DIRS = [
+#     os.path.join(BASE_DIR, "static"),
+# ]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field

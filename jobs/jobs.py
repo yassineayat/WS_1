@@ -1,237 +1,241 @@
 import datetime
 import math
 import time
-import paho.mqtt.client as mqtt
+# import paho.mqtt.client as mqtt
 from django.conf import settings
 import requests
 import json
 import random
-import paho.mqtt.client as mqtt
+# import paho.mqtt.client as mqtt
 from django.db.models import Sum, Avg, Max, Min
 from django.http import HttpResponseRedirect
 import penmon as pm
 from django.utils import timezone
 
-from application.models import Ws, ET0, DataFwiO,Ray, Data, ET0o
-
-postcodes = [
-    "SW1A 1AA",
-    "PE35 6EB",
-    "CV34 6AH",
-    "EH1 2NG"
-]
-
-
-def schedule_api():
-
-    postcode = postcodes[random.randint(0, 3)]
-
-    full_url = f"https://api.postcodes.io/postcodes/{postcode}"
-
-    r = requests.get(full_url)
-    if r.status_code == 200:
-        result = r.json()["result"]
-
-        lat = result["latitude"]
-        lng = result["longitude"]
-
-        print(f'Latitude: {lat}, Longitude: {lng}')
-        print(datetime.datetime.now()-datetime.timedelta(1))
+from application.models import Ws, ET0, DataFwiO,Ray2, Data2, ET0o
+# import datetime
+# from django.utils import timezone
+# from django.db.models import Avg
+# from penmon import DayEntry
+# import pm
+# postcodes = [
+#     "SW1A 1AA",
+#     "PE35 6EB",
+#     "CV34 6AH",
+#     "EH1 2NG"
+# ]
 
 
-def schedule_api2():
-    headers = {
-        'authorization': '876523763964578',
-    }
-    params = (
-        ('type', 'value'),
-    )
-    response = requests.get('https://api.myiotplatform.com/data/exports/devices/d1072befe4', headers=headers,
-                            params=params)
-    response2 = requests.get('https://api.myiotplatform.com/data/exports/devices/f29f3c49e0', headers=headers,
-                            params=params)
-    pouet = json.loads(response.text)
-    # print(pouet)
-    pouet2 = json.loads(response2.text)
-    print("jobs 2 meteo...")
-    dateobservation = str(pouet['data']['d1072befe4'][-1]['dateEvent'])
-    # dateobservation2 = str(pouet2['data']['f29f3c49e0'][i]['dateEvent'])
-    if not Ws.objects.filter(date=dateobservation).exists():
-        # dobservation_str = dateobservation[0:10]
-        # heureobservation = dateobservation[11:19]
-        # print("dobservation_str :" + dobservation_str)
-        # print("heureobservation :" + heureobservation)
+# def schedule_api():
 
-        # print("test" + str(pouet['data']['d1072befe4'][i]['data']['probe1']['value']))
-        temperature = pouet['data']['d1072befe4'][-1]['data']['probe1']['value']
+#     postcode = postcodes[random.randint(0, 3)]
 
-        hygro = pouet['data']['d1072befe4'][-1]['data']['probe2']['value']
+#     full_url = f"https://api.postcodes.io/postcodes/{postcode}"
 
-        vitvent = pouet['data']['d1072befe4'][-1]['data']['probe3']['value']
+#     r = requests.get(full_url)
+#     if r.status_code == 200:
+#         result = r.json()["result"]
 
-        rafale = pouet['data']['d1072befe4'][-1]['data']['probe4']['value']
-        pluvio = pouet['data']['d1072befe4'][-1]['data']['probe5']['value']
+#         lat = result["latitude"]
+#         lng = result["longitude"]
 
-        # Ray = pouet2['data']['f29f3c49e0'][i]['data']['probe1']['value']
+#         print(f'Latitude: {lat}, Longitude: {lng}')
+#         print(datetime.datetime.now()-datetime.timedelta(1))
 
-        # if not Ws.objects.filter(date=dateobservation).exists():
-            # Insert new data here
-        tab = Ws.objects.create(Temperature=temperature, Humidity=hygro, Vent=vitvent, Rafale=rafale, Pluv=pluvio,
-                                date=dateobservation)
-        print(tab)
-        print(datetime.datetime.now()-datetime.timedelta(1))
-    # time.sleep(1)
 
-    else:
-        print("______________________________________________deja existews____________________________________")
+# def schedule_api2():
+#     headers = {
+#         'authorization': '876523763964578',
+#     }
+#     params = (
+#         ('type', 'value'),
+#     )
+#     response = requests.get('https://api.myiotplatform.com/data/exports/devices/d1072befe4', headers=headers,
+#                             params=params)
+#     response2 = requests.get('https://api.myiotplatform.com/data/exports/devices/f29f3c49e0', headers=headers,
+#                             params=params)
+#     pouet = json.loads(response.text)
+#     # print(pouet)
+#     pouet2 = json.loads(response2.text)
+#     print("jobs 2 meteo...")
+#     dateobservation = str(pouet['data']['d1072befe4'][-1]['dateEvent'])
+#     # dateobservation2 = str(pouet2['data']['f29f3c49e0'][i]['dateEvent'])
+#     if not Ws.objects.filter(date=dateobservation).exists():
+#         # dobservation_str = dateobservation[0:10]
+#         # heureobservation = dateobservation[11:19]
+#         # print("dobservation_str :" + dobservation_str)
+#         # print("heureobservation :" + heureobservation)
 
-def schedule_api3():
-    try:
-        headers = {
-            'authorization': '876523763964578',
-        }
-        params = (
-            ('type', 'value'),
-        )
+#         # print("test" + str(pouet['data']['d1072befe4'][i]['data']['probe1']['value']))
+#         temperature = pouet['data']['d1072befe4'][-1]['data']['probe1']['value']
 
-        response = requests.get('https://api.myiotplatform.com/data/exports/devices/f29f3c49e0', headers=headers,
-                                params=params)
+#         hygro = pouet['data']['d1072befe4'][-1]['data']['probe2']['value']
 
-        pouet = json.loads(response.text)
-        i = -1
-        dateobservation = str(pouet['data']['f29f3c49e0'][i]['dateEvent'])
-        print(dateobservation)
-        print("last" + str(pouet['data']['f29f3c49e0'][-1]['dateEvent']))
-        if not Ray.objects.filter(dateRay=dateobservation).exists():
-            Rayo = pouet['data']['f29f3c49e0'][i]['data']['probe1']['value']
+#         vitvent = pouet['data']['d1072befe4'][-1]['data']['probe3']['value']
 
-            # if not Ws.objects.filter(date=dateobservation).exists():
-                # Insert new data here
-            tab = Ray.objects.create(Ray=Rayo, dateRay=dateobservation)
-            print(tab)
-            print(datetime.datetime.now()-datetime.timedelta(1))
-        # time.sleep(1)
+#         rafale = pouet['data']['d1072befe4'][-1]['data']['probe4']['value']
+#         pluvio = pouet['data']['d1072befe4'][-1]['data']['probe5']['value']
 
-        else:
-            print("______________________________________deja existe rayonnement___________________________________")
-    except Exception as e:
-        print(e)
-        pass
-def ET0_calc():
-    # exemple()
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=1)).replace(hour=0, minute=0, second=0,
-                                                                                 microsecond=0)
-    now = (datetime.datetime.now()).replace(hour=0, minute=0, second=0, microsecond=0)
-    onedayRay = one_day_ago.replace(hour=7)
-    todayRay = one_day_ago.replace(hour=20)
-    posts = Ws.objects.filter(date__gte=one_day_ago, date__lte=now)
-    hm = Ws.objects.filter(date__gte=one_day_ago, date__lte=now, Humidity__gte=50)
-    print("hm :", hm)
-    # print("posts ws", posts.count())
-    print("heure", one_day_ago)
-    print("to heure", todayRay)
+#         # Ray = pouet2['data']['f29f3c49e0'][i]['data']['probe1']['value']
 
-    post = Ray.objects.filter(dateRay__gte=one_day_ago, dateRay__lte=now)
-    rav = post.count()
-    print("nbrs ray1", rav)
-    print("____________________________________filtre par heure _______________________________________")
+#         # if not Ws.objects.filter(date=dateobservation).exists():
+#             # Insert new data here
+#         tab = Ws.objects.create(Temperature=temperature, Humidity=hygro, Vent=vitvent, Rafale=rafale, Pluv=pluvio,
+#                                 date=dateobservation)
+#         print(tab)
+#         print(datetime.datetime.now()-datetime.timedelta(1))
+#     # time.sleep(1)
 
-    filtresup = Ray.objects.filter(dateRay__gte=onedayRay, dateRay__lte=todayRay)
-    print("filtre nbr:", filtresup.count())
-    w = filtresup.aggregate(Sum('Ray'))
-    print("filtreRay :", w)
-    rayonnement = w['Ray__sum'] / rav
-    print("avreage ray :", rayonnement)
-    print("_____________________________________fin filtre par heure __________________________________")
+#     else:
+#         print("______________________________________________deja existews____________________________________")
 
-    totalRay = post.values('Ray').aggregate(Sum('Ray'))
-    Maxtemp = posts.values('Temperature').aggregate(Max('Temperature'))
-    Mintemp = posts.values('Temperature').aggregate(Min('Temperature'))
-    MaxHum = posts.values('Humidity').aggregate(Max('Humidity'))
-    MinHum = posts.values('Humidity').aggregate(Min('Humidity'))
-    avreage = posts.aggregate(Avg('Vent'))
-    dicttolistVent = list(avreage.items())
-    avgvent = (round(dicttolistVent[0][1] / 3.6, 4))
-    vitvent = round(dicttolistVent[0][1], 4)
-    print("vitvent :", vitvent)
-    dicttolisTmax = list(Maxtemp.items())
-    Tmmax = dicttolisTmax[0][1]
-    dicttolisTmin = list(Mintemp.items())
-    Tmmin = dicttolisTmin[0][1]
-    dicttolisHmax = list(MaxHum.items())
-    Hmax = dicttolisHmax[0][1]
-    dicttolisHmin = list(MinHum.items())
-    Hmin = dicttolisHmin[0][1]
-    # print("posts", posts)
-    print("tv", avgvent)
-    print("tr", totalRay)
-    print("tmin", Tmmin)
-    print("tmax", Tmmax)
-    print("hmin", Hmin)
-    print("hmax", Hmax)
-    print("avg :", avgvent)
-    B2 = one_day_ago.timetuple().tm_yday  # 57#
-    print("b2", B2)
-    RS = 6017.33  # totl radiation
-    Tmin = Tmmin  # 6.62#
-    Tmax = Tmmax  # 29.19#
-    HRmin = Hmin  # 16.46#
-    HRmax = Hmax  # 74.86#
-    u = avgvent  # m/s moyen 0.1652#
-    M = round(rayonnement, 2)  # radiation/h RS/24#
-    print("ray ", M)
-    N = round(M * 3600 * 0.000001 * 24, 2)  # Rs [MJm-2d-1]
-    print("N :", N)
-    u2 = round(u * 4.87 / math.log(67.8 * 2 - 5.42), 3)
-    print("u2 ;", u2)
-    latitude = 53.9
-    altitude = 580
-    ctesolaire = 0.082
-    StefanBolt = 0.000000004896
-    p = 3.140
-    g = 0.000665 * 101.3 * math.pow(((293 - 0.0065 * altitude) / 293), 5.26)
-    conversion = latitude * 3.1416 / 180
-    Y = 1 + 0.033 * math.cos((2 * p * B2) / 365)
-    Z = 0.409 * math.sin((2 * p * B2 / 365) - 1.39)
-    AA = math.acos(-math.tan(conversion) * math.tan(Z))
-    AB = (24 * 60 / p) * ctesolaire * Y * (
-            AA * math.sin(conversion) * math.sin(Z) + math.cos(conversion) * math.cos(Z) * math.sin(AA))
-    AC = AB * (0.75 + 0.00002 * altitude)
-    AD = 1.35 * (N / AC) - 0.35
-    AE = (0.6108 * math.exp(17.27 * Tmin / (Tmin + 237.3)) + 0.6108 * math.exp(17.27 * Tmax / (Tmax + 237.3))) / 2
-    AF = (HRmin * 0.6108 * math.exp(17.27 * Tmax / (Tmax + 237.3)) + HRmax * 0.6108 * math.exp(
-        17.27 * Tmin / (Tmin + 237.3))) / (2 * 100)
-    AG = StefanBolt * 0.5 * ((Tmin + 273) ** 4 + (Tmax + 273) ** 4) * (0.34 - 0.14 * math.sqrt(AF)) * AD
-    AH = (1 - 0.23) * N - AG
-    AI = 0.1
-    AJ = 4098 * 0.6108 * math.exp(17.27 * 0.5 * (Tmin + Tmax) / (0.5 * (Tmin + Tmax) + 237.3)) / (
-            0.5 * (Tmin + Tmax) + 237.3) ** 2
-    ET_0 = (0.408 * AJ * (AH - AI) + (1600 * g / ((Tmin + Tmax) * 0.5 + 273)) * u2 * (AE - AF)) / (
-            AJ + g * (1 + 0.38 * u2))
+# def schedule_api3():
+#     try:
+#         headers = {
+#             'authorization': '876523763964578',
+#         }
+#         params = (
+#             ('type', 'value'),
+#         )
 
-    ET= round(ET_0,2)
-    print("--------------------------------------------------------------")
-    station = pm.Station(latitude=33.6, altitude=1690)
-    station.anemometer_height = 2
-    r = round(rayonnement * 0.0864, 2)
-    print(r)
-    day = station.day_entry(B2,
-                            temp_min=Tmmin,
-                            temp_max=Tmmax,
-                            wind_speed=u,
-                            humidity_max=HRmax,
-                            humidity_min=HRmin,
-                            # humidity_mean=(Hmin + Hmax) * 0.5,
-                            radiation_s=r,
-                            )
-    etop = day.eto()
-    print("ETo opensnz for this day is", etop)
-    print("--------------------------------------------------------------")
+#         response = requests.get('https://api.myiotplatform.com/data/exports/devices/f29f3c49e0', headers=headers,
+#                                 params=params)
 
-    print("ET_0", ET)
+#         pouet = json.loads(response.text)
+#         i = -1
+#         dateobservation = str(pouet['data']['f29f3c49e0'][i]['dateEvent'])
+#         print(dateobservation)
+#         print("last" + str(pouet['data']['f29f3c49e0'][-1]['dateEvent']))
+#         if not Ray.objects.filter(dateRay=dateobservation).exists():
+#             Rayo = pouet['data']['f29f3c49e0'][i]['data']['probe1']['value']
 
-    ET0.objects.create(value=etop, WSavg=avgvent, Tmax=Tmax, Tmin=Tmin, Hmax=HRmax, Hmin=HRmin, Raym=M, U2=u2, Delta=B2)
-    print("__________________________________ET_O Calculé________________________________")
+#             # if not Ws.objects.filter(date=dateobservation).exists():
+#                 # Insert new data here
+#             tab = Ray.objects.create(Ray=Rayo, dateRay=dateobservation)
+#             print(tab)
+#             print(datetime.datetime.now()-datetime.timedelta(1))
+#         # time.sleep(1)
+
+#         else:
+#             print("______________________________________deja existe rayonnement___________________________________")
+#     except Exception as e:
+#         print(e)
+#         pass
+# def ET0_calc():
+#     # exemple()
+#     one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=1)).replace(hour=0, minute=0, second=0,
+#                                                                                  microsecond=0)
+#     now = (datetime.datetime.now()).replace(hour=0, minute=0, second=0, microsecond=0)
+#     onedayRay = one_day_ago.replace(hour=7)
+#     todayRay = one_day_ago.replace(hour=20)
+#     posts = Ws.objects.filter(date__gte=one_day_ago, date__lte=now)
+#     hm = Ws.objects.filter(date__gte=one_day_ago, date__lte=now, Humidity__gte=50)
+#     print("hm :", hm)
+#     # print("posts ws", posts.count())
+#     print("heure", one_day_ago)
+#     print("to heure", todayRay)
+
+#     post = Ray.objects.filter(dateRay__gte=one_day_ago, dateRay__lte=now)
+#     rav = post.count()
+#     print("nbrs ray1", rav)
+#     print("____________________________________filtre par heure _______________________________________")
+
+#     filtresup = Ray.objects.filter(dateRay__gte=onedayRay, dateRay__lte=todayRay)
+#     print("filtre nbr:", filtresup.count())
+#     w = filtresup.aggregate(Sum('Ray'))
+#     print("filtreRay :", w)
+#     rayonnement = w['Ray__sum'] / rav
+#     print("avreage ray :", rayonnement)
+#     print("_____________________________________fin filtre par heure __________________________________")
+
+#     totalRay = post.values('Ray').aggregate(Sum('Ray'))
+#     Maxtemp = posts.values('Temperature').aggregate(Max('Temperature'))
+#     Mintemp = posts.values('Temperature').aggregate(Min('Temperature'))
+#     MaxHum = posts.values('Humidity').aggregate(Max('Humidity'))
+#     MinHum = posts.values('Humidity').aggregate(Min('Humidity'))
+#     avreage = posts.aggregate(Avg('Vent'))
+#     dicttolistVent = list(avreage.items())
+#     avgvent = (round(dicttolistVent[0][1] / 3.6, 4))
+#     vitvent = round(dicttolistVent[0][1], 4)
+#     print("vitvent :", vitvent)
+#     dicttolisTmax = list(Maxtemp.items())
+#     Tmmax = dicttolisTmax[0][1]
+#     dicttolisTmin = list(Mintemp.items())
+#     Tmmin = dicttolisTmin[0][1]
+#     dicttolisHmax = list(MaxHum.items())
+#     Hmax = dicttolisHmax[0][1]
+#     dicttolisHmin = list(MinHum.items())
+#     Hmin = dicttolisHmin[0][1]
+#     # print("posts", posts)
+#     print("tv", avgvent)
+#     print("tr", totalRay)
+#     print("tmin", Tmmin)
+#     print("tmax", Tmmax)
+#     print("hmin", Hmin)
+#     print("hmax", Hmax)
+#     print("avg :", avgvent)
+#     B2 = one_day_ago.timetuple().tm_yday  # 57#
+#     print("b2", B2)
+#     RS = 6017.33  # totl radiation
+#     Tmin = Tmmin  # 6.62#
+#     Tmax = Tmmax  # 29.19#
+#     HRmin = Hmin  # 16.46#
+#     HRmax = Hmax  # 74.86#
+#     u = avgvent  # m/s moyen 0.1652#
+#     M = round(rayonnement, 2)  # radiation/h RS/24#
+#     print("ray ", M)
+#     N = round(M * 3600 * 0.000001 * 24, 2)  # Rs [MJm-2d-1]
+#     print("N :", N)
+#     u2 = round(u * 4.87 / math.log(67.8 * 2 - 5.42), 3)
+#     print("u2 ;", u2)
+#     latitude = 53.9
+#     altitude = 580
+#     ctesolaire = 0.082
+#     StefanBolt = 0.000000004896
+#     p = 3.140
+#     g = 0.000665 * 101.3 * math.pow(((293 - 0.0065 * altitude) / 293), 5.26)
+#     conversion = latitude * 3.1416 / 180
+#     Y = 1 + 0.033 * math.cos((2 * p * B2) / 365)
+#     Z = 0.409 * math.sin((2 * p * B2 / 365) - 1.39)
+#     AA = math.acos(-math.tan(conversion) * math.tan(Z))
+#     AB = (24 * 60 / p) * ctesolaire * Y * (
+#             AA * math.sin(conversion) * math.sin(Z) + math.cos(conversion) * math.cos(Z) * math.sin(AA))
+#     AC = AB * (0.75 + 0.00002 * altitude)
+#     AD = 1.35 * (N / AC) - 0.35
+#     AE = (0.6108 * math.exp(17.27 * Tmin / (Tmin + 237.3)) + 0.6108 * math.exp(17.27 * Tmax / (Tmax + 237.3))) / 2
+#     AF = (HRmin * 0.6108 * math.exp(17.27 * Tmax / (Tmax + 237.3)) + HRmax * 0.6108 * math.exp(
+#         17.27 * Tmin / (Tmin + 237.3))) / (2 * 100)
+#     AG = StefanBolt * 0.5 * ((Tmin + 273) ** 4 + (Tmax + 273) ** 4) * (0.34 - 0.14 * math.sqrt(AF)) * AD
+#     AH = (1 - 0.23) * N - AG
+#     AI = 0.1
+#     AJ = 4098 * 0.6108 * math.exp(17.27 * 0.5 * (Tmin + Tmax) / (0.5 * (Tmin + Tmax) + 237.3)) / (
+#             0.5 * (Tmin + Tmax) + 237.3) ** 2
+#     ET_0 = (0.408 * AJ * (AH - AI) + (1600 * g / ((Tmin + Tmax) * 0.5 + 273)) * u2 * (AE - AF)) / (
+#             AJ + g * (1 + 0.38 * u2))
+
+#     ET= round(ET_0,2)
+#     print("--------------------------------------------------------------")
+#     station = pm.Station(latitude=33.6, altitude=1690)
+#     station.anemometer_height = 2
+#     r = round(rayonnement * 0.0864, 2)
+#     print(r)
+#     day = station.day_entry(B2,
+#                             temp_min=Tmmin,
+#                             temp_max=Tmmax,
+#                             wind_speed=u,
+#                             humidity_max=HRmax,
+#                             humidity_min=HRmin,
+#                             # humidity_mean=(Hmin + Hmax) * 0.5,
+#                             radiation_s=r,
+#                             )
+#     etop = day.eto()
+#     print("ETo opensnz for this day is", etop)
+#     print("--------------------------------------------------------------")
+
+#     print("ET_0", ET)
+
+#     ET0.objects.create(value=etop, WSavg=avgvent, Tmax=Tmax, Tmin=Tmin, Hmax=HRmax, Hmin=HRmin, Raym=M, U2=u2, Delta=B2)
+#     print("__________________________________ET_O Calculé________________________________")
 
 def FWI():
     global temp, rhum, prcp, wind, ffmc0, dc0, dmc0, ffmc, dmc, isi, bui, fwi, i, jprcp
@@ -358,7 +362,7 @@ def FWI():
 
     def main():
         one_day_ago = datetime.datetime.now() - datetime.timedelta(days=1)
-        posts = Data.objects.filter(Time_Stamp__gte=one_day_ago)
+        posts = Data2.objects.filter(Time_Stamp__gte=one_day_ago)
         print("posts :", posts)
         # vent calcul
         totalVent = posts.values('Wind_Speed').aggregate(Sum('Wind_Speed'))
@@ -424,163 +428,217 @@ def FWI():
     main()
 
 
-def ET0o_calc():
-    # exemple()
-
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=1)).replace(hour=0, minute=0, second=0,
-                                                                                 microsecond=0)
-    now = (datetime.datetime.now()).replace(hour=0, minute=0, second=0, microsecond=0)
-    onedayRay = one_day_ago.replace(hour=7)
-    todayRay = one_day_ago.replace(hour=20)
-    posts = Data.objects.filter(Time_Stamp__gte=one_day_ago, Time_Stamp__lte=now)
-    # print("posts ws", posts.count())
-    print("heure", one_day_ago)
-    print("to heure", todayRay)
-
-    post = Data.objects.filter(Time_Stamp__gte=one_day_ago, Time_Stamp__lte=now)
-    rav = post.count()
-    print("nbrs ray1", rav)
-    print("____________________________________filtre par heure _______________________________________")
-
-    filtresup = Data.objects.filter(Time_Stamp__gte=onedayRay, Time_Stamp__lte=todayRay)
-    print("filtre nbr:", filtresup.count())
-    w = post.aggregate(Avg('Ray'))
-    print("moy ray :", w)
-    lit = list(w.items())
-    rayonnement = lit[0][1]
-    print("avreage ray :", rayonnement)
-    print("_____________________________________fin filtre par heure __________________________________")
-
-    """ wind speed opensnz"""
-    # wind_s = Ws.objects.filter(date__gte=one_day_ago, date__lte=now)
-    # wind_avg= wind_s.aggregate(Avg('Vent'))
-    # print(wind_avg)
-    # dicttolistVent = list(wind_avg.items())
-    # avgvent = (round(dicttolistVent[0][1] / 3.6, 4))
-    # print(avgvent)
-    # wind_sp = wind_s.aggregate(Max('Vent'))
-    # spw = list(wind_sp.items())
-    # sw = float(spw[0][1])
-    # print("speed max visio :", sw)
-
-    wsp = Data.objects.filter(Time_Stamp__gte=onedayRay, Time_Stamp__lte=todayRay)
-    awsp = wsp.aggregate(Sum('Wind_Speed'))
-    listws = list(awsp.items())
-    avgws = round(listws[0][1] / rav, 4)
-    print("avrege open snz vent :", avgws)
-    # dif_ws=avgws-avgvent
-    # print("difference vent :", dif_ws)
-    totalRay = post.values('Ray').aggregate(Sum('Ray'))
-    Maxtemp = posts.values('Temp').aggregate(Max('Temp'))
-    Mintemp = posts.values('Temp').aggregate(Min('Temp'))
-    MaxHum = posts.values('Hum').aggregate(Max('Hum'))
-    MinHum = posts.values('Hum').aggregate(Min('Hum'))
-    avreage = posts.aggregate(Avg('Wind_Speed'))
-
-    dicttolistVent = list(avreage.items())
-    avgvent = (round(dicttolistVent[0][1] / 3.6, 4))
-    vitvent = round(dicttolistVent[0][1], 4)
-    print("vitvent :", vitvent)
-    dicttolisTmax = list(Maxtemp.items())
-    Tmmax = dicttolisTmax[0][1]
-    dicttolisTmin = list(Mintemp.items())
-    Tmmin = dicttolisTmin[0][1]
-    dicttolisHmax = list(MaxHum.items())
-    Hmax = dicttolisHmax[0][1]
-    dicttolisHmin = list(MinHum.items())
-    Hmin = dicttolisHmin[0][1]
-    # print("posts", posts)
-    print("tv", avgvent)
-    print("tr", totalRay)
-    print("tmin", Tmmin)
-    print("tmax", Tmmax)
-    print("hmin", Hmin)
-    print("hmax", Hmax)
-    print("avg :", avgvent)
-    B2 = one_day_ago.timetuple().tm_yday
-    print("b2", B2)
-
-    RS = 7875  # totl radiation
-    Tmin = Tmmin
-    Tmax = Tmmax
-    HRmin = Hmin
-    HRmax = Hmax
-    u = avgws  # m/s moyen
-    print("--------------------------------------------------------------")
-    station = pm.Station(latitude=33.01, altitude=640)
-    station.anemometer_height = 2
-    r = round(rayonnement * 0.0864, 2)
-    print(r)
-
-    day = station.day_entry(B2,
-                            temp_min=Tmmin,
-                            temp_max=Tmmax,
-                            wind_speed=u,
-                            humidity_max=HRmax,
-                            humidity_min=HRmin,
-                            # humidity_mean=(Hmin + Hmax) * 0.5,
-                            radiation_s=r,
-                            )
-    print("ETo opensnz for this day is", day.eto())
-    eto = day.eto()
-
-    M = round(rayonnement, 2)  # radiation/h
-    print("ray ", M)
-    N = round(M * 3600 * 0.000001 * 24, 2)  # Rs [MJm-2d-1]
-    print("N :", N)
-    u2 = round(u * 4.87 / math.log(67.8 * 2 - 5.42), 3)
-    print("u2 ;", u2)
-    latitude = 60
-    altitude = 800
-    ctesolaire = 0.082
-    StefanBolt = 0.000000004896
-    p = 3.140
-    g = 0.000665 * 101.3 * math.pow(((293 - 0.0065 * altitude) / 293), 5.26)
-    conversion = latitude * 3.1416 / 180
-    Y = 1 + 0.033 * math.cos((2 * p * B2) / 365)
-    Z = 0.409 * math.sin((2 * p * B2 / 365) - 1.39)
-    AA = math.acos(-math.tan(conversion) * math.tan(Z))
-    AB = (24 * 60 / p) * ctesolaire * Y * (
-            AA * math.sin(conversion) * math.sin(Z) + math.cos(conversion) * math.cos(Z) * math.sin(AA))
-    AC = AB * (0.75 + 0.00002 * altitude)
-    AD = 1.35 * (N / AC) - 0.35
-    AE = (0.6108 * math.exp(17.27 * Tmin / (Tmin + 237.3)) + 0.6108 * math.exp(17.27 * Tmax / (Tmax + 237.3))) / 2
-    AF = (HRmin * 0.6108 * math.exp(17.27 * Tmax / (Tmax + 237.3)) + HRmax * 0.6108 * math.exp(
-        17.27 * Tmin / (Tmin + 237.3))) / (2 * 100)
-    AG = StefanBolt * 0.5 * ((Tmin + 273) ** 4 + (Tmax + 273) ** 4) * (0.34 - 0.14 * math.sqrt(AF)) * AD
-    AH = (1 - 0.23) * N - AG
-    AI = 7
-    AJ = 4098 * 0.6108 * math.exp(17.27 * 0.5 * (Tmin + Tmax) / (0.5 * (Tmin + Tmax) + 237.3)) / (
-            0.5 * (Tmin + Tmax) + 237.3) ** 2
-    ET_0 = (0.408 * AJ * (AH - AI) + (1600 * g / ((Tmin + Tmax) * 0.5 + 273)) * u2 * (AE - AF)) / (
-            AJ + g * (1 + 0.38 * u2))
-    print("aj :", AJ)
-
-    ET = round(ET_0, 2)
-    print("ET_0", ET)
-
-    # ET0.objects.create(value=ET, WSavg=avgvent, Tmax=Tmax, Tmin=Tmin, Hmax=HRmax, Hmin=HRmin, Raym=M, U2=u2, Delta=B2)
-    print("__________________________________ET_O Calculé________________________________")
-    etoop = day.eto()
-    dur = etoop/0.05
-    print("duréé irrigation ..............", dur)
-    print("ETo opensnz for this day is", etoop)
-    print("--------------------------------------------------------------")
-
-    ET0o.objects.create(value=etoop, WSavg=avgws, Tmax=Tmax, Tmin=Tmin, Hmax=HRmax, Hmin=HRmin, Raym=M, U2=u2, Delta=B2)
-    print("__________________________________ET_O open Calculé________________________________")
+# def ET0o_calc():
 
 
-def evp():
+# # Retrieve data for the previous day
+#     # one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
+#     # now = (datetime.datetime.now()).replace(hour=0, minute=0, second=0, microsecond=0)
+#     one_day_ago = (timezone.now() - datetime.timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
+#     now = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+#     # Retrieve radiation data
+#     radiation_data = Ray2.objects.filter(DateRay__range=(one_day_ago, now)).aggregate(Avg('Ray'))
+#     radiation_avg = radiation_data['Ray__avg']
+
+#     # Retrieve weather data
+#     weather_data = Data2.objects.filter(Time_Stamp__range=(one_day_ago, now)).aggregate(
+#         Avg('Temp'),
+#         Avg('Hum'),
+#         Avg('Wind_Speed'),
+#         Avg('Pr')
+#     )
+#     temp_avg = weather_data['Temp__avg']
+#     hum_avg = weather_data['Hum__avg']
+#     wind_speed_avg = round((weather_data['Wind_Speed__avg']/3.6),4)
+#     pressure_avg = weather_data['Pr__avg']
+
+#     # Assuming the altitude is 532 meters and the anemometer height is 2 meters
+#     station = pm.Station(latitude=33.51, altitude=532)
+#     station.anemometer_height = 2
+
+#     # Convert radiation to the required units
+#     # rad = radiation_avg / 24
+#     r1 = round((radiation_avg * 0.0864),2)
+
+#     # Compute max and min temperature and humidity
+#     temp_max = Data2.objects.filter(Time_Stamp__range=(one_day_ago, now)).order_by('-Temp').first().Temp
+#     temp_min = Data2.objects.filter(Time_Stamp__range=(one_day_ago, now)).order_by('Temp').first().Temp
+#     humidity_max = Data2.objects.filter(Time_Stamp__range=(one_day_ago, now)).order_by('-Hum').first().Hum
+#     humidity_min = Data2.objects.filter(Time_Stamp__range=(one_day_ago, now)).order_by('Hum').first().Hum
+#     day_of_year=(timezone.now().timetuple().tm_yday - 1)
+#     # Create a DayEntry instance
+#     day = station.day_entry(
+#         day_of_year,
+#         temp_max=temp_max,
+#         temp_min=temp_min,
+#         temp_mean=temp_avg,
+#         wind_speed=wind_speed_avg,
+#         humidity_max=humidity_max,
+#         humidity_min=humidity_min,
+#         radiation_s=r1
+#     )
+
+#     # Calculate ETo
+#     eto_value = round((day.eto()),2)
+#     print("ETo for this day is", eto_value)
+
+#     ET0.objects.create(value=eto_value, WSavg=wind_speed_avg, Tmax=temp_max, Tmin=temp_min, Hmax=humidity_max, Hmin=humidity_min, Raym=radiation_avg, U2=wind_speed_avg, Delta=day_of_year)
+#     # exemple()
+
+#     one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=1)).replace(hour=0, minute=0, second=0,
+#                                                                                  microsecond=0)
+#     now = (datetime.datetime.now()).replace(hour=0, minute=0, second=0, microsecond=0)
+#     onedayRay = one_day_ago.replace(hour=7)
+#     todayRay = one_day_ago.replace(hour=20)
+#     posts = Data2.objects.filter(Time_Stamp__gte=one_day_ago, Time_Stamp__lte=now)
+#     # print("posts ws", posts.count())
+#     print("heure", one_day_ago)
+#     print("to heure", todayRay)
+
+#     post = Data.objects.filter(Time_Stamp__gte=one_day_ago, Time_Stamp__lte=now)
+#     rav = post.count()
+#     print("nbrs ray1", rav)
+#     print("____________________________________filtre par heure _______________________________________")
+
+#     filtresup = Data.objects.filter(Time_Stamp__gte=onedayRay, Time_Stamp__lte=todayRay)
+#     print("filtre nbr:", filtresup.count())
+#     w = post.aggregate(Avg('Ray'))
+#     print("moy ray :", w)
+#     lit = list(w.items())
+#     rayonnement = lit[0][1]
+#     print("avreage ray :", rayonnement)
+#     print("_____________________________________fin filtre par heure __________________________________")
+
+#     """ wind speed opensnz"""
+#     # wind_s = Ws.objects.filter(date__gte=one_day_ago, date__lte=now)
+#     # wind_avg= wind_s.aggregate(Avg('Vent'))
+#     # print(wind_avg)
+#     # dicttolistVent = list(wind_avg.items())
+#     # avgvent = (round(dicttolistVent[0][1] / 3.6, 4))
+#     # print(avgvent)
+#     # wind_sp = wind_s.aggregate(Max('Vent'))
+#     # spw = list(wind_sp.items())
+#     # sw = float(spw[0][1])
+#     # print("speed max visio :", sw)
+
+#     wsp = Data.objects.filter(Time_Stamp__gte=onedayRay, Time_Stamp__lte=todayRay)
+#     awsp = wsp.aggregate(Sum('Wind_Speed'))
+#     listws = list(awsp.items())
+#     avgws = round(listws[0][1] / rav, 4)
+#     print("avrege open snz vent :", avgws)
+#     # dif_ws=avgws-avgvent
+#     # print("difference vent :", dif_ws)
+#     totalRay = post.values('Ray').aggregate(Sum('Ray'))
+#     Maxtemp = posts.values('Temp').aggregate(Max('Temp'))
+#     Mintemp = posts.values('Temp').aggregate(Min('Temp'))
+#     MaxHum = posts.values('Hum').aggregate(Max('Hum'))
+#     MinHum = posts.values('Hum').aggregate(Min('Hum'))
+#     avreage = posts.aggregate(Avg('Wind_Speed'))
+
+#     dicttolistVent = list(avreage.items())
+#     avgvent = (round(dicttolistVent[0][1] / 3.6, 4))
+#     vitvent = round(dicttolistVent[0][1], 4)
+#     print("vitvent :", vitvent)
+#     dicttolisTmax = list(Maxtemp.items())
+#     Tmmax = dicttolisTmax[0][1]
+#     dicttolisTmin = list(Mintemp.items())
+#     Tmmin = dicttolisTmin[0][1]
+#     dicttolisHmax = list(MaxHum.items())
+#     Hmax = dicttolisHmax[0][1]
+#     dicttolisHmin = list(MinHum.items())
+#     Hmin = dicttolisHmin[0][1]
+#     # print("posts", posts)
+#     print("tv", avgvent)
+#     print("tr", totalRay)
+#     print("tmin", Tmmin)
+#     print("tmax", Tmmax)
+#     print("hmin", Hmin)
+#     print("hmax", Hmax)
+#     print("avg :", avgvent)
+#     B2 = one_day_ago.timetuple().tm_yday
+#     print("b2", B2)
+
+#     RS = 7875  # totl radiation
+#     Tmin = Tmmin
+#     Tmax = Tmmax
+#     HRmin = Hmin
+#     HRmax = Hmax
+#     u = avgws  # m/s moyen
+#     print("--------------------------------------------------------------")
+#     station = pm.Station(latitude=33.01, altitude=640)
+#     station.anemometer_height = 2
+#     r = round(rayonnement * 0.0864, 2)
+#     print(r)
+
+#     day = station.day_entry(B2,
+#                             temp_min=Tmmin,
+#                             temp_max=Tmmax,
+#                             wind_speed=u,
+#                             humidity_max=HRmax,
+#                             humidity_min=HRmin,
+#                             # humidity_mean=(Hmin + Hmax) * 0.5,
+#                             radiation_s=r,
+#                             )
+#     print("ETo opensnz for this day is", day.eto())
+#     eto = day.eto()
+
+#     M = round(rayonnement, 2)  # radiation/h
+#     print("ray ", M)
+#     N = round(M * 3600 * 0.000001 * 24, 2)  # Rs [MJm-2d-1]
+#     print("N :", N)
+#     u2 = round(u * 4.87 / math.log(67.8 * 2 - 5.42), 3)
+#     print("u2 ;", u2)
+#     latitude = 60
+#     altitude = 800
+#     ctesolaire = 0.082
+#     StefanBolt = 0.000000004896
+#     p = 3.140
+#     g = 0.000665 * 101.3 * math.pow(((293 - 0.0065 * altitude) / 293), 5.26)
+#     conversion = latitude * 3.1416 / 180
+#     Y = 1 + 0.033 * math.cos((2 * p * B2) / 365)
+#     Z = 0.409 * math.sin((2 * p * B2 / 365) - 1.39)
+#     AA = math.acos(-math.tan(conversion) * math.tan(Z))
+#     AB = (24 * 60 / p) * ctesolaire * Y * (
+#             AA * math.sin(conversion) * math.sin(Z) + math.cos(conversion) * math.cos(Z) * math.sin(AA))
+#     AC = AB * (0.75 + 0.00002 * altitude)
+#     AD = 1.35 * (N / AC) - 0.35
+#     AE = (0.6108 * math.exp(17.27 * Tmin / (Tmin + 237.3)) + 0.6108 * math.exp(17.27 * Tmax / (Tmax + 237.3))) / 2
+#     AF = (HRmin * 0.6108 * math.exp(17.27 * Tmax / (Tmax + 237.3)) + HRmax * 0.6108 * math.exp(
+#         17.27 * Tmin / (Tmin + 237.3))) / (2 * 100)
+#     AG = StefanBolt * 0.5 * ((Tmin + 273) ** 4 + (Tmax + 273) ** 4) * (0.34 - 0.14 * math.sqrt(AF)) * AD
+#     AH = (1 - 0.23) * N - AG
+#     AI = 7
+#     AJ = 4098 * 0.6108 * math.exp(17.27 * 0.5 * (Tmin + Tmax) / (0.5 * (Tmin + Tmax) + 237.3)) / (
+#             0.5 * (Tmin + Tmax) + 237.3) ** 2
+#     ET_0 = (0.408 * AJ * (AH - AI) + (1600 * g / ((Tmin + Tmax) * 0.5 + 273)) * u2 * (AE - AF)) / (
+#             AJ + g * (1 + 0.38 * u2))
+#     print("aj :", AJ)
+
+#     ET = round(ET_0, 2)
+#     print("ET_0", ET)
+
+#     # ET0.objects.create(value=ET, WSavg=avgvent, Tmax=Tmax, Tmin=Tmin, Hmax=HRmax, Hmin=HRmin, Raym=M, U2=u2, Delta=B2)
+#     print("__________________________________ET_O Calculé________________________________")
+#     etoop = day.eto()
+#     dur = etoop/0.05
+#     print("duréé irrigation ..............", dur)
+#     print("ETo opensnz for this day is", etoop)
+#     print("--------------------------------------------------------------")
+
+#     ET0o.objects.create(value=etoop, WSavg=avgws, Tmax=Tmax, Tmin=Tmin, Hmax=HRmax, Hmin=HRmin, Raym=M, U2=u2, Delta=B2)
+#     print("__________________________________ET_O open Calculé________________________________")
 
 
-    client = mqtt.Client()
+# def evp():
 
-    client.connect("broker.hivemq.com", 1883, 80)
 
-    client.publish("et", 32)  # publish the message typed by the user
+#     client = mqtt.Client()
 
-    client.disconnect(); #disconnect from server
-    print("ok.......data")
-    eto = ET0o.objects.last()
-    print(eto.value)
+#     client.connect("broker.hivemq.com", 1883, 80)
+
+#     client.publish("et", 32)  # publish the message typed by the user
+
+#     client.disconnect(); #disconnect from server
+#     print("ok.......data")
+#     eto = ET0o.objects.last()
+#     print(eto.value)
