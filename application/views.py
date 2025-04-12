@@ -2701,6 +2701,7 @@ def wsopen1(request):
 
     def get_rain_sum(queryset):
         rain_sum = queryset.aggregate(Sum('rain_gauge'))['rain_gauge__sum']
+        rain_sum = round(rain_sum,2)
         return round(rain_sum, 2) if rain_sum is not None else 0
 
     p1h = get_rain_sum(posts)
@@ -3867,8 +3868,34 @@ def v_chirpstack(request):
                 print("*************************try")
                 data = json.loads(request.body)
                 print(data)
+                print("DEV EUI : ", data['deviceInfo']['devEui'])
+                if data['deviceInfo']['devEui'] == 'a84041685458e15b':
+                    print("Données reçues du dispositif SW3L-010")
 
+                    # Récupération des données depuis 'object'
+                    object_data = data.get('object', {})
 
+                    # Création de l'objet `debitcap`
+                    object_debit = debitcap()
+
+                    # Affectation des valeurs
+                    object_debit.debit = object_data.get('debit', None)
+                    object_debit.pulse = object_data.get('pulse', None)
+                    object_debit.flag = object_data.get('flag', None)
+
+                    # Time_Stamp peut être défini à partir du champ 'time' si présent dans les données reçues
+                    if 'time' in data:
+                        from django.utils.dateparse import parse_datetime
+                        object_debit.Time_Stamp = parse_datetime(data['time'])
+
+                    try:
+                        # Sauvegarde dans la base de données
+                        object_debit.save()
+                        print("Données enregistrées avec succès :", object_debit)
+                    except Exception as e:
+                        print("Erreur lors de l'enregistrement :", e)
+                else:
+                    print("Dispositif non reconnu, données ignorées.")
                 if data['deviceInfo']['devEui'] == WsSENSECAP_WeatherStation:
                     messages = data['object']['messages']
                     print("messages: ", messages)
@@ -3937,7 +3964,7 @@ def v_chirpstack(request):
                     object_wsd.wind_direction_angle = object_data.get('wind_direction_angle', None)
                     object_wsd.wind_direction = object_data.get('wind_direction', None)
                     object_wsd.HUM = object_data.get('TEM', None)
-                    object_wsd.rain_gauge = object_data.get('rain_gauge', None)
+                    object_wsd.rain_gauge = round(float(object_data.get('rain_gauge', None)),2)
                     object_wsd.wind_speed = round((float(object_data.get('wind_speed', 0.0)) * 3.6), 4)  # Convertir en km/h
                     object_wsd.illumination = object_data.get('A1', None)
                     if object_wsd.illumination is not None:  # Vérifie que la valeur n'est pas None
@@ -4041,6 +4068,9 @@ def v_chirpstack(request):
 
 
 
+
+
+
             except :
                 print("chirpstack integration error")
 
@@ -4101,7 +4131,9 @@ def filter_data(request, field_data2, field_wsd, template_name):
     last_data2_value = getattr(lst_data2, field_data2, 0) if lst_data2 and getattr(lst_data2, field_data2, None) is not None else 0
     last_wsd_value = getattr(lst_wsd, field_wsd, 0) if lst_wsd and getattr(lst_wsd, field_wsd, None) is not None else 0
     zipped_data2 = zip(labels_data2, data_data2)
+    print("zipped : ",zipped_data2)
     zipped_datawsd = zip(labels_wsd, data_wsd)
+    print("zipped : ",zipped_datawsd)
     # Création du contexte
     context = {
         'all_data2': all_data2,
@@ -4399,6 +4431,12 @@ def compare_sensors(request):
         "calibrated_values": merged_df[["timestamp", "sensecap", "dragino", "calibrated_dragino"]].to_dict(orient="records")
     })
 
+def debit_data(request):
+
+    lasted = debitcap.objects.last()
+    context={'lasted':lasted}
+
+    return render(request,"debitControl.html",context)
 # if data['deviceInfo']['devEui']==pyranometre:
                 #     time_test = datetime.datetime.now()
                 #     hour_minute = time_test.strftime('%H:%M')

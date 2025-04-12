@@ -15,7 +15,7 @@ from .views import (
     co2v1, co2v3, co2v7, co2v15,
     ch2ov1, ch2ov3, ch2ov7, ch2ov15,
     o31, o33, o37, o315, data_filter,data_filter_hum, data_filter_ws,data_filter_pl,data_filter_ry,
-    data_filter_et0,send_command,compare_sensors
+    data_filter_et0,send_command,compare_sensors,debit_data
 )
 
 urlpatterns = [
@@ -213,9 +213,13 @@ urlpatterns = [
     path('o37/', o37, name='o37'),
     path('o315/', o315, name='o315'),
     # path('test0/',views.mych,"test"),
+
+    path('debit/', debit_data, name='debit'),
+
     # chirpstack integration
     path('chirpstack/', views.v_chirpstack, name='chirpstack'),
 
     # path('wind-rose-data/', wind_rose_data, name='wind_rose_data'),
+
 
 ]
