@@ -10,7 +10,8 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render,HttpResponse
 from django.views.generic import TemplateView
 # import paho.mqtt.client as mqtt
-
+from collections import defaultdict
+from django.utils.timezone import make_aware
 from .models import *
 import requests
 import json
@@ -40,1291 +41,7 @@ def aqi(request):
     context={}
     return render(request,"tab.html",context)
 
-def chart(request):
-    tab=CapSol.objects.all()
-    labels = []
-    dataa = []
-    dataa2 = []
-    for data in tab:
-        labels.append((data.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        dataa.append(data.Temp)
-        dataa2.append(data.Hum)
-        print("labels0", type(labels))
-    if (request.method == "POST"):
-        labels.clear()
-        dataa.clear()
-        dataa2.clear()
 
-        fromdate = request.POST.get('startdate')
-        # print(type(datetime.datetime.now()))
-        print("fromdate")
-        print(fromdate)
-        todate = request.POST.get('enddate')
-        print("todate")
-        print(todate)
-        first = CapSol.objects.first()
-        print("first date", str(first.dt))
-        lastdate = CapSol.objects.last()
-        print("last date", str(lastdate.dt))
-        if fromdate != "" and todate != "":
-            # to = datetime.datetime.strptime(todate, '%Y-%m-%d')+datetime.timedelta(days=1)
-            to = datetime.datetime.strptime(todate, '%Y-%m-%d') + datetime.timedelta(days=1)
-            print("to", to)
-            # fromdate = datetime.datetime("07-07")
-            created_documents5 = CapSol.objects.filter(dt__range=[fromdate, to]).order_by('dt')
-            print("created_documents5", created_documents5)
-            for data in created_documents5:
-                labels.append((data.dt).strftime("%d %b %Y %H:%M:%S"))
-                dataa.append(data.Temp)
-                dataa2.append(data.Hum)
-                print("labelfiltter", labels)
-                # return HttpResponseRedirect('/')
-            # print("labelfiltter",labels)
-        if fromdate == "":
-            fromdate = first.dt
-
-        if todate == "":
-            to = (lastdate.dt) + datetime.timedelta(days=1)
-            todate = to + datetime.timedelta(days=1)
-            labels.clear()
-            dataa.clear()
-            dataa2.clear()
-            created_documents6 = CapSol.objects.filter(dt__range=[fromdate, todate]).order_by('id')
-            # print("created_documents6", created_documents6)
-
-            for data in created_documents6:
-                labels.append((data.dt).strftime("%d %b %Y %H:%M:%S"))
-                dataa.append(data.Temp)
-                dataa2.append(data.Hum)
-                # print("lab", labels)
-                return HttpResponseRedirect('/Chart')
-
-            print("todate", type(todate))
-
-    context={'tab':tab,'labels':labels,'dataa':dataa}
-    return render(request,"charts.html",context)
-
-
-""" temperature capteur de sol"""
-def tsol1(request):
-    one_day_ago = (datetime.datetime.today()).replace(hour=0,minute=0,second=0,microsecond=0)
-    print((datetime.datetime.today()).replace(hour=0,minute=0,second=0,microsecond=0))
-    print("oui ......",one_day_ago)
-    labels = []
-    dataa = []
-    all = CapSol2.objects.filter(dt__gte=one_day_ago)
-    # print("all", all)
-    for i in all:
-        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        # print("labels", labels)
-        dataa.append(i.Temp)
-
-    context = {'all': all, 'labels': labels, 'dataa': dataa}
-    return render(request, "sol/Tsol1.html", context)
-
-def tsol3(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=3)).replace(hour=0,minute=0,second=0,microsecond=0)
-    labels = []
-    dataa = []
-    all = CapSol2.objects.filter(dt__gte=one_day_ago)
-    print("all", all)
-    for i in all:
-        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        # print("labels", labels)
-        dataa.append(i.Temp)
-    lst = Data.objects.last()
-    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
-    return render(request, "sol/Tsol3.html", context)
-
-def tsol7(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=7)).replace(hour=0,minute=0,second=0,microsecond=0)
-    labels = []
-    dataa = []
-    all = CapSol2.objects.filter(dt__gte=one_day_ago)
-    print("all", all)
-    for i in all:
-        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        # print("labels", labels)
-        dataa.append(i.Temp)
-    lst = Data.objects.last()
-    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
-    return render(request, "sol/Tsol7.html", context)
-
-def tsol15(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=15)).replace(hour=0,minute=0,second=0,microsecond=0)
-    labels = []
-    dataa = []
-    all = CapSol2.objects.filter(dt__gte=one_day_ago)
-    print("all", all)
-    for i in all:
-        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        # print("labels", labels)
-        dataa.append(i.Temp)
-    lst = Data.objects.last()
-    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
-    return render(request, "sol/Tsol15.html", context)
-
-def tsol21(request):
-    one_day_ago = (datetime.datetime.today()).replace(hour=0,minute=0,second=0,microsecond=0)
-    print("oui ......",one_day_ago)
-    labels = []
-    dataa = []
-    all = CapSol.objects.filter(dt__gte=one_day_ago)
-    # print("all", all)
-    for i in all:
-        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        # print("labels", labels)
-        dataa.append(i.Temp)
-
-    context = {'all': all, 'labels': labels, 'dataa': dataa}
-    return render(request, "sol2/Tsol1.html", context)
-
-def tsol23(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=3)).replace(hour=0,minute=0,second=0,microsecond=0)
-    labels = []
-    dataa = []
-    all = CapSol.objects.filter(dt__gte=one_day_ago)
-    print("all", all)
-    for i in all:
-        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        # print("labels", labels)
-        dataa.append(i.Temp)
-    lst = Data.objects.last()
-    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
-    return render(request, "sol2/Tsol3.html", context)
-
-def tsol27(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=7)).replace(hour=0,minute=0,second=0,microsecond=0)
-    labels = []
-    dataa = []
-    all = CapSol.objects.filter(dt__gte=one_day_ago)
-    print("all", all)
-    for i in all:
-        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        # print("labels", labels)
-        dataa.append(i.Temp)
-    lst = Data.objects.last()
-    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
-    return render(request, "sol2/Tsol7.html", context)
-
-def tsol215(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=15)).replace(hour=0,minute=0,second=0,microsecond=0)
-    labels = []
-    dataa = []
-    all = CapSol.objects.filter(dt__gte=one_day_ago)
-    print("all", all)
-    for i in all:
-        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        # print("labels", labels)
-        dataa.append(i.Temp)
-    lst = Data.objects.last()
-    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
-    return render(request, "sol2/Tsol15.html", context)
-
-""" humidité sol """
-def hsol1(request):
-    one_day_ago = (datetime.datetime.today()).replace(hour=0,minute=0,second=0,microsecond=0)
-    print("oui ......",one_day_ago)
-    labels = []
-    dataa = []
-    all = CapSol2.objects.filter(dt__gte=one_day_ago)
-    # print("all", all)
-    for i in all:
-        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        # print("labels", labels)
-        dataa.append(i.Hum)
-
-    context = {'all': all, 'labels': labels, 'dataa': dataa}
-    return render(request, "sol/Hsol1.html", context)
-
-def hsol3(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=3)).replace(hour=0,minute=0,second=0,microsecond=0)
-    labels = []
-    dataa = []
-    all = CapSol2.objects.filter(dt__gte=one_day_ago)
-    print("all", all)
-    for i in all:
-        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        # print("labels", labels)
-        dataa.append(i.Hum)
-    lst = Data.objects.last()
-    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
-    return render(request, "sol/Hsol3.html", context)
-
-def hsol7(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=7)).replace(hour=0,minute=0,second=0,microsecond=0)
-    labels = []
-    dataa = []
-    all = CapSol2.objects.filter(dt__gte=one_day_ago)
-    print("all", all)
-    for i in all:
-        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        # print("labels", labels)
-        dataa.append(i.Hum)
-    lst = Data.objects.last()
-    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
-    return render(request, "sol/Hsol7.html", context)
-
-def hsol15(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=15)).replace(hour=0,minute=0,second=0,microsecond=0)
-    labels = []
-    dataa = []
-    all = CapSol2.objects.filter(dt__gte=one_day_ago)
-    print("all", all)
-    for i in all:
-        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        # print("labels", labels)
-        dataa.append(i.Hum)
-    lst = Data.objects.last()
-    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
-    return render(request, "sol/Hsol15.html", context)
-
-def hsol21(request):
-    one_day_ago = (datetime.datetime.today()).replace(hour=0,minute=0,second=0,microsecond=0)
-    print("oui ......",one_day_ago)
-    labels = []
-    dataa = []
-    all = CapSol.objects.filter(dt__gte=one_day_ago)
-    # print("all", all)
-    for i in all:
-        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        # print("labels", labels)
-        dataa.append(i.Hum)
-
-    context = {'all': all, 'labels': labels, 'dataa': dataa}
-    return render(request, "sol2/Hsol1.html", context)
-
-def hsol23(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=3)).replace(hour=0,minute=0,second=0,microsecond=0)
-    labels = []
-    dataa = []
-    all = CapSol.objects.filter(dt__gte=one_day_ago)
-    print("all", all)
-    for i in all:
-        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        # print("labels", labels)
-        dataa.append(i.Hum)
-    lst = Data.objects.last()
-    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
-    return render(request, "sol2/Hsol3.html", context)
-
-def hsol27(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=7)).replace(hour=0,minute=0,second=0,microsecond=0)
-    labels = []
-    dataa = []
-    all = CapSol.objects.filter(dt__gte=one_day_ago)
-    print("all", all)
-    for i in all:
-        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        # print("labels", labels)
-        dataa.append(i.Hum)
-    lst = Data.objects.last()
-    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
-    return render(request, "sol2/Hsol7.html", context)
-
-def hsol215(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=15)).replace(hour=0,minute=0,second=0,microsecond=0)
-    labels = []
-    dataa = []
-    all = CapSol.objects.filter(dt__gte=one_day_ago)
-    print("all", all)
-    for i in all:
-        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        # print("labels", labels)
-        dataa.append(i.Hum)
-    lst = Data.objects.last()
-    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
-    return render(request, "sol2/Hsol15.html", context)
-
-
-def ssol1(request):
-    one_day_ago = (datetime.datetime.today()).replace(hour=0,minute=0,second=0,microsecond=0)
-    print("oui ......",one_day_ago)
-    labels = []
-    dataa = []
-    all = CapSol2.objects.filter(dt__gte=one_day_ago)
-    # print("all", all)
-    for i in all:
-        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        # print("labels", labels)
-        dataa.append(i.Sal)
-
-    context = {'all': all, 'labels': labels, 'dataa': dataa}
-    return render(request, "sol/Ssol1.html", context)
-
-def ssol3(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=3)).replace(hour=0,minute=0,second=0,microsecond=0)
-    labels = []
-    dataa = []
-    all = CapSol2.objects.filter(dt__gte=one_day_ago)
-    print("all", all)
-    for i in all:
-        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        # print("labels", labels)
-        dataa.append(i.Sal)
-    lst = Data.objects.last()
-    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
-    return render(request, "sol/Ssol3.html", context)
-
-def ssol7(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=7)).replace(hour=0,minute=0,second=0,microsecond=0)
-    labels = []
-    dataa = []
-    all = CapSol2.objects.filter(dt__gte=one_day_ago)
-    print("all", all)
-    for i in all:
-        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        # print("labels", labels)
-        dataa.append(i.Sal)
-    lst = Data.objects.last()
-    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
-    return render(request, "sol/Ssol7.html", context)
-
-def ssol15(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=15)).replace(hour=0,minute=0,second=0,microsecond=0)
-    labels = []
-    dataa = []
-    all = CapSol.objects.filter(dt__gte=one_day_ago)
-    print("all", all)
-    for i in all:
-        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        # print("labels", labels)
-        dataa.append(i.Sal)
-    lst = Data.objects.last()
-    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
-    return render(request, "sol2/Ssol15.html", context)
-
-def ssol21(request):
-    one_day_ago = (datetime.datetime.today()).replace(hour=0,minute=0,second=0,microsecond=0)
-    print("oui ......",one_day_ago)
-    labels = []
-    dataa = []
-    all = CapSol.objects.filter(dt__gte=one_day_ago)
-    # print("all", all)
-    for i in all:
-        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        # print("labels", labels)
-        dataa.append(i.Sal)
-
-    context = {'all': all, 'labels': labels, 'dataa': dataa}
-    return render(request, "sol2/Ssol1.html", context)
-
-def ssol23(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=3)).replace(hour=0,minute=0,second=0,microsecond=0)
-    labels = []
-    dataa = []
-    all = CapSol.objects.filter(dt__gte=one_day_ago)
-    print("all", all)
-    for i in all:
-        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        # print("labels", labels)
-        dataa.append(i.Sal)
-    lst = Data.objects.last()
-    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
-    return render(request, "sol2/Ssol3.html", context)
-
-def ssol27(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=7)).replace(hour=0,minute=0,second=0,microsecond=0)
-    labels = []
-    dataa = []
-    all = CapSol.objects.filter(dt__gte=one_day_ago)
-    print("all", all)
-    for i in all:
-        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        # print("labels", labels)
-        dataa.append(i.Sal)
-    lst = Data.objects.last()
-    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
-    return render(request, "sol2/Ssol7.html", context)
-
-def ssol215(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=15)).replace(hour=0,minute=0,second=0,microsecond=0)
-    labels = []
-    dataa = []
-    all = CapSol.objects.filter(dt__gte=one_day_ago)
-    print("all", all)
-    for i in all:
-        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        # print("labels", labels)
-        dataa.append(i.Sal)
-    lst = Data.objects.last()
-    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
-    return render(request, "sol2/Ssol15.html", context)
-
-# EC
-def esol1(request):
-    one_day_ago = (datetime.datetime.today()).replace(hour=0,minute=0,second=0,microsecond=0)
-    print("oui ......",one_day_ago)
-    labels = []
-    dataa = []
-    all = CapSol2.objects.filter(dt__gte=one_day_ago)
-    # print("all", all)
-    for i in all:
-        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        # print("labels", labels)
-        dataa.append(i.Ec)
-
-    context = {'all': all, 'labels': labels, 'dataa': dataa}
-    return render(request, "sol/Esol1.html", context)
-
-def esol3(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=3)).replace(hour=0,minute=0,second=0,microsecond=0)
-    labels = []
-    dataa = []
-    all = CapSol2.objects.filter(dt__gte=one_day_ago)
-    print("all", all)
-    for i in all:
-        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        #print("labels", labels)
-        dataa.append(i.Ec)
-    lst = Data.objects.last()
-    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
-    return render(request, "sol/Esol3.html", context)
-
-def esol7(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=7)).replace(hour=0,minute=0,second=0,microsecond=0)
-    labels = []
-    dataa = []
-    all = CapSol2.objects.filter(dt__gte=one_day_ago)
-    print("all", all)
-    for i in all:
-        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        # print("labels", labels)
-        dataa.append(i.Ec)
-    lst = Data.objects.last()
-    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
-    return render(request, "sol/Esol7.html", context)
-
-def esol15(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=15)).replace(hour=0,minute=0,second=0,microsecond=0)
-    labels = []
-    dataa = []
-    all = CapSol2.objects.filter(dt__gte=one_day_ago)
-    print("all", all)
-    for i in all:
-        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        # print("labels", labels)
-        dataa.append(i.Ec)
-    lst = Data.objects.last()
-    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
-    return render(request, "sol/Esol15.html", context)
-
-""" e2"""
-
-def esol21(request):
-    one_day_ago = (datetime.datetime.today()).replace(hour=0,minute=0,second=0,microsecond=0)
-    print("oui ......",one_day_ago)
-    labels = []
-    dataa = []
-    all = CapSol.objects.filter(dt__gte=one_day_ago)
-    # print("all", all)
-    for i in all:
-        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        # print("labels", labels)
-        dataa.append(i.Ec)
-
-    context = {'all': all, 'labels': labels, 'dataa': dataa}
-    return render(request, "sol2/Esol1.html", context)
-
-def esol23(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=3)).replace(hour=0,minute=0,second=0,microsecond=0)
-    labels = []
-    dataa = []
-    all = CapSol.objects.filter(dt__gte=one_day_ago)
-    print("all", all)
-    for i in all:
-        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        # print("labels", labels)
-        dataa.append(i.Ec)
-    lst = Data.objects.last()
-    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
-    return render(request, "sol2/Esol3.html", context)
-
-def esol27(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=7)).replace(hour=0,minute=0,second=0,microsecond=0)
-    labels = []
-    dataa = []
-    all = CapSol.objects.filter(dt__gte=one_day_ago)
-    print("all", all)
-    for i in all:
-        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        # print("labels", labels)
-        dataa.append(i.Ec)
-    lst = Data.objects.last()
-    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
-    return render(request, "sol2/Esol7.html", context)
-
-def esol215(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=15)).replace(hour=0,minute=0,second=0,microsecond=0)
-    labels = []
-    dataa = []
-    all = CapSol.objects.filter(dt__gte=one_day_ago)
-    print("all", all)
-    for i in all:
-        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        # print("labels", labels)
-        dataa.append(i.Ec)
-    lst = Data.objects.last()
-    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
-    return render(request, "sol2/Esol15.html", context)
-
-#N
-def nsol1(request):
-    one_day_ago = (datetime.datetime.today()).replace(hour=0, minute=0, second=0, microsecond=0)
-    labels = []
-    dataa = []  # Contiendra les valeurs de l'azote (N)
-    all = CapSol2.objects.filter(dt__gte=one_day_ago)
-    for i in all:
-        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        dataa.append(i.N)  # Utilisation de N pour l'azote
-
-    context = {'all': all, 'labels': labels, 'dataa': dataa}
-    return render(request, "sol/Nsol1.html", context)
-
-def nsol3(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=3)).replace(hour=0, minute=0, second=0, microsecond=0)
-    labels = []
-    dataa = []  # Contiendra les valeurs de l'azote (N)
-    all = CapSol2.objects.filter(dt__gte=one_day_ago)
-    for i in all:
-        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        dataa.append(i.N)  # Utilisation de N pour l'azote
-    lst = Data.objects.last()
-    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
-    return render(request, "sol/Nsol3.html", context)
-
-def nsol7(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=7)).replace(hour=0, minute=0, second=0, microsecond=0)
-    labels = []
-    dataa = []  # Contiendra les valeurs de l'azote (N)
-    all = CapSol2.objects.filter(dt__gte=one_day_ago)
-    for i in all:
-        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        dataa.append(i.N)  # Utilisation de N pour l'azote
-    lst = Data.objects.last()
-    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
-    return render(request, "sol/Nsol7.html", context)
-
-def nsol15(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=15)).replace(hour=0, minute=0, second=0, microsecond=0)
-    labels = []
-    dataa = []  # Contiendra les valeurs de l'azote (N)
-    all = CapSol2.objects.filter(dt__gte=one_day_ago)
-    for i in all:
-        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        dataa.append(i.N)  # Utilisation de N pour l'azote
-    lst = Data.objects.last()
-    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
-    return render(request, "sol/Nsol15.html", context)
-
-def nsol21(request):
-    one_day_ago = (datetime.datetime.today()).replace(hour=0, minute=0, second=0, microsecond=0)
-    labels = []
-    dataa = []  # Contiendra les valeurs de l'azote (N)
-    all = CapSol.objects.filter(dt__gte=one_day_ago)
-    for i in all:
-        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        dataa.append(i.N)  # Utilisation de N pour l'azote
-    context = {'all': all, 'labels': labels, 'dataa': dataa}
-    return render(request, "sol2/Nsol1.html", context)
-
-def nsol23(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=3)).replace(hour=0, minute=0, second=0, microsecond=0)
-    labels = []
-    dataa = []  # Contiendra les valeurs de l'azote (N)
-    all = CapSol.objects.filter(dt__gte=one_day_ago)
-    for i in all:
-        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        dataa.append(i.N)  # Utilisation de N pour l'azote
-    lst = Data.objects.last()
-    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
-    return render(request, "sol2/Nsol3.html", context)
-
-def nsol27(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=7)).replace(hour=0, minute=0, second=0, microsecond=0)
-    labels = []
-    dataa = []  # Contiendra les valeurs de l'azote (N)
-    all = CapSol.objects.filter(dt__gte=one_day_ago)
-    for i in all:
-        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        dataa.append(i.N)  # Utilisation de N pour l'azote
-    lst = Data.objects.last()
-    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
-    return render(request, "sol2/Nsol7.html", context)
-
-def nsol215(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=15)).replace(hour=0, minute=0, second=0, microsecond=0)
-    labels = []
-    dataa = []  # Contiendra les valeurs de l'azote (N)
-    all = CapSol.objects.filter(dt__gte=one_day_ago)
-    for i in all:
-        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        dataa.append(i.N)  # Utilisation de N pour l'azote
-    lst = Data.objects.last()
-    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
-    return render(request, "sol2/Nsol15.html", context)
-
-#P
-def psol1(request):
-    one_day_ago = (datetime.datetime.today()).replace(hour=0, minute=0, second=0, microsecond=0)
-    labels = []
-    dataa = []  # Contiendra les valeurs du phosphore (P)
-    all = CapSol2.objects.filter(dt__gte=one_day_ago)
-    for i in all:
-        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        dataa.append(i.P)  # Utilisation de P pour le phosphore
-
-    context = {'all': all, 'labels': labels, 'dataa': dataa}
-    return render(request, "sol/Psol1.html", context)
-
-def psol3(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=3)).replace(hour=0, minute=0, second=0, microsecond=0)
-    labels = []
-    dataa = []  # Contiendra les valeurs du phosphore (P)
-    all = CapSol2.objects.filter(dt__gte=one_day_ago)
-    for i in all:
-        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        dataa.append(i.P)  # Utilisation de P pour le phosphore
-    lst = Data.objects.last()
-    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
-    return render(request, "sol/Psol3.html", context)
-
-def psol7(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=7)).replace(hour=0, minute=0, second=0, microsecond=0)
-    labels = []
-    dataa = []  # Contiendra les valeurs du phosphore (P)
-    all = CapSol2.objects.filter(dt__gte=one_day_ago)
-    for i in all:
-        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        dataa.append(i.P)  # Utilisation de P pour le phosphore
-    lst = Data.objects.last()
-    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
-    return render(request, "sol/Psol7.html", context)
-
-def psol15(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=15)).replace(hour=0, minute=0, second=0, microsecond=0)
-    labels = []
-    dataa = []  # Contiendra les valeurs du phosphore (P)
-    all = CapSol2.objects.filter(dt__gte=one_day_ago)
-    for i in all:
-        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        dataa.append(i.P)  # Utilisation de P pour le phosphore
-    lst = Data.objects.last()
-    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
-    return render(request, "sol/Psol15.html", context)
-
-def psol21(request):
-    one_day_ago = (datetime.datetime.today()).replace(hour=0, minute=0, second=0, microsecond=0)
-    labels = []
-    dataa = []  # Contiendra les valeurs du phosphore (P)
-    all = CapSol.objects.filter(dt__gte=one_day_ago)
-    for i in all:
-        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        dataa.append(i.P)  # Utilisation de P pour le phosphore
-    context = {'all': all, 'labels': labels, 'dataa': dataa}
-    return render(request, "sol2/Psol1.html", context)
-
-def psol23(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=3)).replace(hour=0, minute=0, second=0, microsecond=0)
-    labels = []
-    dataa = []  # Contiendra les valeurs du phosphore (P)
-    all = CapSol.objects.filter(dt__gte=one_day_ago)
-    for i in all:
-        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        dataa.append(i.P)  # Utilisation de P pour le phosphore
-    lst = Data.objects.last()
-    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
-    return render(request, "sol2/Psol3.html", context)
-
-def psol27(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=7)).replace(hour=0, minute=0, second=0, microsecond=0)
-    labels = []
-    dataa = []  # Contiendra les valeurs du phosphore (P)
-    all = CapSol.objects.filter(dt__gte=one_day_ago)
-    for i in all:
-        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        dataa.append(i.P)  # Utilisation de P pour le phosphore
-    lst = Data.objects.last()
-    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
-    return render(request, "sol2/Psol7.html", context)
-
-def psol215(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=15)).replace(hour=0, minute=0, second=0, microsecond=0)
-    labels = []
-    dataa = []  # Contiendra les valeurs du phosphore (P)
-    all = CapSol.objects.filter(dt__gte=one_day_ago)
-    for i in all:
-        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        dataa.append(i.P)  # Utilisation de P pour le phosphore
-    lst = Data.objects.last()
-    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
-    return render(request, "sol2/Psol15.html", context)
-
-#K
-def ksol1(request):
-    one_day_ago = (datetime.datetime.today()).replace(hour=0, minute=0, second=0, microsecond=0)
-    labels = []
-    dataa = []  # Contiendra les valeurs du potassium (K)
-    all = CapSol2.objects.filter(dt__gte=one_day_ago)
-    for i in all:
-        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        dataa.append(i.K)  # Utilisation de K pour le potassium
-
-    context = {'all': all, 'labels': labels, 'dataa': dataa}
-    return render(request, "sol/Ksol1.html", context)
-
-def ksol3(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=3)).replace(hour=0, minute=0, second=0, microsecond=0)
-    labels = []
-    dataa = []  # Contiendra les valeurs du potassium (K)
-    all = CapSol2.objects.filter(dt__gte=one_day_ago)
-    for i in all:
-        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        dataa.append(i.K)  # Utilisation de K pour le potassium
-    lst = Data.objects.last()
-    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
-    return render(request, "sol/Ksol3.html", context)
-
-def ksol7(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=7)).replace(hour=0, minute=0, second=0, microsecond=0)
-    labels = []
-    dataa = []  # Contiendra les valeurs du potassium (K)
-    all = CapSol2.objects.filter(dt__gte=one_day_ago)
-    for i in all:
-        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        dataa.append(i.K)  # Utilisation de K pour le potassium
-    lst = Data.objects.last()
-    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
-    return render(request, "sol/Ksol7.html", context)
-
-def ksol15(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=15)).replace(hour=0, minute=0, second=0, microsecond=0)
-    labels = []
-    dataa = []  # Contiendra les valeurs du potassium (K)
-    all = CapSol2.objects.filter(dt__gte=one_day_ago)
-    for i in all:
-        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        dataa.append(i.K)  # Utilisation de K pour le potassium
-    lst = Data.objects.last()
-    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
-    return render(request, "sol/Ksol15.html", context)
-
-def ksol21(request):
-    one_day_ago = (datetime.datetime.today()).replace(hour=0, minute=0, second=0, microsecond=0)
-    labels = []
-    dataa = []  # Contiendra les valeurs du potassium (K)
-    all = CapSol.objects.filter(dt__gte=one_day_ago)
-    for i in all:
-        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        dataa.append(i.K)  # Utilisation de K pour le potassium
-    context = {'all': all, 'labels': labels, 'dataa': dataa}
-    return render(request, "sol2/Ksol1.html", context)
-
-def ksol23(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=3)).replace(hour=0, minute=0, second=0, microsecond=0)
-    labels = []
-    dataa = []  # Contiendra les valeurs du potassium (K)
-    all = CapSol.objects.filter(dt__gte=one_day_ago)
-    for i in all:
-        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        dataa.append(i.K)  # Utilisation de K pour le potassium
-    lst = Data.objects.last()
-    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
-    return render(request, "sol2/Ksol3.html", context)
-
-def ksol27(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=7)).replace(hour=0, minute=0, second=0, microsecond=0)
-    labels = []
-    dataa = []  # Contiendra les valeurs du potassium (K)
-    all = CapSol.objects.filter(dt__gte=one_day_ago)
-    for i in all:
-        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        dataa.append(i.K)  # Utilisation de K pour le potassium
-    lst = Data.objects.last()
-    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
-    return render(request, "sol2/Ksol7.html", context)
-
-def ksol215(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=15)).replace(hour=0, minute=0, second=0, microsecond=0)
-    labels = []
-    dataa = []  # Contiendra les valeurs du potassium (K)
-    all = CapSol.objects.filter(dt__gte=one_day_ago)
-    for i in all:
-        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        dataa.append(i.K)  # Utilisation de K pour le potassium
-    lst = Data.objects.last()
-    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
-    return render(request, "sol2/Ksol15.html", context)
-
-#Batterie
-def bsol1(request):
-    one_day_ago = (datetime.datetime.today()).replace(hour=0,minute=0,second=0,microsecond=0)
-    print("oui ......",one_day_ago)
-    labels = []
-    dataa = []
-    all = CapSol2.objects.filter(dt__gte=one_day_ago)
-    # print("all", all)
-    for i in all:
-        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        # print("labels", labels)
-        dataa.append(i.Bat)
-
-    context = {'all': all, 'labels': labels, 'dataa': dataa}
-    return render(request, "sol/Bsol1.html", context)
-
-def bsol3(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=3)).replace(hour=0,minute=0,second=0,microsecond=0)
-    labels = []
-    dataa = []
-    all = CapSol2.objects.filter(dt__gte=one_day_ago)
-    print("all", all)
-    for i in all:
-        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        # print("labels", labels)
-        dataa.append(i.Bat)
-    lst = Data.objects.last()
-    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
-    return render(request, "sol/Bsol3.html", context)
-
-def bsol7(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=7)).replace(hour=0,minute=0,second=0,microsecond=0)
-    labels = []
-    dataa = []
-    all = CapSol2.objects.filter(dt__gte=one_day_ago)
-    print("all", all)
-    for i in all:
-        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        # print("labels", labels)
-        dataa.append(i.Bat)
-    lst = Data.objects.last()
-    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
-    return render(request, "sol/Bsol7.html", context)
-
-def bsol15(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=15)).replace(hour=0,minute=0,second=0,microsecond=0)
-    labels = []
-    dataa = []
-    all = CapSol2.objects.filter(dt__gte=one_day_ago)
-    print("all", all)
-    for i in all:
-        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        # print("labels", labels)
-        dataa.append(i.Bat)
-    lst = Data.objects.last()
-    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
-    return render(request, "sol/Bsol15.html", context)
-
-def bsol21(request):
-    one_day_ago = (datetime.datetime.today()).replace(hour=0,minute=0,second=0,microsecond=0)
-    print("oui ......",one_day_ago)
-    labels = []
-    dataa = []
-    all = CapSol.objects.filter(dt__gte=one_day_ago)
-    # print("all", all)
-    for i in all:
-        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        # print("labels", labels)
-        dataa.append(i.Bat)
-
-    context = {'all': all, 'labels': labels, 'dataa': dataa}
-    return render(request, "sol2/Bsol1.html", context)
-
-def bsol23(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=3)).replace(hour=0,minute=0,second=0,microsecond=0)
-    labels = []
-    dataa = []
-    all = CapSol.objects.filter(dt__gte=one_day_ago)
-    print("all", all)
-    for i in all:
-        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        # print("labels", labels)
-        dataa.append(i.Bat)
-    lst = Data.objects.last()
-    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
-    return render(request, "sol2/Bsol3.html", context)
-
-def bsol27(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=7)).replace(hour=0,minute=0,second=0,microsecond=0)
-    labels = []
-    dataa = []
-    all = CapSol.objects.filter(dt__gte=one_day_ago)
-    print("all", all)
-    for i in all:
-        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        # print("labels", labels)
-        dataa.append(i.Bat)
-    lst = Data.objects.last()
-    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
-    return render(request, "sol2/Bsol7.html", context)
-
-def bsol215(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=15)).replace(hour=0,minute=0,second=0,microsecond=0)
-    labels = []
-    dataa = []
-    all = CapSol.objects.filter(dt__gte=one_day_ago)
-    print("all", all)
-    for i in all:
-        labels.append((i.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        # print("labels", labels)
-        dataa.append(i.Bat)
-    lst = Data.objects.last()
-    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
-    return render(request, "sol2/Bsol15.html", context)
-""" fin sol """
-
-#temperature
-
-def dash(request):
-    one_day_ago = (datetime.datetime.today()).replace(hour=0,minute=0,second=0,microsecond=0)
-    print("oui ......",one_day_ago)
-    labels = []
-    dataa = []
-    all = Data2.objects.filter(Time_Stamp__gte=one_day_ago)
-    # print("all", all)
-    for i in all:
-        labels.append((i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S"))
-        # print("labels", labels)
-        dataa.append(i.Temp)
-    lst = Data.objects.last()
-    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
-    return render(request, "temp/Tempjrs.html", context)
-
-def data3(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=3)).replace(hour=0,minute=0,second=0,microsecond=0)
-    labels = []
-    dataa = []
-    all = Data2.objects.filter(Time_Stamp__gte=one_day_ago)
-    print("all", all)
-    for i in all:
-        labels.append((i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S"))
-        # print("labels", labels)
-        dataa.append(i.Temp)
-    lst = Data.objects.last()
-    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
-    return render(request, "temp/Temp3jrs.html", context)
-
-def data7(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=7)).replace(hour=0,minute=0,second=0,microsecond=0)
-    labels = []
-    dataa = []
-    all = Data2.objects.filter(Time_Stamp__gte=one_day_ago)
-    print("all", all)
-    for i in all:
-        labels.append((i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S"))
-        # print("labels", labels)
-        dataa.append(i.Temp)
-    lst = Data.objects.last()
-    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
-    return render(request, "temp/Temp7jrs.html", context)
-
-def data15(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=15)).replace(hour=0,minute=0,second=0,microsecond=0)
-    labels = []
-    dataa = []
-    all = Data2.objects.filter(Time_Stamp__gte=one_day_ago)
-    # print("all", all)
-    for i in all:
-        labels.append((i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S"))
-        # print("labels", labels)
-        dataa.append(i.Temp)
-    lst = Data.objects.last()
-    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
-    return render(request, "temp/Temp15jrs.html", context)
-
-
-#humidité
-def hum1(request):
-    one_day_ago = (datetime.datetime.today()).replace(hour=0,minute=0,second=0,microsecond=0)
-    print("oui ......",one_day_ago)
-    labels = []
-    dataa = []
-    all = Data2.objects.filter(Time_Stamp__gte=one_day_ago)
-    # print("all", all)
-    for i in all:
-        labels.append((i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S"))
-        # print("labels", labels)
-        dataa.append(i.Hum)
-    lst = Data.objects.last()
-    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
-    return render(request, "hum/hum1.html", context)
-
-def hum3(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=3)).replace(hour=0,minute=0,second=0,microsecond=0)
-    labels = []
-    dataa = []
-    all = Data2.objects.filter(Time_Stamp__gte=one_day_ago)
-    print("all", all)
-    for i in all:
-        labels.append((i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S"))
-        # print("labels", labels)
-        dataa.append(i.Hum)
-    lst = Data.objects.last()
-    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
-    return render(request, "hum/hum3.html", context)
-
-def hum7(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=7)).replace(hour=0,minute=0,second=0,microsecond=0)
-    labels = []
-    dataa = []
-    all = Data2.objects.filter(Time_Stamp__gte=one_day_ago)
-    print("all", all)
-    for i in all:
-        labels.append((i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S"))
-        # print("labels", labels)
-        dataa.append(i.Hum)
-    lst = Data.objects.last()
-    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
-    return render(request, "hum/hum7.html", context)
-
-def hum15(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=15)).replace(hour=0,minute=0,second=0,microsecond=0)
-    labels = []
-    dataa = []
-    all = Data2.objects.filter(Time_Stamp__gte=one_day_ago)
-    # print("all", all)
-    for i in all:
-        labels.append((i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S"))
-        # print("labels", labels)
-        dataa.append(i.Hum)
-    lst = Data.objects.last()
-    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
-    return render(request, "hum/hum15.html", context)
-""" fin hum"""
-
-#vitesse
-def vit1(request):
-    one_day_ago = (datetime.datetime.today()).replace(hour=0,minute=0,second=0,microsecond=0)
-    # print("oui ......",one_day_ago)
-    labels = []
-    dataa = []
-    all = Data2.objects.filter(Time_Stamp__gte=one_day_ago)
-    # print("all", all)
-    for i in all:
-        labels.append((i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S"))
-        # print("labels", labels)
-        dataa.append(i.Wind_Speed)
-    lst = Data.objects.last()
-    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
-    return render(request, "vite/vit1.html", context)
-
-def vit3(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=3)).replace(hour=0,minute=0,second=0,microsecond=0)
-    labels = []
-    dataa = []
-    all = Data2.objects.filter(Time_Stamp__gte=one_day_ago)
-    # print("all", all)
-    for i in all:
-        labels.append((i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S"))
-        # print("labels", labels)
-        dataa.append(i.Wind_Speed)
-    lst = Data.objects.last()
-    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
-    return render(request, "vite/vit3.html", context)
-
-def vit7(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=7)).replace(hour=0,minute=0,second=0,microsecond=0)
-    labels = []
-    dataa = []
-    all = Data2.objects.filter(Time_Stamp__gte=one_day_ago)
-    # print("all", all)
-    for i in all:
-        labels.append((i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S"))
-        # print("labels", labels)
-        dataa.append(i.Wind_Speed)
-    lst = Data.objects.last()
-    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
-    return render(request, "vite/vit7.html", context)
-
-def vit15(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=15)).replace(hour=0,minute=0,second=0,microsecond=0)
-    labels = []
-    dataa = []
-    all = Data2.objects.filter(Time_Stamp__gte=one_day_ago)
-    # print("all", all)
-    for i in all:
-        labels.append((i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S"))
-        # print("labels", labels)
-        dataa.append(i.Wind_Speed)
-    lst = Data.objects.last()
-    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
-    return render(request, "vite/vit15.html", context)
-""" fin vit"""
-
-#rayonnement
-def ray1(request):
-    one_day_ago = (datetime.datetime.today()).replace(hour=0,minute=0,second=0,microsecond=0)
-    # print("oui ......",one_day_ago)
-    labels = []
-    dataa = []
-    all = Ray2.objects.filter(DateRay__gte=one_day_ago)
-    # print("all", all)
-    for i in all:
-        labels.append((i.DateRay).strftime("%Y-%m-%d %H:%M:%S"))
-        # print("labels", labels)
-        dataa.append(i.Ray)
-    lst = Data.objects.last()
-    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
-    return render(request, "ray/ray1.html", context)
-
-def ray3(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=3)).replace(hour=0,minute=0,second=0,microsecond=0)
-    labels = []
-    dataa = []
-    all = Ray2.objects.filter(DateRay__gte=one_day_ago)
-    # print("all", all)
-    for i in all:
-        labels.append((i.DateRay).strftime("%Y-%m-%d %H:%M:%S"))
-        # print("labels", labels)
-        dataa.append(i.Ray)
-    lst = Data.objects.last()
-    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
-    return render(request, "ray/ray3.html", context)
-
-def ray7(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=7)).replace(hour=0,minute=0,second=0,microsecond=0)
-    labels = []
-    dataa = []
-    all = Ray2.objects.filter(DateRay__gte=one_day_ago)
-    # print("all", all)
-    for i in all:
-        labels.append((i.DateRay).strftime("%Y-%m-%d %H:%M:%S"))
-        # print("labels", labels)
-        dataa.append(i.Ray)
-    lst = Data.objects.last()
-    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
-    return render(request, "ray/ray7.html", context)
-
-def ray15(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=15)).replace(hour=0,minute=0,second=0,microsecond=0)
-    labels = []
-    dataa = []
-    all = Ray2.objects.filter(DateRay__gte=one_day_ago)
-    # print("all", all)
-    for i in all:
-        labels.append((i.DateRay).strftime("%Y-%m-%d %H:%M:%S"))
-        # print("labels", labels)
-        dataa.append(i.Ray)
-    lst = Data.objects.last()
-    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
-    return render(request, "ray/ray15.html", context)
-""" fin ray"""
-
-#pluviemetre
-def plu1(request):
-    one_day_ago = (datetime.datetime.today()).replace(hour=0,minute=0,second=0,microsecond=0)
-    print("oui ......",one_day_ago)
-    labels = []
-    dataa = []
-    all = Data2.objects.filter(Time_Stamp__gte=one_day_ago)
-    # print("all", all)
-    for i in all:
-        labels.append((i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S"))
-        # print("labels", labels)
-        dataa.append(i.Rain)
-    lst = Data.objects.last()
-    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
-    return render(request, "plu/plu1.html", context)
-
-def plu3(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=3)).replace(hour=0,minute=0,second=0,microsecond=0)
-    labels = []
-    dataa = []
-    all = Data2.objects.filter(Time_Stamp__gte=one_day_ago)
-    print("all", all)
-    for i in all:
-        labels.append((i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S"))
-        # print("labels", labels)
-        dataa.append(i.Rain)
-    lst = Data.objects.last()
-    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
-    return render(request, "plu/plu3.html", context)
-
-def plu7(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=7)).replace(hour=0,minute=0,second=0,microsecond=0)
-    labels = []
-    dataa = []
-    all = Data2.objects.filter(Time_Stamp__gte=one_day_ago)
-    print("all", all)
-    for i in all:
-        labels.append((i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S"))
-        # print("labels", labels)
-        dataa.append(i.Rain)
-    lst = Data.objects.last()
-    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
-    return render(request, "plu/plu7.html", context)
-
-def plu15(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=15)).replace(hour=0,minute=0,second=0,microsecond=0)
-    labels = []
-    dataa = []
-    all = Data2.objects.filter(Time_Stamp__gte=one_day_ago)
-    # print("all", all)
-    for i in all:
-        labels.append((i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S"))
-        # print("labels", labels)
-        dataa.append(i.Rain)
-    lst = Data.objects.last()
-    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
-    return render(request, "plu/plu15.html", context)
-""" fin plu"""
-
-#batterie
-def bat1(request):
-    one_day_ago = (datetime.datetime.today()).replace(hour=0,minute=0,second=0,microsecond=0)
-    print("oui ......",one_day_ago)
-    labels = []
-    dataa = []
-    all = Data2.objects.filter(Time_Stamp__gte=one_day_ago)
-    # print("all", all)
-    for i in all:
-        labels.append((i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S"))
-        # print("labels", labels)
-        dataa.append(i.Bat)
-    lst = Data.objects.last()
-    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
-    return render(request, "bat/bat1.html", context)
-
-def bat3(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=3)).replace(hour=0,minute=0,second=0,microsecond=0)
-    labels = []
-    dataa = []
-    all = Data2.objects.filter(Time_Stamp__gte=one_day_ago)
-    print("all", all)
-    for i in all:
-        labels.append((i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S"))
-        # print("labels", labels)
-        dataa.append(i.Bat)
-    lst = Data.objects.last()
-    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
-    return render(request, "bat/bat3.html", context)
-
-def bat7(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=7)).replace(hour=0,minute=0,second=0,microsecond=0)
-    labels = []
-    dataa = []
-    all = Data2.objects.filter(Time_Stamp__gte=one_day_ago)
-    print("all", all)
-    for i in all:
-        labels.append((i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S"))
-        # print("labels", labels)
-        dataa.append(i.Bat)
-    lst = Data.objects.last()
-    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
-    return render(request, "bat/bat7.html", context)
-
-def bat15(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=15)).replace(hour=0,minute=0,second=0,microsecond=0)
-    labels = []
-    dataa = []
-    all = Data2.objects.filter(Time_Stamp__gte=one_day_ago)
-    # print("all", all)
-    for i in all:
-        labels.append((i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S"))
-        # print("labels", labels)
-        dataa.append(i.Bat)
-    lst = Data.objects.last()
-    context = {'all': all, 'lst': lst, 'labels': labels, 'dataa': dataa}
-    return render(request, "bat/bat15.html", context)
 """ fin bat"""
 #batterie
 def bat11(request):
@@ -1385,30 +102,6 @@ def bat151(request):
     return render(request, "batt/bat15.html", context)
 """ fin bat"""
 
-def et(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=15)).replace(hour=0,minute=0,second=0,microsecond=0)
-    labels = []
-    dataa = []
-    all = ET0o.objects.filter(Time_Stamp__gte=one_day_ago)
-    for i in all:
-        labels.append((i.Time_Stamp).strftime("%Y-%m-%d "))
-        dataa.append(i.value)
-
-    context = {'all': all, 'labels': labels, 'dataa': dataa}
-    return render(request, "ET0/et.html", context)
-
-
-def et0(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=7)).replace(hour=0,minute=0,second=0,microsecond=0)
-    labels = []
-    dataa = []
-    all = ET0.objects.filter(Time_Stamp__gte=one_day_ago)
-    for i in all:
-        labels.append((i.Time_Stamp).strftime("%Y-%m-%d "))
-        dataa.append(i.value)
-
-    context = {'all': all, 'labels': labels, 'dataa': dataa}
-    return render(request, "ET0/et0.html", context)
 
 def fwi0(request):
     one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=15)).replace(hour=0,minute=0,second=0,microsecond=0)
@@ -1422,70 +115,6 @@ def fwi0(request):
     context = {'all': all, 'labels': labels, 'dataa': dataa}
     return render(request, "fwi/fwi.html", context)
 
-
-def charthum(request):
-    tab=CapSol.objects.all()
-    labels = []
-    dataa = []
-    dataa2 = []
-    for data in tab:
-        labels.append((data.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        dataa.append(data.Temp)
-        dataa2.append(data.Hum)
-        print("labels0", type(labels))
-    if (request.method == "POST"):
-        labels.clear()
-        dataa.clear()
-        dataa2.clear()
-
-        fromdate = request.POST.get('startdate')
-        # print(type(datetime.datetime.now()))
-        print("fromdate")
-        print(fromdate)
-        todate = request.POST.get('enddate')
-        print("todate")
-        print(todate)
-        first = CapSol.objects.first()
-        print("first date", str(first.dt))
-        lastdate = CapSol.objects.last()
-        print("last date", str(lastdate.dt))
-        if fromdate != "" and todate != "":
-            # to = datetime.datetime.strptime(todate, '%Y-%m-%d')+datetime.timedelta(days=1)
-            to = datetime.datetime.strptime(todate, '%Y-%m-%d') + datetime.timedelta(days=1)
-            print("to", to)
-            # fromdate = datetime.datetime("07-07")
-            created_documents5 = CapSol.objects.filter(dt__range=[fromdate, to]).order_by('dt')
-            print("created_documents5", created_documents5)
-            for data in created_documents5:
-                labels.append((data.dt).strftime("%d %b %Y %H:%M:%S"))
-                dataa.append(data.Temp)
-                dataa2.append(data.Hum)
-                print("labelfiltter", labels)
-                # return HttpResponseRedirect('/')
-            # print("labelfiltter",labels)
-        if fromdate == "":
-            fromdate = first.dt
-
-        if todate == "":
-            to = (lastdate.dt) + datetime.timedelta(days=1)
-            todate = to + datetime.timedelta(days=1)
-            labels.clear()
-            dataa.clear()
-            dataa2.clear()
-            created_documents6 = CapSol.objects.filter(dt__range=[fromdate, todate]).order_by('id')
-            print("created_documents6", created_documents6)
-
-            for data in created_documents6:
-                labels.append((data.dt).strftime("%d %b %Y %H:%M:%S"))
-                dataa.append(data.Temp)
-                dataa2.append(data.Hum)
-                print("lab", labels)
-                return HttpResponseRedirect('/Charthum')
-
-            print("todate", type(todate))
-
-    context={'tab':tab,'labels':labels,'dataa':dataa,'dataa2':dataa2}
-    return render(request,"chartshum.html",context)
 """
 def chartsal(request):
     tab=CapSol.objects.all()
@@ -1548,360 +177,250 @@ def chartsal(request):
     context={'tab':tab,'labels':labels,'dataa':dataa}
     return render(request,"chartssal.html",context)
 """
-def chartN(request):
-    tab=CapSol.objects.all()
-    labels = []
-    dataa = []
-    for data in tab:
-        labels.append((data.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        dataa.append(data.N)
-        print("labels0", type(labels))
-    if (request.method == "POST"):
-        labels.clear()
-        dataa.clear()
+# def chartN(request):
+#     tab=CapSol.objects.all()
+#     labels = []
+#     dataa = []
+#     for data in tab:
+#         labels.append((data.dt).strftime("%Y-%m-%d %H:%M:%S"))
+#         dataa.append(data.N)
+#         print("labels0", type(labels))
+#     if (request.method == "POST"):
+#         labels.clear()
+#         dataa.clear()
 
-        fromdate = request.POST.get('startdate')
-        # print(type(datetime.datetime.now()))
-        print("fromdate")
-        print(fromdate)
-        todate = request.POST.get('enddate')
-        print("todate")
-        print(todate)
-        first = CapSol.objects.first()
-        print("first date", str(first.dt))
-        lastdate = CapSol.objects.last()
-        print("last date", str(lastdate.dt))
-        if fromdate != "" and todate != "":
-            # to = datetime.datetime.strptime(todate, '%Y-%m-%d')+datetime.timedelta(days=1)
-            to = datetime.datetime.strptime(todate, '%Y-%m-%d') + datetime.timedelta(days=1)
-            print("to", to)
-            # fromdate = datetime.datetime("07-07")
-            created_documents5 = CapSol.objects.filter(dt__range=[fromdate, to]).order_by('dt')
-            print("created_documents5", created_documents5)
-            for data in created_documents5:
-                labels.append((data.dt).strftime("%d %b %Y %H:%M:%S"))
-                dataa.append(data.N)
+#         fromdate = request.POST.get('startdate')
+#         # print(type(datetime.datetime.now()))
+#         print("fromdate")
+#         print(fromdate)
+#         todate = request.POST.get('enddate')
+#         print("todate")
+#         print(todate)
+#         first = CapSol.objects.first()
+#         print("first date", str(first.dt))
+#         lastdate = CapSol.objects.last()
+#         print("last date", str(lastdate.dt))
+#         if fromdate != "" and todate != "":
+#             # to = datetime.datetime.strptime(todate, '%Y-%m-%d')+datetime.timedelta(days=1)
+#             to = datetime.datetime.strptime(todate, '%Y-%m-%d') + datetime.timedelta(days=1)
+#             print("to", to)
+#             # fromdate = datetime.datetime("07-07")
+#             created_documents5 = CapSol.objects.filter(dt__range=[fromdate, to]).order_by('dt')
+#             print("created_documents5", created_documents5)
+#             for data in created_documents5:
+#                 labels.append((data.dt).strftime("%d %b %Y %H:%M:%S"))
+#                 dataa.append(data.N)
 
-                print("labelfiltter", labels)
-                # return HttpResponseRedirect('/')
-            # print("labelfiltter",labels)
-        if fromdate == "":
-            fromdate = first.dt
+#                 print("labelfiltter", labels)
+#                 # return HttpResponseRedirect('/')
+#             # print("labelfiltter",labels)
+#         if fromdate == "":
+#             fromdate = first.dt
 
-        if todate == "":
-            to = (lastdate.dt) + datetime.timedelta(days=1)
-            todate = to + datetime.timedelta(days=1)
-            labels.clear()
-            dataa.clear()
+#         if todate == "":
+#             to = (lastdate.dt) + datetime.timedelta(days=1)
+#             todate = to + datetime.timedelta(days=1)
+#             labels.clear()
+#             dataa.clear()
 
-            created_documents6 = CapSol.objects.filter(dt__range=[fromdate, todate]).order_by('id')
-            print("created_documents6", created_documents6)
+#             created_documents6 = CapSol.objects.filter(dt__range=[fromdate, todate]).order_by('id')
+#             print("created_documents6", created_documents6)
 
-            for data in created_documents6:
-                labels.append((data.dt).strftime("%d %b %Y %H:%M:%S"))
-                dataa.append(data.N)
+#             for data in created_documents6:
+#                 labels.append((data.dt).strftime("%d %b %Y %H:%M:%S"))
+#                 dataa.append(data.N)
 
-                print("lab", labels)
-                return HttpResponseRedirect('/ChartN')
+#                 print("lab", labels)
+#                 return HttpResponseRedirect('/ChartN')
 
-            print("todate", type(todate))
+#             print("todate", type(todate))
 
-    context={'tab':tab,'labels':labels,'dataa':dataa}
-    return render(request,"chartsN.html",context)
+#     context={'tab':tab,'labels':labels,'dataa':dataa}
+#     return render(request,"chartsN.html",context)
 
-def chartP(request):
-    tab=CapSol.objects.all()
-    labels = []
-    dataa = []
-    for data in tab:
-        labels.append((data.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        dataa.append(data.P)
-        print("labels0", type(labels))
-    if (request.method == "POST"):
-        labels.clear()
-        dataa.clear()
+# def chartP(request):
+#     tab=CapSol.objects.all()
+#     labels = []
+#     dataa = []
+#     for data in tab:
+#         labels.append((data.dt).strftime("%Y-%m-%d %H:%M:%S"))
+#         dataa.append(data.P)
+#         print("labels0", type(labels))
+#     if (request.method == "POST"):
+#         labels.clear()
+#         dataa.clear()
 
-        fromdate = request.POST.get('startdate')
-        # print(type(datetime.datetime.now()))
-        print("fromdate")
-        print(fromdate)
-        todate = request.POST.get('enddate')
-        print("todate")
-        print(todate)
-        first = CapSol.objects.first()
-        print("first date", str(first.dt))
-        lastdate = CapSol.objects.last()
-        print("last date", str(lastdate.dt))
-        if fromdate != "" and todate != "":
-            # to = datetime.datetime.strptime(todate, '%Y-%m-%d')+datetime.timedelta(days=1)
-            to = datetime.datetime.strptime(todate, '%Y-%m-%d') + datetime.timedelta(days=1)
-            print("to", to)
-            # fromdate = datetime.datetime("07-07")
-            created_documents5 = CapSol.objects.filter(dt__range=[fromdate, to]).order_by('dt')
-            print("created_documents5", created_documents5)
-            for data in created_documents5:
-                labels.append((data.dt).strftime("%d %b %Y %H:%M:%S"))
-                dataa.append(data.P)
+#         fromdate = request.POST.get('startdate')
+#         # print(type(datetime.datetime.now()))
+#         print("fromdate")
+#         print(fromdate)
+#         todate = request.POST.get('enddate')
+#         print("todate")
+#         print(todate)
+#         first = CapSol.objects.first()
+#         print("first date", str(first.dt))
+#         lastdate = CapSol.objects.last()
+#         print("last date", str(lastdate.dt))
+#         if fromdate != "" and todate != "":
+#             # to = datetime.datetime.strptime(todate, '%Y-%m-%d')+datetime.timedelta(days=1)
+#             to = datetime.datetime.strptime(todate, '%Y-%m-%d') + datetime.timedelta(days=1)
+#             print("to", to)
+#             # fromdate = datetime.datetime("07-07")
+#             created_documents5 = CapSol.objects.filter(dt__range=[fromdate, to]).order_by('dt')
+#             print("created_documents5", created_documents5)
+#             for data in created_documents5:
+#                 labels.append((data.dt).strftime("%d %b %Y %H:%M:%S"))
+#                 dataa.append(data.P)
 
-                print("labelfiltter", labels)
-                # return HttpResponseRedirect('/')
-            # print("labelfiltter",labels)
-        if fromdate == "":
-            fromdate = first.dt
+#                 print("labelfiltter", labels)
+#                 # return HttpResponseRedirect('/')
+#             # print("labelfiltter",labels)
+#         if fromdate == "":
+#             fromdate = first.dt
 
-        if todate == "":
-            to = (lastdate.dt) + datetime.timedelta(days=1)
-            todate = to + datetime.timedelta(days=1)
-            labels.clear()
-            dataa.clear()
+#         if todate == "":
+#             to = (lastdate.dt) + datetime.timedelta(days=1)
+#             todate = to + datetime.timedelta(days=1)
+#             labels.clear()
+#             dataa.clear()
 
-            created_documents6 = CapSol.objects.filter(dt__range=[fromdate, todate]).order_by('id')
-            print("created_documents6", created_documents6)
+#             created_documents6 = CapSol.objects.filter(dt__range=[fromdate, todate]).order_by('id')
+#             print("created_documents6", created_documents6)
 
-            for data in created_documents6:
-                labels.append((data.dt).strftime("%d %b %Y %H:%M:%S"))
-                dataa.append(data.P)
+#             for data in created_documents6:
+#                 labels.append((data.dt).strftime("%d %b %Y %H:%M:%S"))
+#                 dataa.append(data.P)
 
-                print("lab", labels)
-                return HttpResponseRedirect('/ChartP')
+#                 print("lab", labels)
+#                 return HttpResponseRedirect('/ChartP')
 
-            print("todate", type(todate))
+#             print("todate", type(todate))
 
-    context={'tab':tab,'labels':labels,'dataa':dataa}
-    return render(request,"chartsP.html",context)
+#     context={'tab':tab,'labels':labels,'dataa':dataa}
+#     return render(request,"chartsP.html",context)
 
-def chartK(request):
-    tab=CapSol.objects.all()
-    labels = []
-    dataa = []
-    for data in tab:
-        labels.append((data.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        dataa.append(data.K)
-        print("labels0", type(labels))
-    if (request.method == "POST"):
-        labels.clear()
-        dataa.clear()
+# def chartK(request):
+#     tab=CapSol.objects.all()
+#     labels = []
+#     dataa = []
+#     for data in tab:
+#         labels.append((data.dt).strftime("%Y-%m-%d %H:%M:%S"))
+#         dataa.append(data.K)
+#         print("labels0", type(labels))
+#     if (request.method == "POST"):
+#         labels.clear()
+#         dataa.clear()
 
-        fromdate = request.POST.get('startdate')
-        # print(type(datetime.datetime.now()))
-        print("fromdate")
-        print(fromdate)
-        todate = request.POST.get('enddate')
-        print("todate")
-        print(todate)
-        first = CapSol.objects.first()
-        print("first date", str(first.dt))
-        lastdate = CapSol.objects.last()
-        print("last date", str(lastdate.dt))
-        if fromdate != "" and todate != "":
-            # to = datetime.datetime.strptime(todate, '%Y-%m-%d')+datetime.timedelta(days=1)
-            to = datetime.datetime.strptime(todate, '%Y-%m-%d') + datetime.timedelta(days=1)
-            print("to", to)
-            # fromdate = datetime.datetime("07-07")
-            created_documents5 = CapSol.objects.filter(dt__range=[fromdate, to]).order_by('dt')
-            print("created_documents5", created_documents5)
-            for data in created_documents5:
-                labels.append((data.dt).strftime("%d %b %Y %H:%M:%S"))
-                dataa.append(data.K)
+#         fromdate = request.POST.get('startdate')
+#         # print(type(datetime.datetime.now()))
+#         print("fromdate")
+#         print(fromdate)
+#         todate = request.POST.get('enddate')
+#         print("todate")
+#         print(todate)
+#         first = CapSol.objects.first()
+#         print("first date", str(first.dt))
+#         lastdate = CapSol.objects.last()
+#         print("last date", str(lastdate.dt))
+#         if fromdate != "" and todate != "":
+#             # to = datetime.datetime.strptime(todate, '%Y-%m-%d')+datetime.timedelta(days=1)
+#             to = datetime.datetime.strptime(todate, '%Y-%m-%d') + datetime.timedelta(days=1)
+#             print("to", to)
+#             # fromdate = datetime.datetime("07-07")
+#             created_documents5 = CapSol.objects.filter(dt__range=[fromdate, to]).order_by('dt')
+#             print("created_documents5", created_documents5)
+#             for data in created_documents5:
+#                 labels.append((data.dt).strftime("%d %b %Y %H:%M:%S"))
+#                 dataa.append(data.K)
 
-                print("labelfiltter", labels)
-                # return HttpResponseRedirect('/')
-            # print("labelfiltter",labels)
-        if fromdate == "":
-            fromdate = first.dt
+#                 print("labelfiltter", labels)
+#                 # return HttpResponseRedirect('/')
+#             # print("labelfiltter",labels)
+#         if fromdate == "":
+#             fromdate = first.dt
 
-        if todate == "":
-            to = (lastdate.dt) + datetime.timedelta(days=1)
-            todate = to + datetime.timedelta(days=1)
-            labels.clear()
-            dataa.clear()
+#         if todate == "":
+#             to = (lastdate.dt) + datetime.timedelta(days=1)
+#             todate = to + datetime.timedelta(days=1)
+#             labels.clear()
+#             dataa.clear()
 
-            created_documents6 = CapSol.objects.filter(dt__range=[fromdate, todate]).order_by('id')
-            print("created_documents6", created_documents6)
+#             created_documents6 = CapSol.objects.filter(dt__range=[fromdate, todate]).order_by('id')
+#             print("created_documents6", created_documents6)
 
-            for data in created_documents6:
-                labels.append((data.dt).strftime("%d %b %Y %H:%M:%S"))
-                dataa.append(data.K)
+#             for data in created_documents6:
+#                 labels.append((data.dt).strftime("%d %b %Y %H:%M:%S"))
+#                 dataa.append(data.K)
 
-                print("lab", labels)
-                return HttpResponseRedirect('/ChartK')
+#                 print("lab", labels)
+#                 return HttpResponseRedirect('/ChartK')
 
-            print("todate", type(todate))
+#             print("todate", type(todate))
 
-    context={'tab':tab,'labels':labels,'dataa':dataa}
-    return render(request,"chartsK.html",context)
+#     context={'tab':tab,'labels':labels,'dataa':dataa}
+#     return render(request,"chartsK.html",context)
 
-def chartbat(request):
-    tab=CapSol.objects.all()
-    labels = []
-    dataa = []
-    for data in tab:
-        labels.append((data.dt).strftime("%Y-%m-%d %H:%M:%S"))
-        dataa.append(data.Bat)
-        print("labels0", type(labels))
-    if (request.method == "POST"):
-        labels.clear()
-        dataa.clear()
+# def chartbat(request):
+#     tab=CapSol.objects.all()
+#     labels = []
+#     dataa = []
+#     for data in tab:
+#         labels.append((data.dt).strftime("%Y-%m-%d %H:%M:%S"))
+#         dataa.append(data.Bat)
+#         print("labels0", type(labels))
+#     if (request.method == "POST"):
+#         labels.clear()
+#         dataa.clear()
 
-        fromdate = request.POST.get('startdate')
-        # print(type(datetime.datetime.now()))
-        print("fromdate")
-        print(fromdate)
-        todate = request.POST.get('enddate')
-        print("todate")
-        print(todate)
-        first = CapSol.objects.first()
-        print("first date", str(first.dt))
-        lastdate = CapSol.objects.last()
-        print("last date", str(lastdate.dt))
-        if fromdate != "" and todate != "":
-            # to = datetime.datetime.strptime(todate, '%Y-%m-%d')+datetime.timedelta(days=1)
-            to = datetime.datetime.strptime(todate, '%Y-%m-%d') + datetime.timedelta(days=1)
-            print("to", to)
-            # fromdate = datetime.datetime("07-07")
-            created_documents5 = CapSol.objects.filter(dt__range=[fromdate, to]).order_by('dt')
-            print("created_documents5", created_documents5)
-            for data in created_documents5:
-                labels.append((data.dt).strftime("%d %b %Y %H:%M:%S"))
-                dataa.append(data.Bat)
+#         fromdate = request.POST.get('startdate')
+#         # print(type(datetime.datetime.now()))
+#         print("fromdate")
+#         print(fromdate)
+#         todate = request.POST.get('enddate')
+#         print("todate")
+#         print(todate)
+#         first = CapSol.objects.first()
+#         print("first date", str(first.dt))
+#         lastdate = CapSol.objects.last()
+#         print("last date", str(lastdate.dt))
+#         if fromdate != "" and todate != "":
+#             # to = datetime.datetime.strptime(todate, '%Y-%m-%d')+datetime.timedelta(days=1)
+#             to = datetime.datetime.strptime(todate, '%Y-%m-%d') + datetime.timedelta(days=1)
+#             print("to", to)
+#             # fromdate = datetime.datetime("07-07")
+#             created_documents5 = CapSol.objects.filter(dt__range=[fromdate, to]).order_by('dt')
+#             print("created_documents5", created_documents5)
+#             for data in created_documents5:
+#                 labels.append((data.dt).strftime("%d %b %Y %H:%M:%S"))
+#                 dataa.append(data.Bat)
 
-                print("labelfiltter", labels)
-                # return HttpResponseRedirect('/')
-            # print("labelfiltter",labels)
-        if fromdate == "":
-            fromdate = first.dt
+#                 print("labelfiltter", labels)
+#                 # return HttpResponseRedirect('/')
+#             # print("labelfiltter",labels)
+#         if fromdate == "":
+#             fromdate = first.dt
 
-        if todate == "":
-            to = (lastdate.dt) + datetime.timedelta(days=1)
-            todate = to + datetime.timedelta(days=1)
-            labels.clear()
-            dataa.clear()
+#         if todate == "":
+#             to = (lastdate.dt) + datetime.timedelta(days=1)
+#             todate = to + datetime.timedelta(days=1)
+#             labels.clear()
+#             dataa.clear()
 
-            created_documents6 = CapSol.objects.filter(dt__range=[fromdate, todate]).order_by('id')
-            print("created_documents6", created_documents6)
+#             created_documents6 = CapSol.objects.filter(dt__range=[fromdate, todate]).order_by('id')
+#             print("created_documents6", created_documents6)
 
-            for data in created_documents6:
-                labels.append((data.dt).strftime("%d %b %Y %H:%M:%S"))
-                dataa.append(data.Bat)
+#             for data in created_documents6:
+#                 labels.append((data.dt).strftime("%d %b %Y %H:%M:%S"))
+#                 dataa.append(data.Bat)
 
-                print("lab", labels)
-                return HttpResponseRedirect('/Chartec')
+#                 print("lab", labels)
+#                 return HttpResponseRedirect('/Chartec')
 
-            print("todate", type(todate))
+#             print("todate", type(todate))
 
-    context={'tab':tab,'labels':labels,'dataa':dataa}
-    return render(request,"chartsbat.html",context)
+#     context={'tab':tab,'labels':labels,'dataa':dataa}
+#     return render(request,"chartsbat.html",context)
 
-
-def exemple():
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=1)).replace(hour=0,minute=0,second=0,microsecond=0)
-    now=(datetime.datetime.now()).replace(hour=0,minute=0,second=0,microsecond=0)
-    onedayRay = one_day_ago.replace(hour=7)
-    todayRay = one_day_ago.replace(hour=20)
-    posts = Ws.objects.filter(date__gte=one_day_ago,date__lte=now)
-    hm = Ws.objects.filter(date__gte=one_day_ago, date__lte=now,Humidity__gte=50)
-    print("hm :",hm)
-    # print("posts ws", posts.count())
-    print("heure", one_day_ago)
-    print("to heure", todayRay)
-
-    post = Ray.objects.filter(DateRay__gte=one_day_ago, DateRay__lte=now)
-    rav = post.count()
-    print("nbrs ray1", rav)
-    print("____________________________________filtre par heure _______________________________________")
-
-    filtresup=Ray.objects.filter(DateRay__gte=onedayRay,DateRay__lte=todayRay)
-    print("filtre nbr:",filtresup.count())
-    w=filtresup.aggregate(Sum('Ray'))
-    print("filtreRay :", w)
-    rayonnement = w['Ray__sum']/rav
-    print("avreage ray :", rayonnement)
-    print("_____________________________________fin filtre par heure __________________________________")
-
-    totalRay = post.values('Ray').aggregate(Sum('Ray'))
-    Maxtemp = posts.values('Temperature').aggregate(Max('Temperature'))
-    Mintemp = posts.values('Temperature').aggregate(Min('Temperature'))
-    MaxHum = posts.values('Humidity').aggregate(Max('Humidity'))
-    MinHum = posts.values('Humidity').aggregate(Min('Humidity'))
-    avreage = posts.aggregate(Avg('Vent'))
-    dicttolistVent = list(avreage.items())
-    avgvent = (round(dicttolistVent[0][1] / 3.6, 4))
-    vitvent = round(dicttolistVent[0][1],4)
-    print("vitvent :",vitvent)
-    dicttolisTmax = list(Maxtemp.items())
-    Tmmax = dicttolisTmax[0][1]
-    dicttolisTmin = list(Mintemp.items())
-    Tmmin = dicttolisTmin[0][1]
-    dicttolisHmax = list(MaxHum.items())
-    Hmax = dicttolisHmax[0][1]
-    dicttolisHmin = list(MinHum.items())
-    Hmin = dicttolisHmin[0][1]
-    # print("posts", posts)
-    print("tv", avgvent)
-    print("tr", totalRay)
-    print("tmin", Tmmin)
-    print("tmax", Tmmax)
-    print("hmin", Hmin)
-    print("hmax", Hmax)
-    print("avg :", avgvent)
-    B2 = one_day_ago.timetuple().tm_yday # 57#
-    print("b2", B2)
-    RS = 6017.33  # totl radiation
-    Tmin = Tmmin#6.62#
-    Tmax = Tmmax#29.19#
-    HRmin = Hmin #16.46#
-    HRmax = Hmax #74.86#
-    u = avgvent  # m/s moyen 0.1652#
-
-    print("--------------------------------------------------------------")
-    station = pm.Station(latitude=33.9, altitude=1690)
-    station.anemometer_height = 2
-    r = round(180.2 * 0.0864, 2)
-    print(r)
-    day = station.day_entry(B2,
-                            temp_min=11.76,
-                            temp_max=24.66,
-                            wind_speed=u,
-                            humidity_min=43.77,
-                            humidity_max= 92.33,
-                            # humidity_mean=(HRmin+HRmax)*0.5,
-                            radiation_s=r,
-                            )
-    print("ETo for this day is", day.eto())
-    print("--------------------------------------------------------------")
-
-    M = round(rayonnement,2)  # radiation/h RS/24#
-    print("ray ", M)
-    N = round(M * 3600 * 0.000001 * 24,2)  # Rs [MJm-2d-1]
-    print("N :",N)
-    u2 = round(u * 4.87 / math.log(67.8 * 2 - 5.42),3)
-    print("u2 ;",u2)
-    latitude = 53.9
-    altitude = 580
-    ctesolaire = 0.082
-    StefanBolt = 0.000000004896
-    p = 3.140
-    g = 0.000665 * 101.3 * math.pow(((293 - 0.0065 * altitude) / 293), 5.26)
-    conversion = latitude * 3.1416 / 180
-    Y = 1 + 0.033 * math.cos((2 * p * B2) / 365)
-    Z = 0.409 * math.sin((2 * p * B2 / 365) - 1.39)
-    AA = math.acos(-math.tan(conversion) * math.tan(Z))
-    AB = (24 * 60 / p) * ctesolaire * Y * (
-            AA * math.sin(conversion) * math.sin(Z) + math.cos(conversion) * math.cos(Z) * math.sin(AA))
-    AC = AB * (0.75 + 0.00002 * altitude)
-    AD = 1.35 * (N / AC) - 0.35
-    AE = (0.6108 * math.exp(17.27 * Tmin / (Tmin + 237.3)) + 0.6108 * math.exp(17.27 * Tmax / (Tmax + 237.3))) / 2
-    AF = (HRmin * 0.6108 * math.exp(17.27 * Tmax / (Tmax + 237.3)) + HRmax * 0.6108 * math.exp(
-        17.27 * Tmin / (Tmin + 237.3))) / (2 * 100)
-    AG = StefanBolt * 0.5 * ((Tmin + 273) ** 4 + (Tmax + 273) ** 4) * (0.34 - 0.14 * math.sqrt(AF)) * AD
-    AH = (1 - 0.23) * N - AG
-    AI = 0
-    AJ = 4098 * 0.6108 * math.exp(17.27 * 0.5 * (Tmin + Tmax) / (0.5 * (Tmin + Tmax) + 237.3)) / (
-            0.5 * (Tmin + Tmax) + 237.3) ** 2
-    ET_0 = (0.408 * AJ * (AH - AI) + (1600 * g / ((Tmin + Tmax) * 0.5 + 273)) * u2 * (AE - AF)) / (
-            AJ + g * (1 + 0.38 * u2))
-
-    print("ETvisio_0",round(ET_0, 2))
 
 def fwi():
     global temp, rhum, prcp, wind, ffmc0, dc0, dmc0, ffmc, dmc, isi, bui, fwi, i, jprcp
@@ -2089,28 +608,7 @@ def weatherS(request):
     one_day_ago = datetime.datetime.now() - datetime.timedelta(days=1)
     posts = Ws.objects.filter(date__gte=one_day_ago)
     print("................................. weeather station visio green .................................")
-    # #vent calcul
-    # totalVent = posts.values('Vent').aggregate(Sum('Vent'))
-    # nbrVent = posts.values('Vent').count()
-    # moyVent=round((totalVent["Vent__sum"]/nbrVent),2)
-    # print("totalevent : ",totalVent , nbrVent, moyVent)
-    # #temperature calcul
-    # Maxtemp = posts.values('Temperature').aggregate(Max('Temperature'))
-    # Mintemp = posts.values('Temperature').aggregate(Min('Temperature'))
-    # moyTemp = (Maxtemp["Temperature__max"] + Mintemp["Temperature__min"]) / 2
-    # print("moyTemp :", moyTemp)
-    # #humiidity calcul
-    # MaxHum = posts.values('Humidity').aggregate(Max('Humidity'))
-    # MinHum = posts.values('Humidity').aggregate(Min('Humidity'))
-    # moyHum = (MaxHum["Humidity__max"] + MinHum["Humidity__min"]) / 2
-    # print("moyHum : ", moyHum)
-    # #pluie calcul
-    # totalrain = posts.values('Pluv').aggregate(Sum('Pluv'))
-    # nmbrRain = posts.values('Pluv').count()
-    # moyRain = totalrain['Pluv__sum']/nmbrRain
-    # print("moyRain :", moyRain)
-    # mth = datetime.datetime.today().month
-    # print(mth)
+
     context={'lst':lst,'t':t,'h':h,'v':v,'r':r,'p':p,"lstet":lstet,'lstfwi':lstfwi,'ray':ray,'lstR':lstR}
     return render(request,"stationvisio.html",context)
 
@@ -2210,46 +708,79 @@ def home(request):
         # print(type(datetime.datetime.now()))
         print("fromdate")
         print(fromdate)
-        # todate = request.POST.get('enddate')
-        # print("todate")
-        # print(todate)
-        # first = CapSol.objects.first()
-        # print("first date", str(first.dt))
-        # lastdate = CapSol.objects.last()
-        # print("last date", str(lastdate.dt))
-        # if fromdate != "" and todate != "":
-        #     # to = datetime.datetime.strptime(todate, '%Y-%m-%d')+datetime.timedelta(days=1)
-        #     to = datetime.datetime.strptime(todate, '%Y-%m-%d') + datetime.timedelta(days=1)
-        #     # fromdate = datetime.datetime("07-07")
-        #     created_documents5 = CapSol.objects.filter(dt__range=[fromdate, todate]).order_by('dt')
-        #     print("created_documents5",created_documents5)
-        #     for data in created_documents5:
-        #         labels.append((data.dt).strftime("%d %b %Y %H:%M:%S"))
-        #         dataa.append(data.Temp)
-        #         dataa2.append(data.Hum)
-        #
-        # if fromdate =="":
-        #     fromdate= first.dt
-        #
-        # if todate == "":
-        #     to = (lastdate.dt)+ datetime.timedelta(days=1)
-        #     todate = to + datetime.timedelta(days=1)
-        #     labels.clear()
-        #     dataa.clear()
-        #     dataa2.clear()
-        #     created_documents6 = CapSol.objects.filter(dt__range=[fromdate, todate]).order_by('id')
-        #     # print("created_documents6",created_documents6)
-        #
-        #     for data in created_documents6:
-        #
-        #         labels.append((data.dt).strftime("%d %b %Y %H:%M:%S"))
-        #         dataa.append(data.Temp)
-        #         dataa2.append(data.Hum)
 
     context = {'tab': tab,'tab2':tab2,'max_temp':max_temp,'min_temp':min_temp,'moy':moy,'f':f,'labels':labels,'dataa':dataa,'dataa2':dataa2,'cap2':cap2, 'bv':bv,'cap1_last_data':cap1_last_data,'cap2_last_data':cap2_last_data,
     'cap3_last_data':cap3_last_data, 'cap4_last_data':cap4_last_data}
     return render(request, "index.html", context)
 
+
+#******* Capteur des sol ***********
+def capsol_filter(request):
+    # Champs disponibles pour la sélection
+    available_fields = ['Temp', 'Hum', 'ec', 'N', 'P', 'K', 'Sal', 'Bat']
+
+    # Récupération des paramètres GET
+    selected_field = request.GET.get('field', 'Temp')  # Temp par défaut
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+
+    # Traitement des dates
+    if start_date and end_date:
+        start_date = make_aware(datetime.datetime.strptime(start_date, "%Y-%m-%d"))
+        end_date = make_aware(datetime.datetime.strptime(end_date, "%Y-%m-%d").replace(hour=23, minute=59, second=59))
+    else:
+        one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=1)).replace(hour=0, minute=0)
+        start_date = make_aware(one_day_ago)
+        end_date = make_aware(datetime.datetime.now().replace(hour=23, minute=59, second=59))
+
+    # Filtrage des données CapSol2 pour les capteurs 1, 2 et 3
+    data_by_sensor = {}
+    for dev_id in [1, 2, 3, 4]:
+        data = CapSol2.objects.filter(devId=dev_id, dt__range=(start_date, end_date)).order_by('dt')
+        labels = [d.dt.strftime("%Y-%m-%d %H:%M:%S") for d in data]
+        values = [getattr(d, selected_field, 0) if getattr(d, selected_field, None) is not None else 0 for d in data]
+        data_by_sensor[dev_id] = list(zip(labels, values))
+    # data_by_sensor = {}
+    # for dev_id in [1, 2, 3, 4]:
+    #     data = CapSol2.objects.filter(devId=dev_id, dt__range=(start_date, end_date)).order_by('dt')
+
+    #     filtered_data = []
+    #     for d in data:
+    #         value = getattr(d, selected_field, None)
+    #         if value is not None and value <= 500:
+    #             timestamp = d.dt.strftime("%Y-%m-%d %H:%M:%S")
+    #             filtered_data.append((timestamp, value))
+
+    #     data_by_sensor[dev_id] = filtered_data
+    # data_by_sensor = {}
+    # for dev_id in [1, 2, 3, 4]:
+    #     data = CapSol2.objects.filter(devId=dev_id, dt__range=(start_date, end_date)).order_by('dt')
+
+    #     filtered_data = []
+    #     for d in data:
+    #         value = getattr(d, selected_field, None)
+
+    #         # Si le champ sélectionné est "Temp" et que la température est supérieure à 100, ignorer l'enregistrement
+    #         if selected_field == "Temp" and value is not None and value > 100:
+    #             continue
+
+    #         if value is not None:
+    #             timestamp = d.dt.strftime("%Y-%m-%d %H:%M:%S")
+    #             filtered_data.append((timestamp, value))
+
+    #     data_by_sensor[dev_id] = filtered_data
+
+    context = {
+        'available_fields': available_fields,
+        'selected_field': selected_field,
+        'start_date': start_date.strftime("%Y-%m-%d"),
+        'end_date': end_date.strftime("%Y-%m-%d"),
+        'data_by_sensor': data_by_sensor
+    }
+
+    return render(request, "enviro/tvoc7.html", context)
+
+#***********************************
 
     # completed = request.POST('checks')
     # print(completed)
@@ -2533,26 +1064,6 @@ def ETO():
         Delta=D11
     )
 
-#ETO()
-
-# def run_eto_once_per_day():
-#     current_date = now().date()
-#     current_time = now()
-
-#     print(f"Vérification à {current_time}...")
-
-#     # Vérifier si ET0 a été calculé aujourd'hui
-#     already_executed = ET0ExecutionLog.objects.filter(date=current_date).exists()
-
-#     if not already_executed and current_time.hour == 1:
-#         # Exécuter ET0 et enregistrer l'exécution
-#         ETO()
-#         print("✅ ET0 calculé et enregistré.")
-
-#         # Sauvegarde de l'exécution
-#         ET0ExecutionLog.objects.create(date=current_date)
-#     else:
-#         print("⏳ ET0 a déjà été calculé aujourd'hui ou il n'est pas encore temps.")
 from django.utils.timezone import now as dj_now
 
 def et0_job(request):
@@ -2625,6 +1136,8 @@ def wsopen(request):
     # Fonction pour récupérer les précipitations sur une période donnée
     def get_rain_sum(start_time):
         return Data2.objects.filter(Time_Stamp__gte=start_time, Time_Stamp__lte=current_time).aggregate(Sum('Rain'))['Rain__sum'] or 0
+    def get_rain_sum_(start_time):
+        return Data2.objects.filter(Time_Stamp__gte=start_time, Time_Stamp__lte=current_time).aggregate(Sum('Rain_act'))['Rain_act__sum'] or 0
 
     one_hour_ago = current_time - timezone.timedelta(hours=1)
     eight_hours_ago = current_time - timezone.timedelta(hours=8)
@@ -2636,13 +1149,38 @@ def wsopen(request):
     p24h = round(get_rain_sum(one_day_ago), 2)
     p1w = round(get_rain_sum(one_week_ago), 2)
 
+    p1h_ = round(get_rain_sum_(one_hour_ago), 2)
+    p8h_ = round(get_rain_sum_(eight_hours_ago), 2)
+    p24h_ = round(get_rain_sum_(one_day_ago), 2)
+    p1w_ = round(get_rain_sum_(one_week_ago), 2)
+    last_two_rain_acc_1 = Data2.objects.order_by('-Time_Stamp')[:2]
+    print("last_record databases :", last_two_rain_acc_1)
+    # Récupérer les enregistrements par ordre décroissant de date
+    all_rain = Data2.objects.order_by('-Time_Stamp')
+
+    # Initialiser une liste pour stocker les 2 enregistrements valides
+    last_two_rain_acc = []
+
+    for record in all_rain:
+        if not last_two_rain_acc:
+            # Premier enregistrement, on l'ajoute
+            last_two_rain_acc.append(record)
+        else:
+            # Comparer avec le précédent : au moins 5 minutes d’écart ?
+            time_diff = last_two_rain_acc[0].Time_Stamp - record.Time_Stamp
+            if time_diff >= timedelta(minutes=5):
+                last_two_rain_acc.append(record)
+                break  # On a trouvé les deux, on peut arrêter
+    # print("last_record.last_two_rain_acc : ", last_two_rain_acc.Rain_acc,type(last_two_rain_acc.Rain_acc))
     tab = Data2.objects.last()
     tab2 = Ray2.objects.last()
     eto = ET0o.objects.last()
     lstfwi = DataFwiO.objects.last()
+    # derniers_enregistrements = wsd.objects.exclude(Rg=0).order_by('-Time_Stamp')[:2]
 
     context = {
     'tab': tab, 'tab2': tab2, 'eto': eto, 'p1w': p1w, 'p24h': p24h, 'p8h': p8h, 'p1h': p1h,
+    'rg_data': last_two_rain_acc,'p1w_': p1w_, 'p24h_': p24h_, 'p8h_': p8h_, 'p1h_': p1h_,
     'Rx': Rx, 'Rm': Rm, 'Sx': Sx, 'Sm': Sm, 'Hx': Hx, 'Hm': Hm, 'Tmmax': Tmmax, 'Tmmin': Tmmin,
     'Tmavg': round(Tmavg, 2), 'Havg': round(Havg, 2), 'Savg': round(Savg, 2), 'Ravg': round(Ravg, 2),
     'lstfwi': lstfwi
@@ -2680,6 +1218,7 @@ def wsopen1(request):
 
     """ Vitesse du vent """
     Sx = hm.aggregate(Max('wind_speed'))['wind_speed__max']
+    print("sppped max :",Sx)
     Sm = hm.aggregate(Min('wind_speed'))['wind_speed__min']
     Savg = hm.aggregate(Avg('wind_speed'))['wind_speed__avg'] or 0
 
@@ -2708,7 +1247,7 @@ def wsopen1(request):
     p8h = get_rain_sum(post8)
     p24h = get_rain_sum(post24)
     p1w = get_rain_sum(postweek)
-
+    derniers_enregistrements = wsd.objects.exclude(Rg=0).order_by('-Time_Stamp')[:2]
     tab = wsd.objects.last()
     eto = ET0o.objects.last()
     last_et0dr = ET0DR.objects.last()
@@ -2717,7 +1256,7 @@ def wsopen1(request):
     'Rx': Rx, 'Rm': Rm, 'Ravg': round(Ravg, 2),
     'Sx': Sx, 'Sm': Sm, 'Savg': round(Savg, 2),
     'Hx': Hx, 'Hm': Hm, 'Havg': round(Havg, 2),
-    'Tmmax': Tmmax, 'Tmmin': Tmmin, 'Tmavg': round(Tmavg, 2),
+    'Tmmax': Tmmax, 'Tmmin': Tmmin, 'Tmavg': round(Tmavg, 2),'rg_data': derniers_enregistrements,
     'lstfwi': lstfwi, 'last_et0dr': last_et0dr
     }
 
@@ -2750,1111 +1289,10 @@ def cwsi_data(request):
     }
     return render(request, 'cwsi/cwsi01.html', context)
 
-def ET0o_calc():
-
-    # exemple()
-
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=1)).replace(hour=0, minute=0, second=0,
-                                                                                 microsecond=0)
-    now = (datetime.datetime.now()).replace(hour=0, minute=0, second=0, microsecond=0)
-    onedayRay = one_day_ago.replace(hour=7)
-    todayRay = one_day_ago.replace(hour=20)
-    posts = Data.objects.filter(Time_Stamp__gte=one_day_ago, Time_Stamp__lte=now)
-    # print("posts ws", posts.count())
-    print("heure", one_day_ago)
-    print("to heure", todayRay)
-
-    post = Data.objects.filter(Time_Stamp__gte=one_day_ago, Time_Stamp__lte=now)
-    rav = post.count()
-    print("nbrs ray1", rav)
-    print("____________________________________filtre par heure _______________________________________")
-
-    filtresup = Data.objects.filter(Time_Stamp__gte=onedayRay, Time_Stamp__lte=todayRay)
-    print("filtre nbr:", filtresup.count())
-    w = post.aggregate(Avg('Ray'))
-    print("moy ray :", w)
-    lit = list(w.items())
-    rayonnement = lit[0][1]
-    print("avreage ray :", rayonnement)
-    print("_____________________________________fin filtre par heure __________________________________")
-
-    """ wind speed opensnz"""
-    # wind_s = Ws.objects.filter(date__gte=one_day_ago, date__lte=now)
-    # wind_avg= wind_s.aggregate(Avg('Vent'))
-    # print(wind_avg)
-    # dicttolistVent = list(wind_avg.items())
-    # avgvent = (round(dicttolistVent[0][1] / 3.6, 4))
-    # print(avgvent)
-    # wind_sp = wind_s.aggregate(Max('Vent'))
-    # spw = list(wind_sp.items())
-    # sw = float(spw[0][1])
-    # print("speed max visio :", sw)
-
-    wsp = Data.objects.filter(Time_Stamp__gte=onedayRay, Time_Stamp__lte=todayRay)
-    awsp = wsp.aggregate(Sum('Wind_Speed'))
-    listws = list(awsp.items())
-    avgws = round(listws[0][1]/rav,4)
-    print("avrege open snz vent :", avgws)
-    # dif_ws=avgws-avgvent
-    # print("difference vent :", dif_ws)
-    totalRay = post.values('Ray').aggregate(Sum('Ray'))
-    Maxtemp = posts.values('Temp').aggregate(Max('Temp'))
-    Mintemp = posts.values('Temp').aggregate(Min('Temp'))
-    MaxHum = posts.values('Hum').aggregate(Max('Hum'))
-    MinHum = posts.values('Hum').aggregate(Min('Hum'))
-    avreage = posts.aggregate(Avg('Wind_Speed'))
-
-    dicttolistVent = list(avreage.items())
-    avgvent = (round(dicttolistVent[0][1] / 3.6, 4))
-    vitvent = round(dicttolistVent[0][1], 4)
-    print("vitvent :", vitvent)
-    dicttolisTmax = list(Maxtemp.items())
-    Tmmax = dicttolisTmax[0][1]
-    dicttolisTmin = list(Mintemp.items())
-    Tmmin = dicttolisTmin[0][1]
-    dicttolisHmax = list(MaxHum.items())
-    Hmax = dicttolisHmax[0][1]
-    dicttolisHmin = list(MinHum.items())
-    Hmin = dicttolisHmin[0][1]
-    # print("posts", posts)
-    print("tv", avgvent)
-    print("tr", totalRay)
-    print("tmin", Tmmin)
-    print("tmax", Tmmax)
-    print("hmin", Hmin)
-    print("hmax", Hmax)
-    print("avg :", avgvent)
-    B2 =one_day_ago.timetuple().tm_yday
-    print("b2", B2)
-
-    RS = 7875  # totl radiation
-    Tmin = Tmmin
-    Tmax = Tmmax
-    HRmin = Hmin
-    HRmax = Hmax
-    u = avgws  # m/s moyen
-    print("--------------------------------------------------------------")
-    station = pm.Station(latitude=33.01, altitude=640)
-    station.anemometer_height = 2
-    r = round(rayonnement * 0.0864, 2)
-    print(r)
-
-    day = station.day_entry(B2,
-                            temp_min=Tmmin,
-                            temp_max=Tmmax,
-                            wind_speed=u,
-                            humidity_max=HRmax,
-                            humidity_min= HRmin,
-                            # humidity_mean=(Hmin + Hmax) * 0.5,
-                            radiation_s=r,
-                            )
-    print("ETo opensnz for this day is", day.eto())
-    eto=day.eto()
-    durée = eto /0.05
-
-    print("time of irrig ................",round(durée))
-
-    client = mqtt.Client()
-
-    client.connect("broker.hivemq.com", 1883, 80)
-
-    client.publish("et", round(durée))  # publish the message typed by the user
-    # print(msg)
-    client.disconnect(); #disconnect from server
-    print("--------------------------------------------------------------")
-    M = round(rayonnement, 2)  # radiation/h
-    print("ray ", M)
-    N = round(M * 3600 * 0.000001 * 24, 2)  # Rs [MJm-2d-1]
-    print("N :", N)
-    u2 = round(u * 4.87 / math.log(67.8 * 2 - 5.42), 3)
-    print("u2 ;", u2)
-    latitude = 60
-    altitude = 800
-    ctesolaire = 0.082
-    StefanBolt = 0.000000004896
-    p = 3.140
-    g = 0.000665 * 101.3 * math.pow(((293 - 0.0065 * altitude) / 293), 5.26)
-    conversion = latitude * 3.1416 / 180
-    Y = 1 + 0.033 * math.cos((2 * p * B2) / 365)
-    Z = 0.409 * math.sin((2 * p * B2 / 365) - 1.39)
-    AA = math.acos(-math.tan(conversion) * math.tan(Z))
-    AB = (24 * 60 / p) * ctesolaire * Y * (
-            AA * math.sin(conversion) * math.sin(Z) + math.cos(conversion) * math.cos(Z) * math.sin(AA))
-    AC = AB * (0.75 + 0.00002 * altitude)
-    AD = 1.35 * (N / AC) - 0.35
-    AE = (0.6108 * math.exp(17.27 * Tmin / (Tmin + 237.3)) + 0.6108 * math.exp(17.27 * Tmax / (Tmax + 237.3))) / 2
-    AF = (HRmin * 0.6108 * math.exp(17.27 * Tmax / (Tmax + 237.3)) + HRmax * 0.6108 * math.exp(
-        17.27 * Tmin / (Tmin + 237.3))) / (2 * 100)
-    AG = StefanBolt * 0.5 * ((Tmin + 273) ** 4 + (Tmax + 273) ** 4) * (0.34 - 0.14 * math.sqrt(AF)) * AD
-    AH = (1 - 0.23) * N - AG
-    AI = 7
-    AJ = 4098 * 0.6108 * math.exp(17.27 * 0.5 * (Tmin + Tmax) / (0.5 * (Tmin + Tmax) + 237.3)) / (
-            0.5 * (Tmin + Tmax) + 237.3) ** 2
-    ET_0 = (0.408 * AJ * (AH - AI) + (1600 * g / ((Tmin + Tmax) * 0.5 + 273)) * u2 * (AE - AF)) / (
-            AJ + g * (1 + 0.38 * u2))
-    print("aj :", AJ)
-
-    ET = round(ET_0, 2)
-    print("ET_0", ET)
-
-    # ET0.objects.create(value=ET, WSavg=avgvent, Tmax=Tmax, Tmin=Tmin, Hmax=HRmax, Hmin=HRmin, Raym=M, U2=u2, Delta=B2)
-    print("__________________________________ET_O Calculé________________________________")
-
-
-
-# def pm():
-#     import penmon as pm
-#
-#     ### create a station class with known location and elevation
-#     from penmon import DayEntry
-#
-#     station = pm.Station(latitude=34.01, altitude=626)
-#     station.anemometer_height = 2
-#     r = 198.65 * 0.0864
-#     print(r)
-#
-#     ### getting a day instance for August 16th
-#     day = station.day_entry(301,
-#                             temp_min=16.6,
-#                             temp_max=30.95,
-#                             wind_speed=1.86,
-#                             humidity_mean=52.64,
-#                             radiation_s=r,
-#                             )
-#     print("------------psychrometric_constant-----------")
-#     print(day.psychrometric_constant())
-#     print("-----------saturation_vapour_pressure------------")
-#     print(day.saturation_vapour_pressure(30.95))
-#     print("------------daylight_hours-----------")
-#     print(day.daylight_hours())
-#     print("----------latent_heat_of_vaporization-------------")
-#
-#     # print(day.sunshine_hours())
-#     print(day.latent_heat_of_vaporization())
-#     print("----------solar_radiation-------------")
-#     print(day.solar_radiation())
-#     print("------------R_ns-----------")
-#     print(day.R_ns())
-#     print("----------soil_heat_flux-------------")
-#     print(day.soil_heat_flux())
-#     print("-----------R_so------------")
-#     print(day.R_so())
-#     print("----------solar_radiation_in_mm-------------")
-#     print(day.solar_radiation_in_mm())
-#     print("-------------R_a_in_mm----------")
-#     print(day.R_a_in_mm())
-#     print("-------------R_a----------")
-#     print(day.R_a())
-#     print("-----------slope_of_saturation_vapour_pressure------------")
-#     print(day.slope_of_saturation_vapour_pressure(30.65))
-#     print("-----------------------")
-#     day.radiation_s = r
-#
-#     print(day.temp_max)
-#
-#     print(day.wind_speed_2m())
-#
-#     print(" blot :", DayEntry.dew_point(self=day))
-#     print("ETo for this day
-#     is", day.eto())
-def envfct(request):
-
-    from django.db.models import Max, Min
-import datetime
-
-def envfct(request):
-    # Obtenir le début de la journée actuelle
-    now = datetime.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
-
-    # Dernier enregistrement pour chaque capteur (S1, S2, S3)
-    s1_last_data = Envdata.objects.filter(devId="S1").latest('Time_Stamp')
-    s2_last_data = Envdata.objects.filter(devId="S2").latest('Time_Stamp')
-    s3_last_data = Envdata.objects.filter(devId="S3").latest('Time_Stamp')
-
-    # Dernier enregistrement pour wsd (si "TEM" est None, le remplacer par 0)
-    last_wsd_data = wsd.objects.latest('Time_Stamp')
-    last_wsd_value = last_wsd_data.TEM if last_wsd_data.TEM is not None else 0
-
-    # Dernier enregistrement pour Data2 (si "Temp" est None, le remplacer par 0)
-    last_data2 = Data2.objects.latest('Time_Stamp')
-    last_data2_value = last_data2.Temp if last_data2.Temp is not None else 0
-
-    context = {
-        "s1_last_data": s1_last_data,
-        "s2_last_data": s2_last_data,
-        "s3_last_data": s3_last_data,
-        "last_wsd_value": last_wsd_value,  # Ajouter la valeur de wsd
-        "last_data2_value": last_data2_value,  # Ajouter la valeur de Data2
-    }
-
-    return render(request, "env1.html", context)
-
-
 
 
 """ pm10"""
-# For PM10
-def pm10_data(request, days, template_name):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=days)).replace(hour=0, minute=0, second=0,
-                                                                                    microsecond=0)
-    labels = []
-    dataa = []
-    labels1 = []
-    dataa1 = []
-    labels2 = []
-    dataa2 = []
 
-    all_data = Envdata.objects.filter(Time_Stamp__gte=one_day_ago)
-
-    for i in all_data:
-        timestamp_str = (i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S")
-        if i.devId == "S1":
-            labels.append(timestamp_str)
-            dataa.append(i.pm10)
-        elif i.devId == "S2":
-            labels1.append(timestamp_str)
-            dataa1.append(i.pm10)
-        else:
-            labels2.append(timestamp_str)
-            dataa2.append(i.pm10)
-
-    last_data = Envdata.objects.last()
-
-    context = {
-        'all_data': all_data,
-        'last_data': last_data,
-        'labels': labels,
-        'dataa': dataa,
-        'labels1': labels1,
-        'dataa1': dataa1,
-        'labels2': labels2,
-        'dataa2': dataa2,
-    }
-
-    return render(request, template_name, context)
-
-def pm101(request):
-    return pm10_data(request, 1, "enviro/pm101.html")
-
-def pm103(request):
-    return pm10_data(request, 3, "enviro/pm103.html")
-
-def pm107(request):
-    return pm10_data(request, 7, "enviro/pm107.html")
-
-def pm1015(request):
-    return pm10_data(request, 15, "enviro/pm1015.html")
-
-""" fin pm10"""
-
-"""pm1"""
-# For PM
-def pm_data(request, days, template_name):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=days)).replace(hour=0, minute=0, second=0,
-                                                                                    microsecond=0)
-    labels = []
-    dataa = []
-    labels1 = []
-    dataa1 = []
-    labels2 = []
-    dataa2 = []
-
-    all_data = Envdata.objects.filter(Time_Stamp__gte=one_day_ago)
-
-    for i in all_data:
-        timestamp_str = (i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S")
-        if i.devId == "S1":
-            labels.append(timestamp_str)
-            dataa.append(i.pm)
-        elif i.devId == "S2":
-            labels1.append(timestamp_str)
-            dataa1.append(i.pm)
-        else:
-            labels2.append(timestamp_str)
-            dataa2.append(i.pm)
-
-    last_data = Envdata.objects.last()
-
-    context = {
-        'all_data': all_data,
-        'last_data': last_data,
-        'labels': labels,
-        'dataa': dataa,
-        'labels1': labels1,
-        'dataa1': dataa1,
-        'labels2': labels2,
-        'dataa2': dataa2,
-    }
-
-    return render(request, template_name, context)
-
-def pm1(request):
-    return pm_data(request, 1, "enviro/pm1.html")
-
-def pm3(request):
-    return pm_data(request, 3, "enviro/pm3.html")
-
-def pm7(request):
-    return pm_data(request, 7, "enviro/pm7.html")
-
-def pm15(request):
-    return pm_data(request, 15, "enviro/pm15.html")
-
-
-""" fin pm1"""
-"""pm25"""
-# For PM2.5
-def pm25_data(request, days, template_name):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=days)).replace(hour=0, minute=0, second=0,
-                                                                                    microsecond=0)
-    labels = []
-    dataa = []
-    labels1 = []
-    dataa1 = []
-    labels2 = []
-    dataa2 = []
-
-    all_data = Envdata.objects.filter(Time_Stamp__gte=one_day_ago)
-
-    for i in all_data:
-        timestamp_str = (i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S")
-        if i.devId == "S1":
-            labels.append(timestamp_str)
-            dataa.append(i.pm25)
-        elif i.devId == "S2":
-            labels1.append(timestamp_str)
-            dataa1.append(i.pm25)
-        else:
-            labels2.append(timestamp_str)
-            dataa2.append(i.pm25)
-
-    last_data = Envdata.objects.last()
-
-    context = {
-        'all_data': all_data,
-        'last_data': last_data,
-        'labels': labels,
-        'dataa': dataa,
-        'labels1': labels1,
-        'dataa1': dataa1,
-        'labels2': labels2,
-        'dataa2': dataa2,
-    }
-
-    return render(request, template_name, context)
-
-def pm251(request):
-    return pm25_data(request, 1, "enviro/pm251.html")
-
-def pm253(request):
-    return pm25_data(request, 3, "enviro/pm253.html")
-
-def pm257(request):
-    return pm25_data(request, 7, "enviro/pm257.html")
-
-def pm2515(request):
-    return pm25_data(request, 15, "enviro/pm2515.html")
-
-""" fin pm25"""
-
-""" fin co2"""
-# For CO2
-def co2_data(request, days, template_name):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=days)).replace(hour=0, minute=0, second=0,
-                                                                                    microsecond=0)
-    labels = []
-    dataa = []
-    labels1 = []
-    dataa1 = []
-    labels2 = []
-    dataa2 = []
-
-    all_data = Envdata.objects.filter(Time_Stamp__gte=one_day_ago)
-
-    for i in all_data:
-        timestamp_str = (i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S")
-        if i.devId == "S1":
-            labels.append(timestamp_str)
-            dataa.append(i.co2)
-        elif i.devId == "S2":
-            labels1.append(timestamp_str)
-            dataa1.append(i.co2)
-        else:
-            labels2.append(timestamp_str)
-            dataa2.append(i.co2)
-
-    last_data = Envdata.objects.last()
-
-    context = {
-        'all_data': all_data,
-        'last_data': last_data,
-        'labels': labels,
-        'dataa': dataa,
-        'labels1': labels1,
-        'dataa1': dataa1,
-        'labels2': labels2,
-        'dataa2': dataa2,
-    }
-
-    return render(request, template_name, context)
-
-def co2v1(request):
-    return co2_data(request, 1, "enviro/co21.html")
-
-def co2v3(request):
-    return co2_data(request, 3, "enviro/co23.html")
-
-def co2v7(request):
-    return co2_data(request, 7, "enviro/co27.html")
-
-def co2v15(request):
-    return co2_data(request, 15, "enviro/co215.html")
-
-""" fin co2"""
-""" ch2o"""
-# For CH2O
-def ch2o_data(request, days, template_name):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=days)).replace(hour=0, minute=0, second=0,
-                                                                                    microsecond=0)
-    labels = []
-    dataa = []
-    labels1 = []
-    dataa1 = []
-    labels2 = []
-    dataa2 = []
-
-    all_data = Envdata.objects.filter(Time_Stamp__gte=one_day_ago)
-
-    for i in all_data:
-        timestamp_str = (i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S")
-        if i.devId == "S1":
-            labels.append(timestamp_str)
-            dataa.append(i.ch2o)
-        elif i.devId == "S2":
-            labels1.append(timestamp_str)
-            dataa1.append(i.ch2o)
-        else:
-            labels2.append(timestamp_str)
-            dataa2.append(i.ch2o)
-
-    last_data = Envdata.objects.last()
-
-    context = {
-        'all_data': all_data,
-        'last_data': last_data,
-        'labels': labels,
-        'dataa': dataa,
-        'labels1': labels1,
-        'dataa1': dataa1,
-        'labels2': labels2,
-        'dataa2': dataa2,
-    }
-
-    return render(request, template_name, context)
-
-def ch2ov1(request):
-    return ch2o_data(request, 1, "enviro/ch2o1.html")
-
-def ch2ov3(request):
-    return ch2o_data(request, 3, "enviro/ch2o3.html")
-
-def ch2ov7(request):
-    return ch2o_data(request, 7, "enviro/ch2o7.html")
-
-def ch2ov15(request):
-    return ch2o_data(request, 15, "enviro/ch2o15.html")
-
-""" fin ch2o"""
-# For o3
-# For O3
-def o3_data(request, days, template_name):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=days)).replace(hour=0, minute=0, second=0,
-                                                                                    microsecond=0)
-    labels = []
-    dataa = []
-    labels1 = []
-    dataa1 = []
-    labels2 = []
-    dataa2 = []
-
-    all_data = Envdata.objects.filter(Time_Stamp__gte=one_day_ago)
-
-    for i in all_data:
-        timestamp_str = (i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S")
-        if i.devId == "S1":
-            labels.append(timestamp_str)
-            dataa.append(i.o3)
-        elif i.devId == "S2":
-            labels1.append(timestamp_str)
-            dataa1.append(i.o3)
-        else:
-            labels2.append(timestamp_str)
-            dataa2.append(i.o3)
-
-    last_data = Envdata.objects.last()
-
-    context = {
-        'all_data': all_data,
-        'last_data': last_data,
-        'labels': labels,
-        'dataa': dataa,
-        'labels1': labels1,
-        'dataa1': dataa1,
-        'labels2': labels2,
-        'dataa2': dataa2,
-    }
-
-    return render(request, template_name, context)
-
-def o31(request):
-    return o3_data(request, 1, "enviro/o31.html")
-
-def o33(request):
-    return o3_data(request, 3, "enviro/o33.html")
-
-def o37(request):
-    return o3_data(request, 7, "enviro/o37.html")
-
-def o315(request):
-    return o3_data(request, 15, "enviro/o315.html")
-
-
-# For co
-# For CO
-def co_data(request, days, template_name):
-    one_day_ago = (timezone.now() - datetime.timedelta(days=days)).replace(hour=0, minute=0, second=0,
-                                                                            microsecond=0)
-    labels = []
-    dataa = []
-    labels1 = []
-    dataa1 = []
-    labels2 = []
-    dataa2 = []
-
-    all_data = Envdata.objects.filter(Time_Stamp__gte=one_day_ago)
-
-    for i in all_data:
-        local_timestamp = localtime(i.Time_Stamp)
-        timestamp_str = local_timestamp.strftime("%Y-%m-%d %H:%M:%S")
-        # timestamp_str = (i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S")
-        if i.devId == "S1":
-            labels.append(timestamp_str)
-            dataa.append(i.co)
-        elif i.devId == "S2":
-            labels1.append(timestamp_str)
-            dataa1.append(i.co)
-        else:
-            labels2.append(timestamp_str)
-            dataa2.append(i.co)
-
-    last_data = Envdata.objects.last()
-
-    context = {
-        'all_data': all_data,
-        'last_data': last_data,
-        'labels': labels,
-        'dataa': dataa,
-        'labels1': labels1,
-        'dataa1': dataa1,
-        'labels2': labels2,
-        'dataa2': dataa2,
-    }
-
-    return render(request, template_name, context)
-
-def co1(request):
-    return co_data(request, 1, "enviro/co1.html")
-
-def co3(request):
-    return co_data(request, 3, "enviro/co3.html")
-
-def co7(request):
-    return co_data(request, 7, "enviro/co7.html")
-
-def co15(request):
-    return co_data(request, 15, "enviro/co15.html")
-
-# For TVOC
-def tvoc_data(request, days, template_name):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=days)).replace(hour=0, minute=0, second=0,
-                                                                                    microsecond=0)
-    labels = []
-    dataa = []
-    labels1 = []
-    dataa1 = []
-    labels2 = []
-    dataa2 = []
-
-    all_data = Envdata.objects.filter(Time_Stamp__gte=one_day_ago)
-
-    for i in all_data:
-        timestamp_str = (i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S")
-        if i.devId == "S1":
-            labels.append(timestamp_str)
-            dataa.append(i.tvoc)
-        elif i.devId == "S2":
-            labels1.append(timestamp_str)
-            dataa1.append(i.tvoc)
-        else:
-            labels2.append(timestamp_str)
-            dataa2.append(i.tvoc)
-
-    last_data = Envdata.objects.last()
-
-    context = {
-        'all_data': all_data,
-        'last_data': last_data,
-        'labels': labels,
-        'dataa': dataa,
-        'labels1': labels1,
-        'dataa1': dataa1,
-        'labels2': labels2,
-        'dataa2': dataa2,
-    }
-
-    return render(request, template_name, context)
-
-def tvoc1(request):
-    return tvoc_data(request, 1, "enviro/tvoc1.html")
-
-def tvoc3(request):
-    return tvoc_data(request, 3, "enviro/tvoc3.html")
-
-def tvoc7(request):
-    return tvoc_data(request, 7, "enviro/tvoc7.html")
-
-def tvoc15(request):
-    return tvoc_data(request, 15, "enviro/tvoc15.html")
-
-
-# For no2
-# For NO2
-def no2_data(request, days, template_name):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=days)).replace(hour=0, minute=0, second=0,
-                                                                                    microsecond=0)
-    labels = []
-    dataa = []
-    labels1 = []
-    dataa1 = []
-    labels2 = []
-    dataa2 = []
-
-    all_data = Envdata.objects.filter(Time_Stamp__gte=one_day_ago)
-
-    for i in all_data:
-        timestamp_str = (i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S")
-        if i.devId == "S1":
-            labels.append(timestamp_str)
-            dataa.append(i.no2)
-        elif i.devId == "S2":
-            labels1.append(timestamp_str)
-            dataa1.append(i.no2)
-        else:
-            labels2.append(timestamp_str)
-            dataa2.append(i.no2)
-
-    last_data = Envdata.objects.last()
-
-    context = {
-        'all_data': all_data,
-        'last_data': last_data,
-        'labels': labels,
-        'dataa': dataa,
-        'labels1': labels1,
-        'dataa1': dataa1,
-        'labels2': labels2,
-        'dataa2': dataa2,
-    }
-
-    return render(request, template_name, context)
-
-def no21(request):
-    return no2_data(request, 1, "enviro/no21.html")
-
-def no23(request):
-    return no2_data(request, 3, "enviro/no23.html")
-
-def no27(request):
-    return no2_data(request, 7, "enviro/no27.html")
-
-def no215(request):
-    return no2_data(request, 15, "enviro/no215.html")
-
-#temp
-# For temp
-def tempv1(request):
-    one_day_ago = (datetime.datetime.today()).replace(hour=0, minute=0, second=0, microsecond=0)
-    labels = []
-    dataa = []
-    labels1 = []
-    dataa1 = []
-    labels2 = []
-    dataa2 = []
-
-    all_data = Envdata.objects.filter(Time_Stamp__gte=one_day_ago)
-
-    for i in all_data:
-        timestamp_str = (i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S")
-        if i.devId == "S1":
-            labels.append(timestamp_str)
-            dataa.append(i.temp)
-        elif i.devId == "S2":
-            labels1.append(timestamp_str)
-            dataa1.append(i.temp)
-        else:
-            labels2.append(timestamp_str)
-            dataa2.append(i.temp)
-
-    last_data = Envdata.objects.last()
-
-    context = {
-        'all_data': all_data,
-        'last_data': last_data,
-        'labels': labels,
-        'dataa': dataa,
-        'labels1': labels1,
-        'dataa1': dataa1,
-        'labels2': labels2,
-        'dataa2': dataa2,
-    }
-
-    return render(request, "enviro/temp1.html", context)
-
-
-def tempv3(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=3)).replace(hour=0, minute=0, second=0,
-                                                                                microsecond=0)
-    labels = []
-    dataa = []
-    labels1 = []
-    dataa1 = []
-    labels2 = []
-    dataa2 = []
-
-    all_data = Envdata.objects.filter(Time_Stamp__gte=one_day_ago)
-
-    for i in all_data:
-        timestamp_str = (i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S")
-        if i.devId == "S1":
-            labels.append(timestamp_str)
-            dataa.append(round(i.temp,2))
-        elif i.devId == "S2":
-            labels1.append(timestamp_str)
-            dataa1.append(round(i.temp,2))
-        else:
-            labels2.append(timestamp_str)
-            dataa2.append(round(i.temp,2))
-
-    last_data = Envdata.objects.last()
-
-    context = {
-        'all_data': all_data,
-        'last_data': last_data,
-        'labels': labels,
-        'dataa': dataa,
-        'labels1': labels1,
-        'dataa1': dataa1,
-        'labels2': labels2,
-        'dataa2': dataa2,
-    }
-
-    return render(request, "enviro/temp3.html", context)
-
-
-def tempv7(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=7)).replace(hour=0, minute=0, second=0,
-                                                                                microsecond=0)
-    labels = []
-    dataa = []
-    labels1 = []
-    dataa1 = []
-    labels2 = []
-    dataa2 = []
-
-    all_data = Envdata.objects.filter(Time_Stamp__gte=one_day_ago)
-
-    for i in all_data:
-        timestamp_str = (i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S")
-        if i.devId == "S1":
-            labels.append(timestamp_str)
-            dataa.append(i.temp)
-        elif i.devId == "S2":
-            labels1.append(timestamp_str)
-            dataa1.append(i.temp)
-        else:
-            labels2.append(timestamp_str)
-            dataa2.append(i.temp)
-
-    last_data = Envdata.objects.last()
-
-    context = {
-        'all_data': all_data,
-        'last_data': last_data,
-        'labels': labels,
-        'dataa': dataa,
-        'labels1': labels1,
-        'dataa1': dataa1,
-        'labels2': labels2,
-        'dataa2': dataa2,
-    }
-
-    return render(request, "enviro/temp7.html", context)
-
-def tempv15(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=15)).replace(hour=0, minute=0, second=0,
-                                                                                 microsecond=0)
-    labels = []
-    dataa = []
-    labels1 = []
-    dataa1 = []
-    labels2 = []
-    dataa2 = []
-
-    all_data = Envdata.objects.filter(Time_Stamp__gte=one_day_ago)
-
-    for i in all_data:
-        timestamp_str = (i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S")
-        if i.devId == "S1":
-            labels.append(timestamp_str)
-            dataa.append(i.temp)
-        elif i.devId == "S2":
-            labels1.append(timestamp_str)
-            dataa1.append(i.temp)
-        else:
-            labels2.append(timestamp_str)
-            dataa2.append(i.temp)
-
-    last_data = Envdata.objects.last()
-
-    context = {
-        'all_data': all_data,
-        'last_data': last_data,
-        'labels': labels,
-        'dataa': dataa,
-        'labels1': labels1,
-        'dataa1': dataa1,
-        'labels2': labels2,
-        'dataa2': dataa2,
-    }
-
-    return render(request, "enviro/temp15.html", context)
-
-
-# For hum
-def humv1(request):
-    one_day_ago = (datetime.datetime.today()).replace(hour=0, minute=0, second=0, microsecond=0)
-    labels = []
-    dataa = []
-    labels1 = []
-    dataa1 = []
-    labels2 = []
-    dataa2 = []
-
-    all_data = Envdata.objects.filter(Time_Stamp__gte=one_day_ago)
-
-    for i in all_data:
-        timestamp_str = (i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S")
-        if i.devId == "S1":
-            labels.append(timestamp_str)
-            dataa.append(i.hum)
-        elif i.devId == "S2":
-            labels1.append(timestamp_str)
-            dataa1.append(i.hum)
-        else:
-            labels2.append(timestamp_str)
-            dataa2.append(i.hum)
-
-    last_data = Envdata.objects.last()
-
-    context = {
-        'all_data': all_data,
-        'last_data': last_data,
-        'labels': labels,
-        'dataa': dataa,
-        'labels1': labels1,
-        'dataa1': dataa1,
-        'labels2': labels2,
-        'dataa2': dataa2,
-    }
-
-    return render(request, "enviro/hum1.html", context)
-
-# Repeat a similar structure for humv3, humv7, and humv15 with the corresponding conditions.
-
-
-def humv3(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=3)).replace(hour=0, minute=0, second=0,
-                                                                                microsecond=0)
-    labels = []
-    dataa = []
-    labels1 = []
-    dataa1 = []
-    labels2 = []
-    dataa2 = []
-
-    all_data = Envdata.objects.filter(Time_Stamp__gte=one_day_ago)
-
-    for i in all_data:
-        timestamp_str = (i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S")
-        if i.devId == "S1":
-            labels.append(timestamp_str)
-            dataa.append(i.hum)
-        elif i.devId == "S2":
-            labels1.append(timestamp_str)
-            dataa1.append(i.hum)
-        else:
-            labels2.append(timestamp_str)
-            dataa2.append(i.hum)
-
-    last_data = Envdata.objects.last()
-
-    context = {
-        'all_data': all_data,
-        'last_data': last_data,
-        'labels': labels,
-        'dataa': dataa,
-        'labels1': labels1,
-        'dataa1': dataa1,
-        'labels2': labels2,
-        'dataa2': dataa2,
-    }
-
-    return render(request, "enviro/hum3.html", context)
-
-# Repeat a similar structure for humv7 and humv15 with the corresponding conditions.
-
-
-def humv7(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=7)).replace(hour=0, minute=0, second=0,
-                                                                                microsecond=0)
-    labels = []
-    dataa = []
-    labels1 = []
-    dataa1 = []
-    labels2 = []
-    dataa2 = []
-
-    all_data = Envdata.objects.filter(Time_Stamp__gte=one_day_ago)
-
-    for i in all_data:
-        timestamp_str = (i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S")
-        if i.devId == "S1":
-            labels.append(timestamp_str)
-            dataa.append(i.hum)
-        elif i.devId == "S2":
-            labels1.append(timestamp_str)
-            dataa1.append(i.hum)
-        else:
-            labels2.append(timestamp_str)
-            dataa2.append(i.hum)
-
-    last_data = Envdata.objects.last()
-
-    context = {
-        'all_data': all_data,
-        'last_data': last_data,
-        'labels': labels,
-        'dataa': dataa,
-        'labels1': labels1,
-        'dataa1': dataa1,
-        'labels2': labels2,
-        'dataa2': dataa2,
-    }
-
-    return render(request, "enviro/hum7.html", context)
-
-
-def humv15(request):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=15)).replace(hour=0, minute=0, second=0,
-                                                                                 microsecond=0)
-    labels = []
-    dataa = []
-    labels1 = []
-    dataa1 = []
-    labels2 = []
-    dataa2 = []
-
-    all_data = Envdata.objects.filter(Time_Stamp__gte=one_day_ago)
-
-    for i in all_data:
-        timestamp_str = (i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S")
-        if i.devId == "S1":
-            labels.append(timestamp_str)
-            dataa.append(i.hum)
-        elif i.devId == "S2":
-            labels1.append(timestamp_str)
-            dataa1.append(i.hum)
-        else:
-            labels2.append(timestamp_str)
-            dataa2.append(i.hum)
-
-    last_data = Envdata.objects.last()
-
-    context = {
-        'all_data': all_data,
-        'last_data': last_data,
-        'labels': labels,
-        'dataa': dataa,
-        'labels1': labels1,
-        'dataa1': dataa1,
-        'labels2': labels2,
-        'dataa2': dataa2,
-    }
-
-    return render(request, "enviro/hum15.html", context)
-
-
-# For bat
-def bat_data(request, days, template_name):
-    one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=days)).replace(hour=0, minute=0, second=0,
-                                                                                    microsecond=0)
-    labels = []
-    dataa = []
-    labels1 = []
-    dataa1 = []
-    labels2 = []
-    dataa2 = []
-
-    all_data = Envdata.objects.filter(Time_Stamp__gte=one_day_ago)
-
-    for i in all_data:
-        timestamp_str = (i.Time_Stamp).strftime("%Y-%m-%d %H:%M:%S")
-        if i.devId == "S1":
-            labels.append(timestamp_str)
-            dataa.append(i.bat)
-        elif i.devId == "S2":
-            labels1.append(timestamp_str)
-            dataa1.append(i.bat)
-        else:
-            labels2.append(timestamp_str)
-            dataa2.append(i.bat)
-
-    last_data = Envdata.objects.last()
-
-    context = {
-        'all_data': all_data,
-        'last_data': last_data,
-        'labels': labels,
-        'dataa': dataa,
-        'labels1': labels1,
-        'dataa1': dataa1,
-        'labels2': labels2,
-        'dataa2': dataa2,
-    }
-
-    return render(request, template_name, context)
-
-def batv1(request):
-    return bat_data(request, 1, "enviro/bat1.html")
-
-def batv3(request):
-    return bat_data(request, 3, "enviro/bat3.html")
-
-def batv7(request):
-    return bat_data(request, 7, "enviro/bat7.html")
-
-def batv15(request):
-    return bat_data(request, 15, "enviro/bat15.html")
 
 @require_POST
 @csrf_exempt
@@ -3928,6 +1366,7 @@ def v_chirpstack(request):
                                 continue
                             elif measurement['type'] =="Rain Gauge":
                                 rainfall = measurement['measurementValue']
+                                print("rain_fall : sense cap : ", rainfall, type(rainfall))
                                 continue
                             elif measurement['type'] =="Barometric Pressure":
                                 pressure = measurement['measurementValue']
@@ -3939,7 +1378,16 @@ def v_chirpstack(request):
                     object_WsSENSECAP.Hum = airHum
                     object_WsSENSECAP.Wind_Speed = round((float(windSpeed)*3.6),4)
                     # object_WsSENSECAP.WindDirection = windDirection
+                    object_WsSENSECAP.Rain_acc = rainfall
+                    last_Rain_acc = Data2.objects.order_by('-Time_Stamp').first()
+                    print("last_Rain_acc : ",last_Rain_acc, type(last_Rain_acc.Rain_acc))
+                    if float(rainfall) < float(last_Rain_acc.Rain_acc):
+                        object_WsSENSECAP.Rain_act = rainfall
+                    else:
+                        object_WsSENSECAP.Rain_act = float(rainfall-float(last_Rain_acc.Rain_acc))
+                    print("object_WsSENSECAP.Rain_act: ",object_WsSENSECAP.Rain_act)
                     object_WsSENSECAP.Rain = rainfall/4
+                    print("object_WsSENSECAP.Rain : ",object_WsSENSECAP.Rain)
                     # object_WsSENSECAP.Light = light
                     # object_WsSENSECAP.UV = uv
                     object_WsSENSECAP.Pr = pressure
@@ -3964,7 +1412,44 @@ def v_chirpstack(request):
                     object_wsd.wind_direction_angle = object_data.get('wind_direction_angle', None)
                     object_wsd.wind_direction = object_data.get('wind_direction', None)
                     object_wsd.HUM = object_data.get('TEM', None)
-                    object_wsd.rain_gauge = round(float(object_data.get('rain_gauge', None)),2)
+                    # Dernier enregistrement avec une pluie non nulle
+                    last_record = wsd.objects.exclude(Rg=0).order_by('-Time_Stamp').first()
+                    print("last_record from DB:", last_record)
+
+                    # Pluie brute reçue du capteur (accumulée depuis le début)
+                    current_rain_raw = object_data.get('rain_gauge', None)
+                    print("current_rain_raw:", current_rain_raw)
+
+                    try:
+                        # Conversion en float
+                        current_rain = round(float(current_rain_raw), 2)
+                        print("current_rain:", current_rain)
+
+                        # Enregistrement de la valeur brute dans Rg
+                        object_wsd.Rg = current_rain
+
+                        # Si c'est la première mesure ou pas de précédent, on met 0 comme incrément
+                        if last_record is None:
+                            object_wsd.rain_gauge = 0
+                        else:
+                            previous_rain = round(float(last_record.Rg), 2)
+                            print("previous_rain:", previous_rain)
+
+                            # Calcul de l'incrément uniquement si la nouvelle valeur est supérieure ou égale
+                            if current_rain >= previous_rain:
+                                rain_increment = round(current_rain - previous_rain, 2)
+                                print("rain_increment:", rain_increment)
+                                object_wsd.rain_gauge = rain_increment
+                            else:
+                                # Le capteur a peut-être été remis à zéro (nouveau cycle) : on enregistre 0 ou current_rain
+                                print("Reset detected or invalid data. Resetting increment.")
+                                object_wsd.rain_gauge = 0
+
+                    except (TypeError, ValueError) as e:
+                        # En cas de problème de conversion ou valeur absente
+                        print("Error parsing rain_gauge:", e)
+                        object_wsd.rain_gauge = 0
+                        object_wsd.Rg = 0
                     object_wsd.wind_speed = round((float(object_data.get('wind_speed', 0.0)) * 3.6), 4)  # Convertir en km/h
                     object_wsd.illumination = object_data.get('A1', None)
                     if object_wsd.illumination is not None:  # Vérifie que la valeur n'est pas None
@@ -3999,6 +1484,37 @@ def v_chirpstack(request):
                     print("Dispositif non reconnu, données ignorées.")
 
 
+                # if data['deviceInfo']['devEui'] == 'a84041d10858e027':  # Vérifie si c'est bien le capteur de sol
+                #     print("📡 Données reçues du Capteur de sol")
+
+                #     # Récupération des données depuis 'object'
+                #     object_data = data.get('object', {})
+                #     batterie = object_data.get('Batterie', '0')  # Valeur par défaut '0' si absente
+
+                #     print("📊 object_data complet :", object_data)
+
+                #     # Boucle sur les capteurs de sol (Capteur_1 à Capteur_4)
+                #     for i in range(1, 5):
+                #         capteur_key = f"Capteur_{i}"
+                #         if capteur_key in object_data:
+                #             capteur_data = object_data[capteur_key]
+                #             print(f"🔎 {capteur_key} trouvé :", capteur_data)
+
+                #             try:
+                #                 CapSol2.objects.create(
+                #                     devId=i,
+                #                     Temp=capteur_data.get('Temperature', '0'),
+                #                     Hum=capteur_data.get('Humidite', '0'),
+                #                     ec=capteur_data.get('Conductivite', '0'),
+                #                     N=capteur_data.get('Azote', '0'),
+                #                     P=capteur_data.get('Phosphore', '0'),
+                #                     K=capteur_data.get('Potassium', '0'),
+                #                     Sal=0,  # Valeur par défaut
+                #                     Bat=batterie
+                #                 )
+                #                 print(f"✅ Données enregistrées pour {capteur_key}: {capteur_data}")
+                #             except Exception as e:
+                #                 print(f"❌ Erreur lors de l'enregistrement de {capteur_key}: {e}")
                 if data['deviceInfo']['devEui'] == 'a84041d10858e027':  # Vérifie si c'est bien le capteur de sol
                     print("📡 Données reçues du Capteur de sol")
 
@@ -4015,22 +1531,33 @@ def v_chirpstack(request):
                             capteur_data = object_data[capteur_key]
                             print(f"🔎 {capteur_key} trouvé :", capteur_data)
 
+                            # Vérification si l'une des valeurs dépasse 65000
+                            temperature = float(capteur_data.get('Temperature', '0'))
+                            humidite = float(capteur_data.get('Humidite', '0'))
+                            conductivite = float(capteur_data.get('Conductivite', '0'))
+                            azote = float(capteur_data.get('Azote', '0'))
+                            phosphore = float(capteur_data.get('Phosphore', '0'))
+                            potassium = float(capteur_data.get('Potassium', '0'))
+
+                            if any(value > 65000 for value in [temperature, humidite, conductivite, azote, phosphore, potassium]):
+                                print(f"⚠️ Ignoré l'enregistrement pour {capteur_key} car une des valeurs dépasse 65000")
+                                continue  # Ignorer cet enregistrement et passer au suivant
+
                             try:
                                 CapSol2.objects.create(
                                     devId=i,
-                                    Temp=capteur_data.get('Temperature', '0'),
-                                    Hum=capteur_data.get('Humidite', '0'),
-                                    ec=capteur_data.get('Conductivite', '0'),
-                                    N=capteur_data.get('Azote', '0'),
-                                    P=capteur_data.get('Phosphore', '0'),
-                                    K=capteur_data.get('Potassium', '0'),
+                                    Temp=temperature,
+                                    Hum=humidite,
+                                    ec=conductivite,
+                                    N=azote,
+                                    P=phosphore,
+                                    K=potassium,
                                     Sal=0,  # Valeur par défaut
                                     Bat=batterie
                                 )
                                 print(f"✅ Données enregistrées pour {capteur_key}: {capteur_data}")
                             except Exception as e:
                                 print(f"❌ Erreur lors de l'enregistrement de {capteur_key}: {e}")
-
                 if data['devEui'] == 'a84041d10858e027':
                     print("Données reçues du dispositif contenant plusieurs capteurs")
 
@@ -4063,6 +1590,31 @@ def v_chirpstack(request):
                             print(f"Données du capteur {i + 1} enregistrées avec succès :", capteur)
                         except Exception as e:
                             print(f"Erreur lors de l'enregistrement du capteur {i + 1} :", e)
+                else:
+                    print("Dispositif non reconnu, données ignorées.")
+                if data['deviceInfo']['devEui'] == 'ce7554dc00001057':
+                    print("Données reçues de l'electrovanne")
+
+                    # Récupération des données depuis 'object'
+                    object_data = data.get('object', {})
+
+                    # Création de l'objet `ev_batt`
+                    object_batt = ev_batt()
+
+                    # Affectation des valeurs
+                    object_batt.batt = object_data.get('battery_voltage', None)
+
+                    # Time_Stamp peut être défini à partir du champ 'time' si présent dans les données reçues
+                    if 'time' in data:
+                        from django.utils.dateparse import parse_datetime
+                        object_batt.Time_Stamp = parse_datetime(data['time'])
+
+                    try:
+                        # Sauvegarde dans la base de données
+                        object_batt.save()
+                        print("Données enregistrées avec succès :", object_batt)
+                    except Exception as e:
+                        print("Erreur lors de l'enregistrement :", e)
                 else:
                     print("Dispositif non reconnu, données ignorées.")
 
@@ -4168,8 +1720,8 @@ def data_filter_ws(request):
 def data_filter_pl(request):
     return filter_data(request, field_data2='Rain', field_wsd='rain_gauge', template_name="enviro/tvoc3.html")
 
-def data_filter_pl(request):
-    return filter_data(request, field_data2='Rain', field_wsd='rain_gauge', template_name="enviro/tvoc3.html")
+# def data_filter_pl(request):
+#     return filter_data(request, field_data2='Rain', field_wsd='rain_gauge', template_name="enviro/tvoc3.html")
 
 def data_filter_ry(request):
     # Récupération des valeurs du formulaire
@@ -4221,7 +1773,10 @@ def data_filter_ry(request):
     # Derniers objets de chaque modèle
     lst_data2 = Ray2.objects.last()
     lst_wsd = wsd.objects.last()
-
+    zipped_data2 = zip(labels_data2, data_data2)
+    print("zipped : ",zipped_data2)
+    zipped_datawsd = zip(labels_wsd, data_wsd)
+    print("zipped : ",zipped_datawsd)
     # Création du contexte pour passer les données à la vue
     context = {
         'all_data2': all_data2,
@@ -4234,10 +1789,56 @@ def data_filter_ry(request):
         'data_wsd': data_wsd,
         'start_date': start_date.strftime("%Y-%m-%d"),
         'end_date': end_date.strftime("%Y-%m-%d"),
+        'zipped_data2': list(zipped_data2),
+        'zipped_datawsd': list(zipped_datawsd),
     }
 
     return render(request, "enviro/temp3.html", context)
+def filter_ray_battery(request):
+    """
+    Filtrer les valeurs de la batterie (Bat) du modèle Ray2 sur une période donnée ou par défaut sur la dernière journée.
+    - template_name : le nom du fichier HTML à afficher.
+    """
 
+    # 1. Récupération des dates depuis le formulaire GET
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+
+    # 2. Conversion des dates ou utilisation de la journée précédente
+    if start_date and end_date:
+        start_date = make_aware(datetime.datetime.strptime(start_date, "%Y-%m-%d"))
+        end_date = make_aware(datetime.datetime.strptime(end_date, "%Y-%m-%d").replace(hour=23, minute=59, second=59))
+    else:
+        one_day_ago = (datetime.datetime.now() - datetime.timedelta(days=1)).replace(hour=0, minute=0, second=0)
+        start_date = make_aware(one_day_ago)
+        end_date = make_aware(datetime.datetime.now().replace(hour=23, minute=59, second=59))
+
+    # 3. Filtrage des données dans l'intervalle de dates
+    all_ray = Ray2.objects.filter(DateRay__range=(start_date, end_date))
+
+    # 4. Extraction des labels (timestamps) et des valeurs de la batterie
+    labels = [entry.DateRay.strftime("%Y-%m-%d %H:%M:%S") for entry in all_ray]
+    bat_values = [entry.Bat if entry.Bat is not None else 0 for entry in all_ray]
+
+    # 5. Récupération de la dernière valeur connue de la batterie
+    last_ray = Ray2.objects.last()
+    last_bat_value = last_ray.Bat if last_ray and last_ray.Bat is not None else 0
+
+    # 6. Données groupées pour affichage
+    zipped_data = zip(labels, bat_values)
+
+    # 7. Contexte à envoyer au template
+    context = {
+        'all_ray': all_ray,
+        'labels': labels,
+        'bat_values': bat_values,
+        'last_bat_value': last_bat_value,
+        'start_date': start_date.strftime("%Y-%m-%d"),
+        'end_date': end_date.strftime("%Y-%m-%d"),
+        'zipped_data': list(zipped_data),
+    }
+
+    return render(request, "enviro/temp15.html", context)
 
 def data_filter_et0(request):
     # Récupération des valeurs du formulaire
@@ -4272,7 +1873,10 @@ def data_filter_et0(request):
     for data in all_et0dr:
         labels_et0dr.append(data.Time_Stamp.strftime("%Y-%m-%d"))
         data_et0dr.append(data.value if data.value is not None else 0)
-
+    zipped_data2 = zip(labels_et0dr, data_et0dr)
+    print("zipped : ",zipped_data2)
+    zipped_datawsd = zip(labels_et0, data_et0)
+    print("zipped : ",zipped_datawsd)
     # Derniers objets de chaque modèle
     last_et0 = ET0o.objects.last()
     last_et0dr = ET0DR.objects.last()
@@ -4289,6 +1893,8 @@ def data_filter_et0(request):
         'data_et0dr': data_et0dr,
         'start_date': start_date.strftime("%Y-%m-%d"),
         'end_date': end_date.strftime("%Y-%m-%d"),
+        'zipped_data2': list(zipped_data2),
+        'zipped_datawsd': list(zipped_datawsd),
     }
 
     return render(request, "enviro/hum15.html", context)

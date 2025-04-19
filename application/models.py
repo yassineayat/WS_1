@@ -94,7 +94,7 @@ class CapSol2(models.Model):
     dt = models.DateTimeField(auto_now=True, null=True)
 
     def __str__(self):
-        return str(self.dt)
+        return str(self.dt)+ " Dev_ID : " + str(self.devId)+" Température : " + str(self.Temp)
 
 
 class Ws(models.Model):
@@ -129,7 +129,8 @@ class Data2(models.Model):
     #Ray = models.FloatField(null=True)
     Wind_Speed = models.FloatField(null=True)
     Rain = models.FloatField(null=True)
-
+    Rain_acc = models.FloatField(null=True)
+    Rain_act = models.FloatField(null=True)
     # alt = models.FloatField(null=True)
     Pr = models.FloatField(null=True)
     # d = models.FloatField(null=True)
@@ -137,7 +138,7 @@ class Data2(models.Model):
     #i = models.IntegerField(null=True)
     # Bat = models.FloatField(null=True)
     def __str__(self):
-        return str(self.Temp) + str(self.Time_Stamp)
+        return "rain_actuel : " + str(self.Rain_act) + "\t rain_acc : "  + str(self.Rain_acc) + "\t rain : "  + str(self.Rain) +"\t Time : " + str(self.Time_Stamp)
 
 class ET0ExecutionLog(models.Model):
     date = models.DateField(unique=True)  # Stocke la date d'exécution
@@ -457,6 +458,7 @@ class wsd(models.Model):
     wind_direction_angle = models.FloatField(null=True)
     wind_direction = models.CharField(max_length=100, null=True, blank=True)
     HUM = models.FloatField(null=True)
+    Rg = models.FloatField(null=True)
     rain_gauge = models.FloatField(null=True)
     wind_speed = models.FloatField(null=True)
     illumination = models.FloatField(null=True)
@@ -465,21 +467,21 @@ class wsd(models.Model):
     # d = models.FloatField(null=True)
     Time_Stamp = models.DateTimeField(default=timezone.now)
     # i = models.IntegerField(null=True)
-    def save(self, *args, **kwargs):
-        last_record = wsd.objects.exclude(rain_gauge=0).order_by('-Time_Stamp').first()  # Dernier enregistrement non nul
+    # def save(self, *args, **kwargs):
+    #     last_record = wsd.objects.exclude(rain_gauge=0).order_by('-Time_Stamp').first()  # Dernier enregistrement non nul
+    #     print("last_record databases :", last_record)
+    #     if last_record and self.rain_gauge is not None:
+    #         last_value = last_record.rain_gauge if last_record.rain_gauge is not None else 0
 
-        if last_record and self.rain_gauge is not None:
-            last_value = last_record.rain_gauge if last_record.rain_gauge is not None else 0
+    #         if self.rain_gauge > last_value:
+    #             self.rain_gauge = self.rain_gauge - last_value  # Différence = pluie tombée
+    #         else:
+    #             self.rain_gauge = 0  # Aucune nouvelle pluie détectée
 
-            if self.rain_gauge > last_value:
-                self.rain_gauge = self.rain_gauge - last_value  # Différence = pluie tombée
-            else:
-                self.rain_gauge = 0  # Aucune nouvelle pluie détectée
-
-        super(wsd, self).save(*args, **kwargs)  # Enregistrer l'objet
+    #     super(wsd, self).save(*args, **kwargs)  # Enregistrer l'objet
 
     def __str__(self):
-        return f"TEM: {self.TEM}, Rain: {self.rain_gauge} mm, Time: {self.Time_Stamp}"
+        return f"TEM: {self.TEM}, Rain: {self.rain_gauge} mm, Rain_Acc: {self.Rg} mm, Time: {self.Time_Stamp}"
 
 
 class ET0DR(models.Model):
@@ -510,4 +512,14 @@ class debitcap(models.Model):
 
     def __str__(self):
         return f"debit: {self.debit} L, Time: {self.Time_Stamp}"
+
+#########################electrovanne###############################################
+
+class ev_batt(models.Model):
+    #devId = models.IntegerField()
+    batt = models.FloatField(null=True)
+    Time_Stamp = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return f"battery: {self.batt} V, Time: {self.Time_Stamp}"
 
