@@ -16,7 +16,7 @@ from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+print("la base directory : ",BASE_DIR)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
@@ -134,11 +134,22 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
-STATIC_URL = '/home/wsensa/ws_irr/static/'
-STATIC_ROOT = "/home/wsensa/ws_irr/static/"
-# STATICFILES_DIRS = [
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+print("static ",STATIC_ROOT, STATIC_URL)
+#STATICFILES_DIRS = [
 #     os.path.join(BASE_DIR, "static"),
 # ]
+#STATIC_URL = '/WS_1/WS_1/static/'
+#STATIC_ROOT = '/WS_1/WS_1/static/'  # Pour collectstatic
+#DEBUG = True  # Important en développement
+
+#STATIC_URL = '/static/'
+#STATIC_ROOT = '/home/debian/chirpstack-docker/WS_1/static'
+
+#STATICFILES_DIRS = [
+#    os.path.join(BASE_DIR, 'static'),  # Où tu mets tes fichiers manuellement
+#]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field

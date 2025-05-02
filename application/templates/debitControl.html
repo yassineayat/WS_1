@@ -32,7 +32,7 @@
 <style>
     .app {
         background-color: #EBEBEB;
-        background-image: url(../../static/bg3.jpg);
+        background-image: url("{% static 'bg3.jpg' %}");
             padding: 44px;
             padding-right: 44px;
             padding-top: 44px;
@@ -317,72 +317,112 @@ input:checked + .slider .off
 
             <div class="row justify-content-md-center">
                 <div class="col--xxl- p-3 text-center">
-                    <h1 class=" mb-6 text-center" style="color:#1e40af">
-                        Water Flow Control Dashboard
-                    </h1>
+                    <h1 class="app-page-title">Gestionnaire d'irrigation</h1>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col">
-                    <div class="card mt-5" style="width: auto; height:31rem; padding: 2em;">
+                    <!-- Carte Débit -->
+   <div class="col-md-5">
+    <div class="card shadow-lg" style="border-radius: 20px; background-color: #ffffff; padding: 2em; height: 40rem;">
+<h4 class="card-title text-center mb-4" style="color: white; background-color: #5b99ea; border-radius: 15px; padding: 10px; height: 4rem; display: flex; align-items: center; justify-content: center;">
+    Débit
+</h4>
 
-                        <h4 class="card-title" style="color: #f8fdfe; text-align:center; background-color: #5b99ea;">Débit</h4>
-                                <br>
-                                <br>
-                                <h1  style=" text-align: center;" >  <em>  {{ lasted.debit }}  L </em> </h1>
-                                <br>
-                                <h10 style=" text-align: center;">il y a : {{lasted.Time_Stamp|timesince}} ({{ lasted.Time_Stamp|date:"H:i"}})</h10>
+        <div class="card-body d-flex flex-column justify-content-center">
+    <h1 class="text-center display-4 text-dark mb-2">
+        <em>{{ lasted.debit }} L</em>
+    </h1>
+    <p class="text-center text-muted mb-2">
+        il y a : {{ lasted.Time_Stamp|timesince }} ({{ lasted.Time_Stamp|date:"H:i" }})
+    </p>
 
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="card" style="width: auto; padding: 2em;">
-                            <h4 class="card-title" style="color: #f8fdfe; text-align:center; background-color: #5b99ea;">Panneau de Contrôle</h4>
-                            <div class="card" style="width: auto; padding: 1em; margin-bottom :2em">
-                                <div class="card-body">
-                                    <h5 class="card-title" style="color: #2379e5">Contrôle de la Pompe à Eau</h5>
-                                    <span class="control-label"><i class="fa-solid fa-power-off" style="font-weight: bolder;"></i> Alimentation de la Pompe</span>
-                                    <div class="d-grid gap-2 d-md-flex justify-content-md-end m-2">
-                                        <button class="btn btn-success me-md-2" type="button">ON</button>
-                                        <button class="btn btn-danger" type="button">OFF</button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card" style="width: auto; padding: 1em;">
-                                <div class="card-body">
-                                <h5 class="card-title" style="color: #2379e5">Contrôle de l'Électrovanne</h5>
-                                    <table class="table table-borderless">
-                                        <tr>
-                                            <td style="font-weight: bold;"> Batterie:</td>
-                                            <td style="text-align: end;">....</td>
-                                        </tr>
-                                    </table>
+    <!-- Champ de saisie -->
+    <form method="post" action="">
+        {% csrf_token %}
+        <div class="mb-2">
+            <label> Commande pompe </label>
+            <input type="text" name="milliseconds_on_off" class="form-control" placeholder="Entrer le temps (ms)" style="border-radius: 10px;">
+        </div>
 
-                                    <span class="control-label"><i class="fa-solid fa-power-off" style="font-weight: bolder;"></i> Alimentation de l'Électrovanne</span>
-                                    <div class="d-grid gap-2 d-md-flex justify-content-md-end m-2">
-                                        <button class="btn btn-success me-md-2" type="button">ON</button>
-                                        <button class="btn btn-danger" type="button">OFF</button>
-                                    </div>
+        <!-- Boutons ON et OFF -->
+        <div class="d-flex justify-content-around">
+            <button type="submit" name="action" value="on" class="btn btn-success" style="border-radius: 10px; width: 100px;">ON</button>
+            <button type="submit" name="action" value="off" class="btn btn-danger" style="border-radius: 10px; width: 100px;">OFF</button>
+        </div>
+    </form>
+</div>
+    </div>
+</div>
 
-                                <div class="duration-input-group m-2">
-                                    <label for="openDuration" class="duration-label">Durée d'Ouverture (secondes)</label>
-                                    <div class="col-12">
-                                        <input type="number" id="openDuration" value="1" min="1" style="float: right;">
-                                    </div>
-                                </div>
-                                <div class="time-input-group m-2">
-                                    <label for="scheduledTime" class="time-label">Heure d'Ouverture Programmée</label>
-                                    <div class="col-12">
-                                        <input type="time" id="scheduledTime" value="12:00" style="float: right;">
-                                    </div>
-                                </div>
-                                </div>
-                            </div>
+ <div class="col-md-5">
+    <div class="card shadow-lg" style="border-radius: 20px; background-color: #ffffff; padding: 2em; height: 40rem;">
+
+        <!-- Titre de la carte -->
+        <h4 class="card-title text-center mb-4" style="color: white; background-color: #5b99ea; border-radius: 15px; padding: 10px; height: 4rem; display: flex; align-items: center; justify-content: center;">
+            Configuration d'Irrigation
+        </h4>
+
+        <!-- Contenu de la carte -->
+        <div class="card-body d-flex flex-column justify-content-center">
+
+            <form method="post" id="irrigationForm">
+                {% csrf_token %}
+
+                <!-- Heure d'irrigation -->
+                <div class="mb-4">
+                    <label for="irrigation_time" class="form-label" style="color: #5b99ea;">Heure d'Irrigation :</label>
+                    <input type="time" name="irrigation_time" id="irrigation_time" class="form-control text-center">
+                    <div class="text-center mt-4">
+                        <button type="submit" name="action" value="set_time" class="btn btn-primary btn-lg w-75">Valider l'Heure</button>
                     </div>
                 </div>
 
+                <!-- Temps d'irrigation -->
+                <div class="mb-4">
+                    <label for="milliseconds" class="form-label" style="color: #5b99ea;">Temps d'Irrigation (ms) :</label>
+                    <input type="number" name="milliseconds" id="milliseconds" class="form-control text-center" placeholder="Entrez un temps en ms">
+                    <div class="text-center mt-4">
+                        <button type="submit" name="action" value="send_time" class="btn btn-warning btn-lg w-75">Envoyer Temps</button>
+                    </div>
+                </div>
 
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+    <!-- Formulaire Configuration -->
+<!--    <div class="col-md-5">-->
+<!--<form method="post" class="card shadow-lg p-5" style="border-radius: 20px; padding: 2em; background-color: #ffffff; max-width: 600px; margin: auto; height: 40rem;" id="irrigationForm">-->
+<!--    {% csrf_token %}-->
+
+<!--    <h4 class="card-title text-center mb-5" style="color: white; background-color: #5b99ea; border-radius: 15px; padding: 10px; height: 4rem; display: flex; align-items: center; justify-content: center;">-->
+<!--    Configuration d'Irrigation-->
+<!--</h4>-->
+
+
+
+<script>
+document.getElementById('irrigationForm').addEventListener('submit', function(event) {
+    const action = document.activeElement.value;  // le bouton sur lequel on a cliqué
+    const irrigationTime = document.getElementById('irrigation_time').value;
+    const milliseconds = document.getElementById('milliseconds').value;
+
+    if (action === 'set_time' && !irrigationTime) {
+        alert('Veuillez entrer l\'heure d\'irrigation.');
+        event.preventDefault();
+    }
+
+    if (action === 'send_time' && !milliseconds) {
+        alert('Veuillez entrer le temps en millisecondes.');
+        event.preventDefault();
+    }
+});
+</script>
+
+    </div>
             </div>
+
 
 <!------------------------------------------------------------------------------------------------------------------------->
 	    </div><!--//app-content-->

@@ -7,7 +7,7 @@ import pandas as pd
 from django.utils import timezone
 from django.db.models import Max, Min, Sum, Avg
 from django.http import HttpResponseRedirect
-from django.shortcuts import render,HttpResponse
+from django.shortcuts import render,HttpResponse, redirect
 from django.views.generic import TemplateView
 # import paho.mqtt.client as mqtt
 from collections import defaultdict
@@ -36,6 +36,93 @@ pyraGV = 'a84041fc4188657b'
 
 Capteurdesol ='a84041d10858e027'
 #fin progra
+
+import base64
+import requests
+
+import grpc
+from chirpstack_api import api
+api_token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJjaGlycHN0YWNrIiwiaXNzIjoiY2hpcnBzdGFjayIsInN1YiI6IjA4ODBmOWY4LTU5NzktNDNlOC1iNjEyLTE0YmQ3M2YyNmI4NiIsInR5cCI6ImtleSJ9.XKsZDC4EUtsgJctOkJ_e-sQMS7lADDP3ManxNWzyYOo"
+# ID du périphérique (dev_eui)
+dev_eui = "ce7554dc00001057"
+
+# Adresse du serveur ChirpStack (si différente)
+server = "51.38.188.212:8080"
+def send_downlink_1(api_token, dev_eui, server, etat=1):
+    """
+    Envoie un message ON (0x01) ou OFF (0x00) via l'API gRPC de ChirpStack.
+
+    :param api_token: Jeton API pour l'authentification.
+    :param dev_eui: DevEUI du périphérique.
+    :param server: Adresse du serveur ChirpStack.
+    :param etat: 1 pour ON (0x01), 0 pour OFF (0x00).
+    :return: ID du message envoyé ou None en cas d'erreur.
+    """
+    try:
+        # Connexion gRPC
+        channel = grpc.insecure_channel(server)
+        client = api.DeviceServiceStub(channel)
+        auth_token = [("authorization", f"Bearer {api_token}")]
+
+        # Construction du message
+        req = api.EnqueueDeviceQueueItemRequest()
+        req.queue_item.confirmed = False
+        req.queue_item.dev_eui = dev_eui
+        req.queue_item.f_port = 10
+        req.queue_item.data = bytes([0x01]) if etat else bytes([0x00])
+
+        # Envoi
+        resp = client.Enqueue(req, metadata=auth_token)
+        return resp.id
+
+    except grpc.RpcError as e:
+        print(f"Erreur lors de l'envoi du downlink: {e}")
+        return None
+
+def send_downlink(api_token, dev_eui="ce7554dc00001057", server="51.38.188.212:8080", milliseconds=0):
+    """
+    Envoie un message downlink à un périphérique via l'API gRPC de ChirpStack.
+
+    :param api_token: Le jeton API pour l'authentification.
+    :param dev_eui: L'ID unique du périphérique.
+    :param server: L'adresse du serveur ChirpStack (par défaut '51.38.188.212:8080').
+    :param milliseconds: Le temps en millisecondes à envoyer (sur 6 bits).
+    :return: L'ID de la requête de mise en file d'attente ou une erreur.
+    """
+    try:
+        # Connexion au serveur gRPC sans TLS.
+        channel = grpc.insecure_channel(server)
+
+        # Client de l'API DeviceService
+        client = api.DeviceServiceStub(channel)
+
+        # Définir le jeton d'authentification.
+        auth_token = [("authorization", "Bearer %s" % api_token)]
+
+        # Convertir les millisecondes en hexadécimal sur 6 bits.
+        hex_value = format(int(milliseconds), '06x').upper()  # Conversion en hex avec 6 chiffres
+
+        # Ajouter '01' au début.
+        final_value = '01' + hex_value  # 01 suivi des millisecondes en hexadécimal
+
+        # Construire la requête.
+        req = api.EnqueueDeviceQueueItemRequest()
+        req.queue_item.confirmed = False  # Non confirmé
+        req.queue_item.data = bytes.fromhex(final_value)  # Données converties en bytes
+        req.queue_item.dev_eui = dev_eui  # L'ID du périphérique
+        req.queue_item.f_port = 1  # Le port de l'application
+
+        # Envoi de la requête au serveur ChirpStack.
+        resp = client.Enqueue(req, metadata=auth_token)
+
+        # Retourner l'ID du downlink
+        return resp.id
+
+    except grpc.RpcError as e:
+        # Gestion des erreurs gRPC
+        print(f"Erreur lors de l'envoi du downlink: {e}")
+        return None
+
 
 def aqi(request):
     context={}
@@ -622,13 +709,31 @@ def home(request):
     cap3_last_data = CapSol2.objects.filter(devId="3").latest('dt')
     cap4_last_data = CapSol2.objects.filter(devId="4").latest('dt')
     cap2 = CapSol2.objects.last()
+    #****************cmd vanne *********
+    # Votre jeton API
+    api_token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJjaGlycHN0YWNrIiwiaXNzIjoiY2hpcnBzdGFjayIsInN1YiI6IjA4ODBmOWY4LTU5NzktNDNlOC1iNjEyLTE0YmQ3M2YyNmI4NiIsInR5cCI6ImtleSJ9.XKsZDC4EUtsgJctOkJ_e-sQMS7lADDP3ManxNWzyYOo"
 
+# ID du périphérique (dev_eui)
+    dev_eui = "ce7554dc00001057"
+
+# Adresse du serveur ChirpStack (si différente)
+    server = "51.38.188.212:8080"
+
+# Appeler la fonction pour envoyer le downlink
+    #downlink_id = send_downlink(api_token, dev_eui, server)
+
+    #if downlink_id:
+    #    print(f"Downlink envoyé avec succès, ID : {downlink_id}")
+    #else:
+    #    print("Erreur lors de l'envoi du downlink.")
+
+    #***************fin cmd ************
     bv= batvanne.objects.last()
     # print("last",str((tab.time)))
 
     f = CapSol.objects.first()
     tab2=CapSol.objects.all()
-
+#    send_downlink_to_node()
     max_temp=CapSol.objects.all().aggregate(Max('Temp'))
     min_temp = CapSol.objects.all().aggregate(Min('Temp'))
     moy=(max_temp["Temp__max"]+min_temp["Temp__min"])/2
@@ -1239,7 +1344,7 @@ def wsopen1(request):
     postweek = wsd.objects.filter(Time_Stamp__gte=week, Time_Stamp__lte=current_time)
 
     def get_rain_sum(queryset):
-        rain_sum = queryset.aggregate(Sum('rain_gauge'))['rain_gauge__sum']
+        rain_sum = queryset.aggregate(Sum('rain_gauge'))['rain_gauge__sum'] or 0
         rain_sum = round(rain_sum,2)
         return round(rain_sum, 2) if rain_sum is not None else 0
 
@@ -1839,49 +1944,79 @@ def filter_ray_battery(request):
     }
 
     return render(request, "enviro/temp15.html", context)
-
 def data_filter_et0(request):
     # Récupération des valeurs du formulaire
     start_date = request.GET.get('start_date')
     end_date = request.GET.get('end_date')
 
-    # Initialisation des listes
-    labels_et0 = []
-    labels_et0dr = []
-    data_et0 = []
-    data_et0dr = []
-
-    # Si l'utilisateur a spécifié des dates, on les utilise, sinon on prend les 15 derniers jours
+    # Si l'utilisateur a spécifié des dates, on les utilise, sinon 15 derniers jours
     if start_date and end_date:
         start_date = make_aware(datetime.datetime.strptime(start_date, "%Y-%m-%d"))
         end_date = make_aware(datetime.datetime.strptime(end_date, "%Y-%m-%d")).replace(hour=23, minute=59, second=59)
     else:
-        start_date = (datetime.datetime.now() - datetime.timedelta(days=15)).replace(hour=0, minute=0, second=0, microsecond=0)
-        end_date = datetime.datetime.now().replace(hour=23, minute=59, second=59)
-        start_date = make_aware(start_date)
-        end_date = make_aware(end_date)
+        now = datetime.datetime.now()
+        start_date = make_aware((now - datetime.timedelta(days=15)).replace(hour=0, minute=0, second=0, microsecond=0))
+        end_date = make_aware(now.replace(hour=23, minute=59, second=59))
 
-    # Filtrage des données pour les classes ET0o et ET0DR
+    # Filtrage des données pour ET0o et ET0DR
     all_et0 = ET0o.objects.filter(Time_Stamp__range=(start_date, end_date))
     all_et0dr = ET0DR.objects.filter(Time_Stamp__range=(start_date, end_date))
 
-    # Collecte des labels et des données
+    # Collecte des labels et données
+    labels_et0 = []
+    data_et0 = []
     for data in all_et0:
         labels_et0.append(data.Time_Stamp.strftime("%Y-%m-%d"))
         data_et0.append(data.value if data.value is not None else 0)
 
+    labels_et0dr = []
+    data_et0dr = []
     for data in all_et0dr:
         labels_et0dr.append(data.Time_Stamp.strftime("%Y-%m-%d"))
         data_et0dr.append(data.value if data.value is not None else 0)
-    zipped_data2 = zip(labels_et0dr, data_et0dr)
-    print("zipped : ",zipped_data2)
-    zipped_datawsd = zip(labels_et0, data_et0)
-    print("zipped : ",zipped_datawsd)
-    # Derniers objets de chaque modèle
+
+    # Construction de listes zip
+    list_zipped_data2 = list(zip(labels_et0dr, data_et0dr))
+    list_zipped_datawsd = list(zip(labels_et0, data_et0))
+
+    # Derniers objets
     last_et0 = ET0o.objects.last()
     last_et0dr = ET0DR.objects.last()
 
-    # Création du contexte
+    # Liste de toutes les dates
+    all_dates = sorted(set(labels_et0dr) | set(labels_et0))
+
+    # Dictionnaires date -> valeur
+    zipped_data2_dates = {date: value for date, value in list_zipped_data2}
+    zipped_datawsd_dates = {date: value for date, value in list_zipped_datawsd}
+
+    # Initialiser les listes
+    dragino_data = []
+    sensecap_data = []
+
+    # Variables pour mémoriser la dernière valeur
+    last_dragino_value = 0
+    last_sensecap_value = 0
+
+    # Générer les données alignées
+    for date in all_dates:
+        dragino_y = zipped_data2_dates.get(date, None)
+        sensecap_y = zipped_datawsd_dates.get(date, None)
+
+        if dragino_y is None:
+            dragino_y = last_dragino_value
+        else:
+            last_dragino_value = dragino_y
+
+        if sensecap_y is None:
+            sensecap_y = last_sensecap_value
+        else:
+            last_sensecap_value = sensecap_y
+
+        dragino_data.append({'x': date, 'y': dragino_y})
+        sensecap_data.append({'x': date, 'y': sensecap_y})
+
+    # Préparer le contexte pour le template
     context = {
         'all_et0': all_et0,
         'all_et0dr': all_et0dr,
@@ -1893,8 +2028,10 @@ def data_filter_et0(request):
         'data_et0dr': data_et0dr,
         'start_date': start_date.strftime("%Y-%m-%d"),
         'end_date': end_date.strftime("%Y-%m-%d"),
-        'zipped_data2': list(zipped_data2),
-        'zipped_datawsd': list(zipped_datawsd),
+        'zipped_data2': list_zipped_data2,
+        'zipped_datawsd': list_zipped_datawsd,
+        'dragino_data': dragino_data,
+        'sensecap_data': sensecap_data,
     }
 
     return render(request, "enviro/hum15.html", context)
@@ -2037,10 +2174,45 @@ def compare_sensors(request):
         "calibrated_values": merged_df[["timestamp", "sensecap", "dragino", "calibrated_dragino"]].to_dict(orient="records")
     })
 
+dev_eui_1 ="ab7554dc00001075"
 def debit_data(request):
 
     lasted = debitcap.objects.last()
     context={'lasted':lasted}
+    irrigation_time = None
+    milliseconds = None
+    hex_milliseconds = None
+    # Appeler la fonction pour envoyer le downlink
+
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        irrigation_time = request.POST.get('irrigation_time')
+        milliseconds = request.POST.get('milliseconds')
+
+        if action == 'set_time' and irrigation_time:
+            # Traiter l'heure d'irrigation ici
+            print(f"Heure d'irrigation : {irrigation_time}")
+        if action == 'on':
+            milliseconds_on_off = request.POST.get('milliseconds_on_off')
+            print("on relay : ", milliseconds_on_off)
+            send_downlink_1(api_token, dev_eui_1, server, etat=1)
+            # Faire quelque chose pour ouvrir avec durée milliseconds_on_off
+        if action == 'off':
+            milliseconds_on_off = request.POST.get('milliseconds_on_off')
+            print("off relay : ",milliseconds_on_off)
+            send_downlink_1(api_token, dev_eui_1, server, etat=0)
+        if action == 'send_time' and milliseconds:
+            # Traiter le temps en ms ici
+            print(f"Temps d'irrigation : {milliseconds}")
+            # Convertir le temps en millisecondes et limiter à 6 bits
+            downlink_id = send_downlink(api_token, dev_eui, server, milliseconds)
+
+            if downlink_id:
+                print(f"Downlink envoyé avec succès, ID : {downlink_id}")
+            else:
+                print("Erreur lors de l'envoi du downlink.")
+
+        return redirect('debit')  # 👈 rediriger vers la page 'home' pour éviter re-post
 
     return render(request,"debitControl.html",context)
 # if data['deviceInfo']['devEui']==pyranometre:

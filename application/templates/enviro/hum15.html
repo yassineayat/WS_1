@@ -365,142 +365,123 @@
 <!--  ReactDOM.render(React.createElement(ApexChart), domContainer);-->
 <!--</script>-->
 <script type="text/babel">
-  class ApexChart extends React.Component {
-    constructor(props) {
-      super(props);
+class ApexChart extends React.Component {
+  constructor(props) {
+    super(props);
 
-      this.state = {
-        series: [
-          {
-            name: 'Dragino',  // Label pour la première courbe
-            data: [
-              {% for date, value in zipped_data2 %}
-                { x: new Date("{{ date|escapejs }}"), y: {{ value }} },
-              {% endfor %}
-            ]
-          },
-          {
-            name: 'SenseCap ',  // Label pour la deuxième courbe
-            data: [
-              {% for date, value in zipped_datawsd %}
-                { x: new Date("{{ date|escapejs }}"), y: {{ value }} },
-              {% endfor %}
-            ]
-          }
-        ],
-        options: {
-          chart: {
-            height: 350,
-            type: 'line',
-            dropShadow: {
-              enabled: true,
-              color: '#000',
-              top: 18,
-              left: 7,
-              blur: 10,
-              opacity: 0.5
-            },
-            zoom: {
-              enabled: true
-            },
-            toolbar: {
-              show: true
-            }
-          },
-          colors: ['#000010', '#008FFF'],  // Noir pour SenseCap, Bleu pour Dragino '#008FFB', '#546E7A'
-          dataLabels: {
-            enabled: false,  // Active l'affichage des valeurs sur le graphique
-          },
-          stroke: {
-            curve: 'smooth'  // Ajoute une courbe lissée aux lignes
-          },
-          title: {
-            text: 'Evapotranspiration SenseCap et Dragino',
-            align: 'left'
-          },
-          grid: {
-            borderColor: '#e7e7e7',
-            row: {
-              colors: ['#f3f3f3', 'transparent'],  // Fond alterné pour les lignes de la grille
-              opacity: 0.5
-            },
-          },
-          markers: {
-            size: 0 // Taille des marqueurs pour chaque point
-          },
-          xaxis: {
-            type: 'datetime',
-            categories: [
-              {% for date, value in zipped_data2 %}
-                "{{ date|escapejs }}",  // Remplir avec les dates pour l'axe X
-              {% endfor %}
-            ],
-            title: {
-              text: 'Temps'
-            }
-          },
-          yaxis: {
-            title: {
-              text: 'Valeur'
-            },
-            // min: 0,  // Valeur minimale de l'axe Y
-            // max: 30  // Valeur maximale de l'axe Y
-          },
-          tooltip: {
-  shared: true,
-  intersect: false,
-  custom: function({ series, dataPointIndex, w }) {
-    const values = [
-      {
-        name: 'Dragino',
-        value: series[0][dataPointIndex],
-        color: w.config.colors[0]
-      },
-      {
-        name: 'SensCap',
-        value: series[1][dataPointIndex],
-        color: w.config.colors[1]
-      }
-    ];
-
-    const sorted = values.sort((a, b) => b.value - a.value);
-
-    let tooltipHTML = '';
-    sorted.forEach(item => {
-      tooltipHTML += `
-        <div style="display: flex; align-items: center; gap: 5px;">
-          <span style="display:inline-block; width:10px; height:10px; background-color:${item.color}; border-radius:2px;"></span>
-          ${item.name} : ${item.value.toFixed(2)}
-        </div>`;
-    });
-
-    return tooltipHTML;
+    this.state = {
+     series: [
+  {
+    name: 'Dragino',
+    data: [
+      {% for point in dragino_data %}
+        { x: new Date("{{ point.x|escapejs }}"), y: {{ point.y|default:"null" }} },
+      {% endfor %}
+    ]
+  },
+  {
+    name: 'SenseCap',
+    data: [
+      {% for point in sensecap_data %}
+        { x: new Date("{{ point.x|escapejs }}"), y: {{ point.y|default:"null" }} },
+      {% endfor %}
+    ]
   }
-},
-          legend: {
-            position: 'top',
-            horizontalAlign: 'center',
-            floating: true,
-            offsetY: -25,
-            offsetX: -5
+],
+      options: {
+        chart: {
+          height: 350,
+          type: 'line',
+          dropShadow: {
+            enabled: true,
+            color: '#000',
+            top: 18,
+            left: 7,
+            blur: 10,
+            opacity: 0.5
+          },
+          zoom: { enabled: true },
+          toolbar: { show: true }
+        },
+        colors: ['#000010', '#008FFF'],
+        dataLabels: { enabled: false },
+        stroke: {
+          curve: 'smooth',
+          connectNulls: true // ici on veut voir la coupure N/A
+        },
+        title: {
+          text: 'Evapotranspiration SenseCap et Dragino',
+          align: 'left'
+        },
+        grid: {
+          borderColor: '#e7e7e7',
+          row: {
+            colors: ['#f3f3f3', 'transparent'],
+            opacity: 0.5
+          },
+        },
+        markers: { size: 0 },
+        xaxis: {
+          type: 'datetime',
+          title: { text: 'Temps' }
+        },
+        yaxis: {
+          title: { text: 'Valeur' }
+        },
+        tooltip: {
+          shared: true,
+          intersect: false,
+          custom: function({ series, dataPointIndex, w }) {
+            const values = [
+              {
+                name: 'Dragino',
+                value: series[0][dataPointIndex],
+                color: w.config.colors[0]
+              },
+              {
+                name: 'SenseCap',
+                value: series[1][dataPointIndex],
+                color: w.config.colors[1]
+              }
+            ];
+
+            const sorted = values.sort((a, b) => (b.value || 0) - (a.value || 0));
+
+            let tooltipHTML = '';
+            sorted.forEach(item => {
+              tooltipHTML += `
+                <div style="display: flex; align-items: center; gap: 5px;">
+                  <span style="display:inline-block; width:10px; height:10px; background-color:${item.color}; border-radius:2px;"></span>
+                  ${item.name} : ${item.value !== null ? item.value.toFixed(2) : 'N/A'}
+                </div>`;
+            });
+
+            return tooltipHTML;
           }
+        },
+        legend: {
+          position: 'top',
+          horizontalAlign: 'center',
+          floating: true,
+          offsetY: -25,
+          offsetX: -5
         }
-      };
-    }
-
-    render() {
-      return (
-        <div id="chart-line">
-          <ReactApexChart options={this.state.options} series={this.state.series} type="line" height={500} />
-        </div>
-      );
-    }
+      }
+    };
   }
 
-  const domContainer = document.querySelector('#app');
-  ReactDOM.render(React.createElement(ApexChart), domContainer);
-</script>
+  render() {
+    return (
+      <div id="chart-line">
+        <ReactApexChart options={this.state.options} series={this.state.series} type="line" height={500} />
+      </div>
+    );
+  }
+}
 
+const domContainer = document.querySelector('#app');
+ReactDOM.render(React.createElement(ApexChart), domContainer);
+</script>
 
 
 </body>

@@ -1,0 +1,12 @@
+Django
+gunicorn
+numpy
+pandas
+djangorestframework
+APScheduler
+Markdown
+twilio
+-e git+https://github.com/sherzodr/penmon@37d3eb99bcf62c8466678069d7cd3a8734cc01f7#egg=penmon
+paho-mqtt
+chirpstack-api
+#chirpstack-rest-api
